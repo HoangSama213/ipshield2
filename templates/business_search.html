@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<div class="container mt-4">
+    <form method="get">
+        <div class="search-section">
+            <h3>🏢 Tìm kiếm đăng ký kinh doanh theo mã số thuế</h3>
+
+            <div class="row g-2 mt-2">
+                <div class="col-12 col-md-6 col-lg-8">
+                    <input type="text"
+                           name="q"
+                           value="{{ q }}"
+                           class="form-control"
+                           placeholder="Nhập mã số thuế (VD: 0123456789)"
+                           autofocus>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        🔍 Tìm kiếm
+                    </button>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <a href="{% url 'business_search' %}" class="btn btn-secondary w-100">
+                        ✖ Xóa
+                    </a>
+                </div>
+            </div>
+
+            {% if not_found %}
+            <div class="alert alert-warning mt-3">
+                ⚠️ Không tìm thấy đăng ký kinh doanh có mã số thuế: <strong>{{ q }}</strong>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">💡 Hướng dẫn</h5>
+                <ul class="mb-0">
+                    <li>Nhập <strong>mã số thuế</strong> vào ô tìm kiếm</li>
+                    <li>Nhấn <strong>Enter</strong> hoặc nút <strong>Tìm kiếm</strong></li>
+                    <li>Hệ thống sẽ tự động chuyển đến trang chi tiết đăng ký kinh doanh đó</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.search-section {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    color: white;
+}
+
+.search-section h3 {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.search-section .form-control {
+    height: 50px;
+    font-size: 16px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.search-section .btn {
+    height: 50px;
+    font-weight: 600;
+    border: none;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="q"]');
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.closest('form').submit();
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

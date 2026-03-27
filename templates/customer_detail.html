@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+
+<link href="{% static 'css/customer_details.css' %}" rel="stylesheet">
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="detail-header">
+        <div class="header-left">
+            <div class="icon-wrapper">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <h2 class="mb-0">Thông Tin Khách Hàng</h2>
+        </div>
+        <a href="{% url 'home' %}" class="btn-back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Quay lại
+        </a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="info-card">
+        <div class="card-body">
+
+            <!-- Section 1: Thông tin cơ bản -->
+            <div class="info-section">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M2 12h20"></path>
+                        <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                    <h4>Thông tin cơ bản</h4>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Mã khách hàng</span>
+                        <span class="info-value highlight">{{ customer.customer_code }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Loại khách hàng</span>
+                        <span class="info-value">{{ customer.get_customer_type_display }}</span>
+                    </div>
+
+                    <div class="info-item full-width">
+                        <span class="info-label">Trạng thái khách hàng</span>
+                        <div class="status-wrapper">
+                            {% if customer.status == 'approved' %}
+                                <span class="status-badge status-success">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    {{ customer.get_status_display }}
+                                </span>
+                            {% elif customer.status == 'pending' %}
+                                <span class="status-badge status-warning">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                    {{ customer.get_status_display }}
+                                </span>
+                            {% elif customer.status == 'completed' %}
+                                <span class="status-badge status-primary">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    {{ customer.get_status_display }}
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-secondary">
+                                    {{ customer.get_status_display }}
+                                </span>
+                            {% endif %}
+
+                            <a href="{% url 'customer_change_status' customer.id %}" class="btn-edit-status">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                </svg>
+                                Sửa
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Tên khách hàng</span>
+                        <span class="info-value">{{ customer.name }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ customer.email }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Số điện thoại</span>
+                        <span class="info-value">{{ customer.phone }}</span>
+                    </div>
+
+                    <div class="info-item full-width">
+                        <span class="info-label">Địa chỉ</span>
+                        <span class="info-value">{{ customer.address }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Thông tin chi tiết -->
+            <div class="info-section">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <h4>Thông tin chi tiết</h4>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">CCCD</span>
+                        <span class="info-value">{{ customer.cccd }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Mã số thuế</span>
+                        <span class="info-value">{{ customer.tax_code }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Người phụ trách</span>
+                        <span class="info-value">{{ customer.manager }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Chức danh</span>
+                        <span class="info-value">{{ customer.position }}</span>
+                    </div>
+
+                    <div class="info-item full-width">
+                        <span class="info-label">Ghi chú</span>
+                        <span class="info-value">{{ customer.note }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Ngày tạo</span>
+                        <span class="info-value">{{ customer.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'customer_edit' customer.id %}" class="btn-action btn-edit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                    </svg>
+                    Sửa thông tin
+                </a>
+                <a href="{% url 'customer_delete' customer.id %}" class="btn-action btn-delete">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Xóa
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Contracts Section -->
+    <div class="contracts-section">
+        <div class="contracts-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h2>Danh sách hợp đồng</h2>
+
+           <a href="{% url 'add_contract' %}" class="btn-add-contract">
+    <span class="btn-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </span>
+    <span class="btn-text">Thêm hợp đồng</span>
+    <span class="btn-shine"></span>
+</a>
+
+
+
+        </div>
+
+        {% if contracts %}
+        <div class="contracts-card">
+            <div class="table-responsive">
+                <table class="contracts-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã hợp đồng</th>
+                            <th>Loại Dịch vụ</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contract in contracts %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="contract-code">{{ contract.contract_no }}</td>
+                            <td>{{ contract.get_service_type_display }}</td>
+                            <td>
+                                <span class="contract-status">{{ contract.get_status_display }}</span>
+                            </td>
+                            <td>{{ contract.created_at|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'contract_detail' id=contract.id %}" class="btn-view">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <p>Khách hàng này hiện chưa có hợp đồng nào.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+
+<form method="get">
+    <div class="search-section mb-4">
+        <h3>🔍 Tìm kiếm hợp đồng bản quyền tác giả</h3>
+
+        <div class="row g-2 mt-2">
+            <div class="col-12 col-md-6 col-lg-8">
+                <input type="text"
+                       name="q"
+                       value="{{ q }}"
+                       class="form-control"
+                       placeholder="Số giấy chứng nhận bản quyền, mã hợp đồng, mã KH, tên KH...">
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    🔍 Tìm kiếm
+                </button>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{% url 'contract_copyright_search' %}"
+                   class="btn btn-secondary w-100">
+                    ✖ Xóa
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .table-responsive {
+        max-height: 420px;      /* ≈ 10 dòng bootstrap */
+        overflow-y: auto;       /* hiện thanh cuộn dọc */
+    }
+</style>
+
+<!-- 🔥 HIỂN THỊ DANH SÁCH BẢN QUYỀN (NẾU TÌM THEO SỐ CHỨNG NHẬN) -->
+{% if copyrights %}
+<div class="contracts-card">
+
+
+    <div class="table-responsive">
+        <table class="contracts-table table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>STT</th>
+                    <th>Số chứng nhận</th>
+                    <th>Tên tác phẩm</th>
+                    <th>Tác giả</th>
+                    <th>Chủ sở hữu</th>
+                    <th>Loại tác phẩm</th>
+                    <th>Số hợp đồng</th>
+                    <th>Khách hàng</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for copyright in copyrights %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="fw-semibold"><strong>{{ copyright.certificate_no }}</strong></td>
+                    <td>{{ copyright.work_name }}</td>
+                    <td>{{ copyright.author }}</td>
+                    <td>{{ copyright.owner }}</td>
+                    <td>{{ copyright.type }}</td>
+                    <td>{{ copyright.contract.contract_no }}</td>
+                    <td>{{ copyright.contract.customer.name }}</td>
+                    <td>
+                        <a href="{% url 'copyright_detail' copyright.id %}" class="btn btn-sm btn-info">
+                            Xem
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- HIỂN THỊ DANH SÁCH HỢP ĐỒNG (NẾU TÌM THEO THÔNG TIN KHÁC) -->
+{% elif contracts %}
+<div class="contracts-card">
+    <div class="table-responsive">
+        <table class="contracts-table table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>STT</th>
+                    <th>Mã hợp đồng</th>
+                    <th>Loại dịch vụ</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for contract in contracts %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td class="fw-semibold">
+                        {{ contract.contract_no }}
+                    </td>
+
+                    <td>
+                        {{ contract.get_service_type_display }}
+                    </td>
+
+                    <td>
+                        {% if contract.status == 'completed' %}
+                            <span class="badge bg-success">
+                                {{ contract.get_status_display }}
+                            </span>
+                        {% elif contract.status == 'processing' %}
+                            <span class="badge bg-warning text-dark">
+                                {{ contract.get_status_display }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ contract.get_status_display }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ contract.created_at|date:"d/m/Y H:i" }}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'contract_detail' id=contract.id %}"
+                           class="btn btn-sm btn-info">
+                            Xem
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- KHÔNG TÌM THẤY KẾT QUẢ -->
+{% else %}
+<div class="empty-state text-center mt-4">
+    <p class="text-muted">
+        {% if q %}⚠️ Không tìm thấy kết quả nào cho "{{ q }}"{% else %}Không tìm thấy hợp đồng bản quyền tác giả.{% endif %}
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

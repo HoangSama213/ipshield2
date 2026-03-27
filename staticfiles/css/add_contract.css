@@ -1,0 +1,621 @@
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    padding: 24px 30px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(190, 30, 45, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-content svg {
+    color: white;
+    flex-shrink: 0;
+}
+
+.page-header h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Customer Search Styles */
+.customer-search-wrapper {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.search-input-group {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.customer-search-input {
+    width: 100%;
+    padding: 12px 16px 12px 44px !important;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.customer-search-input:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #BE1E2D;
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.search-result-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: #fef2f2;
+}
+
+.search-result-item.no-results,
+.search-result-item.error {
+    cursor: default;
+    text-align: center;
+    color: #6b7280;
+}
+
+.search-result-item.error {
+    color: #dc2626;
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-code {
+    font-weight: 700;
+    color: #BE1E2D;
+    font-size: 14px;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.customer-detail {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.selected-customer {
+    display: none;
+    margin-top: 12px;
+}
+
+.selected-customer-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border: 2px solid #86efac;
+    border-radius: 8px;
+}
+
+.selected-customer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #166534;
+    font-size: 14px;
+}
+
+.selected-customer-info svg {
+    flex-shrink: 0;
+    color: #16a34a;
+}
+
+.remove-customer {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.remove-customer:hover {
+    background: rgba(220, 38, 38, 0.1);
+}
+
+.remove-customer svg {
+    color: #dc2626;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+/* Form Section */
+.form-section {
+    margin-bottom: 32px;
+}
+
+.form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #BE1E2D;
+}
+
+.section-header svg {
+    color: #BE1E2D;
+    flex-shrink: 0;
+}
+
+.section-header h5 {
+    margin: 0;
+    color: #BE1E2D;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.form-content {
+    padding: 0;
+}
+
+/* Service Block */
+.service-block {
+    display: none;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-left: 4px solid #BE1E2D;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.service-block:last-child {
+    margin-bottom: 0;
+}
+
+.service-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.service-header svg {
+    color: #BE1E2D;
+    flex-shrink: 0;
+}
+
+.service-header h6 {
+    margin: 0;
+    color: #374151;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.service-content {
+    padding: 0;
+}
+
+/* Form Inputs */
+.contract-form input[type="text"],
+.contract-form input[type="email"],
+.contract-form input[type="tel"],
+.contract-form input[type="number"],
+.contract-form input[type="date"],
+.contract-form input[type="file"],
+.contract-form textarea,
+.contract-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.contract-form input:focus,
+.contract-form textarea:focus,
+.contract-form select:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.contract-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Form Labels */
+.contract-form label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.contract-form p {
+    margin-bottom: 20px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #f3f4f6;
+}
+
+.btn-save,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-save {
+    background: #BE1E2D;
+    color: white;
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.3);
+}
+
+.btn-save:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+    color: white;
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.btn-save svg,
+.btn-cancel svg {
+    flex-shrink: 0;
+}
+
+/* Django Form Specific */
+.contract-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.contract-form .errorlist li {
+    color: #dc2626;
+    font-size: 13px;
+    padding: 8px 12px;
+    background: #fee2e2;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+/* Select Styling */
+.contract-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+/* Checkbox & Radio */
+.contract-form input[type="checkbox"],
+.contract-form input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+/* Help Text */
+.contract-form .helptext {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 20px;
+    }
+
+    .header-content h2 {
+        font-size: 20px;
+    }
+
+    .form-card {
+        padding: 24px 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .service-block {
+        padding: 16px;
+    }
+}
+
+/* Select2 Custom Styling */
+.select2-container--default .select2-selection--single {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    height: 44px;
+    padding: 6px 12px;
+}
+
+.select2-container--default .select2-selection--single:focus {
+    border-color: #BE1E2D;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px;
+    color: #374151;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 42px;
+}
+
+.select2-dropdown {
+    border: 2px solid #BE1E2D;
+    border-radius: 8px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #BE1E2D;
+}
+/* Ẩn checkbox DELETE của Django formset */
+.formset-item input[type="checkbox"][name$="-DELETE"] {
+    display: none;
+}
+
+/* Ẩn label của checkbox DELETE */
+.formset-item label[for$="-DELETE"] {
+    display: none;
+}
+
+/* Style cho nút xóa */
+.btn-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+    background: #fecaca;
+    border-color: #dc2626;
+}
+
+/* Style cho nút thêm */
+.btn-add {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 2px solid #bbf7d0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.btn-add:hover {
+    background: #bbf7d0;
+    border-color: #16a34a;
+}
+
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-overlay.show {
+    display: flex !important;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 30px 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header svg {
+    margin-bottom: 15px;
+}
+
+.modal-header h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.modal-body {
+    padding: 25px 30px;
+    text-align: center;
+}
+
+.modal-body p {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.modal-warning {
+    color: #f59e0b !important;
+    font-weight: 600;
+    font-size: 14px !important;
+    margin-top: 15px !important;
+}
+
+.modal-footer {
+    padding: 20px 30px 30px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-footer .btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,219 @@
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    padding: 24px 30px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(190, 30, 45, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-content svg {
+    color: white;
+    flex-shrink: 0;
+}
+
+.page-header h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.form-group-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label-custom {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin: 0;
+}
+
+.required-mark {
+    color: #BE1E2D;
+    margin-left: 4px;
+}
+
+/* Form Inputs */
+.custom-form input[type="text"],
+.custom-form input[type="email"],
+.custom-form input[type="tel"],
+.custom-form input[type="number"],
+.custom-form input[type="date"],
+.custom-form textarea,
+.custom-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #f9fafb;
+}
+
+.custom-form input:focus,
+.custom-form textarea:focus,
+.custom-form select:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.custom-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Error & Help Text */
+.field-error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.field-error small {
+    display: block;
+}
+
+.field-help {
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #f3f4f6;
+}
+
+.btn-save,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-save {
+    background: #BE1E2D;
+    color: white;
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.3);
+}
+
+.btn-save:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+    color: white;
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.btn-save svg,
+.btn-cancel svg {
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 20px;
+    }
+
+    .header-content h2 {
+        font-size: 20px;
+    }
+
+    .form-card {
+        padding: 24px 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Django Form Specific */
+.custom-form p {
+    margin: 0;
+}
+
+.custom-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custom-form .errorlist li {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Select Styling */
+.custom-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+/* Checkbox & Radio */
+.custom-form input[type="checkbox"],
+.custom-form input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+}

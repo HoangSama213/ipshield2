@@ -1,0 +1,1625 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load humanize %}
+{% load static %}
+<link href="{% static 'css/contract_detail.css' %}" rel="stylesheet"/>
+<style>
+    /* Payment Header - Full Payment */
+.payment-header {
+    margin-bottom: 24px;
+}
+
+.payment-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.payment-type-badge svg {
+    flex-shrink: 0;
+}
+
+/* Installment Card */
+.installment-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+/* Installment Header */
+.installment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    color: white;
+}
+
+.header-info {
+    flex: 1;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.header-title svg {
+    flex-shrink: 0;
+}
+
+.header-title h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.payment-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.stat-item svg {
+    flex-shrink: 0;
+}
+
+.btn-edit-installment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: white;
+    color: #BE1E2D;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-edit-installment:hover {
+    background: #f9fafb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #BE1E2D;
+}
+
+/* Installment Body */
+.installment-body {
+    padding: 24px;
+}
+
+/* Progress Section */
+.progress-section {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-label {
+    font-weight: 700;
+    color: #374151;
+    font-size: 15px;
+}
+
+.progress-percentage {
+    font-weight: 800;
+    color: #BE1E2D;
+    font-size: 20px;
+}
+
+.progress-bar-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.custom-progress {
+    height: 32px;
+    background: #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #BE1E2D 0%, #e63946 100%);
+    border-radius: 16px;
+    transition: width 0.6s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 13px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.progress-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.remaining-label {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.remaining-amount {
+    color: #BE1E2D;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* Installments Table */
+.installments-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.installments-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.installments-table thead {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+}
+
+.installments-table th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.installments-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.installments-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.installment-row.paid {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.installment-row.overdue {
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.installments-table td {
+    padding: 14px 12px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.row-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-weight: 700;
+    color: #BE1E2D;
+}
+
+.installment-notes {
+    font-weight: 500;
+}
+
+.amount {
+    font-weight: 700;
+    color: #BE1E2D;
+}
+
+.due-date {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-badge.paid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.unpaid {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.paid-date {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-pay,
+.btn-partial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-pay {
+    background: #10b981;
+    color: white;
+}
+
+.btn-pay:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-partial {
+    background: white;
+    color: #BE1E2D;
+    border: 2px solid #BE1E2D;
+}
+
+.btn-partial:hover {
+    background: #BE1E2D;
+    color: white;
+}
+
+/* Bill Export */
+.bill-exported {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.bill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #fee2e2;
+    color: #BE1E2D;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.bill-date {
+    color: #6b7280;
+    font-size: 11px;
+}
+
+.btn-export-bill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #BE1E2D;
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-export-bill:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+}
+
+/* Custom Modal */
+.custom-modal {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.modal-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    color: white;
+    border: none;
+}
+
+.modal-title-custom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.btn-close-custom {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-close-custom:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-close-custom svg {
+    color: white;
+}
+
+.modal-body-custom {
+    padding: 24px;
+}
+
+.payment-summary {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item.highlight {
+    background: white;
+    margin: 8px -8px -8px;
+    padding: 12px 8px;
+    border-radius: 8px;
+    border: 2px solid #BE1E2D;
+}
+
+.summary-label {
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.summary-value {
+    color: #374151;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.summary-value.paid {
+    color: #10b981;
+}
+
+.summary-item.highlight .summary-value {
+    color: #BE1E2D;
+    font-size: 18px;
+}
+
+.form-group-custom {
+    margin-bottom: 0;
+}
+
+.form-label-custom {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-input-custom {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.form-input-custom:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.modal-footer-custom {
+    display: flex;
+    gap: 12px;
+    padding: 20px 24px;
+    background: #f9fafb;
+    border: none;
+}
+
+.btn-modal-cancel,
+.btn-modal-confirm {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-modal-cancel {
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-modal-cancel:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.btn-modal-confirm {
+    background: #BE1E2D;
+    color: white;
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.3);
+}
+
+.btn-modal-confirm:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .installment-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .btn-edit-installment {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .installments-table {
+        font-size: 12px;
+    }
+
+    .installments-table th,
+    .installments-table td {
+        padding: 10px 8px;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+    }
+
+    .modal-footer-custom {
+        flex-direction: column;
+    }
+}
+</style>
+<div class="container mt-4 ">
+    <!-- Header -->
+    <div class="contract-header">
+        <div class="header-left">
+            <div class="icon-wrapper">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+            </div>
+            <h2 class="mb-0">Chi tiết hợp đồng</h2>
+        </div>
+        <a href="{% url 'home' %}" class="btn-back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Quay lại
+        </a>
+    </div>
+
+    <!-- Contract Info Card -->
+    <div class="info-card mb-4">
+        <div class="info-grid">
+            <div class="info-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <div class="info-content">
+                    <span class="info-label">Khách hàng</span>
+                    <span class="info-value">{{ contract.customer.name }}</span>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <div class="info-content">
+                    <span class="info-label">Ngày tạo</span>
+                    <span class="info-value">{{ contract.created_at|date:'d/m/Y' }}</span>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <div class="info-content">
+                    <span class="info-label">Loại dịch vụ</span>
+                    <span class="service-badge">{{ contract.get_service_type_display }}</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <div class="info-content">
+                    <span class="info-label">Tổng giá trị hợp đồng</span>
+                    <span class="service-badge">{{ contract.contract_value|intcomma }} VNĐ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if contract.payment_type == 'full' %}
+    <div class="payment-header">
+        <div class="payment-type-badge full">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>Hợp đồng trả dứt điểm</span>
+        </div>
+    </div>
+
+    {% elif contract.payment_type == 'installment' %}
+
+    <!-- Card Header -->
+    <div class="installment-card">
+        <div class="installment-header">
+            <div class="header-info">
+                <div class="header-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <h5>Lịch thanh toán trả góp</h5>
+                </div>
+                <div class="payment-stats">
+                <span class="stat-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Đã thanh toán: <strong>{{ paid_count }}/{{ installments.count }}</strong> đợt
+                </span>
+                </div>
+            </div>
+            <a href="{% url 'edit_installment_amounts' contract.id %}" class="btn-edit-installment">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+                Nhập số tiền đợt
+            </a>
+        </div>
+
+        <div class="installment-body">
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Tiến độ thanh toán</span>
+                    <span class="progress-percentage">{{ contract.payment_progress }}%</span>
+                </div>
+
+                <div class="progress-bar-wrapper">
+                    <div class="custom-progress">
+                        <div class="progress-fill"
+                             style="width: {{ contract.payment_progress|default:0|floatformat:0 }}%;">
+                            <div class="progress-shine"></div>
+                        </div>
+                    </div>
+                    <div class="progress-text">
+                        {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+                    </div>
+                </div>
+
+                <div class="progress-footer">
+                    <span class="remaining-label">Còn lại:</span>
+                    <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+                </div>
+            </div>
+
+            <!-- Installments Table -->
+            <div class="installments-table-wrapper">
+                <table class="installments-table">
+                    <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th width="20%">Đợt thanh toán</th>
+                        <th width="15%">Số tiền</th>
+                        <th width="12%">Hạn trả</th>
+                        <th width="10%">Trạng thái</th>
+                        <th width="8%">Thao tác</th>
+                        <th width="5%">Xuất hóa đơn</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for ins in installments %}
+                    <tr class="installment-row {% if ins.is_paid %}paid{% elif ins.due_date < today %}overdue{% endif %}">
+                        <td class="text-center">
+                            <span class="row-number">{{ forloop.counter }}</span>
+                        </td>
+                        <td>
+                            <span class="installment-notes">{{ ins.notes }}</span>
+                        </td>
+                        <td class="text-end">
+                            <span class="amount">{{ ins.amount|floatformat:0 }} VNĐ</span>
+                        </td>
+                        <td class="text-center">
+                            {% if ins.due_date %}
+                            <span class="due-date">{{ ins.due_date|date:"d/m/Y" }}</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if ins.is_paid %}
+                            <div class="status-badge paid">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Đã trả
+                            </div>
+                            {% if ins.paid_date %}
+                            <small class="paid-date">{{ ins.paid_date|date:"d/m/Y" }}</small>
+                            {% endif %}
+                            {% else %}
+                            <div class="status-badge unpaid">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                Chưa trả
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if not ins.is_paid %}
+                            <div class="action-buttons">
+                                <!-- Thanh toán toàn bộ -->
+                                <form method="POST" style="display:inline;"
+                                      onsubmit="return confirm('Xác nhận thanh toán đợt này?\n\nSố tiền: {{ ins.remaining_amount|floatformat:0 }} VNĐ');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="pay_installment">
+                                    <input type="hidden" name="installment_id" value="{{ ins.id }}">
+                                    <button type="submit" class="btn-pay" title="Thanh toán đợt này">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Trả
+                                    </button>
+                                </form>
+
+                                <!-- Thanh toán từng phần -->
+                                <button type="button" class="btn-partial"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#partialPayModal{{ ins.id }}"
+                                        title="Thanh toán một phần">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    Trả 1 phần
+                                </button>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if ins.is_exported_bill %}
+                            <!-- Đã xuất hóa đơn -->
+                            <div class="bill-exported">
+                                    <span class="bill-badge">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                        </svg>
+                                        Đã xuất HĐ
+                                    </span>
+                                {% if ins.bill_exported_at %}
+                                <small class="bill-date">{{ ins.bill_exported_at|date:"d/m/Y H:i" }}</small>
+                                {% endif %}
+                            </div>
+
+                            {% elif ins.is_paid %}
+                            <!-- Đã trả nhưng chưa xuất HĐ -->
+                            <form method="POST" style="display:inline;"
+                                  onsubmit="return confirm('Xác nhận xuất hóa đơn đỏ?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="export_bill">
+                                <input type="hidden" name="installment_id" value="{{ ins.id }}">
+                                <button type="submit" class="btn-export-bill">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    Xuất HĐ đỏ
+                                </button>
+                            </form>
+
+                            {% else %}
+                            <!-- Chưa thanh toán -->
+                            <span class="text-muted">Chưa thanh toán</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Modal thanh toán từng phần -->
+                    <div class="modal fade" id="partialPayModal{{ ins.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content custom-modal">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="partial_payment">
+                                    <input type="hidden" name="installment_id" value="{{ ins.id }}">
+
+                                    <div class="modal-header-custom">
+                                        <h5 class="modal-title-custom">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
+                                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                            </svg>
+                                            Thanh toán từng phần - {{ ins.notes }}
+                                        </h5>
+                                        <button type="button" class="btn-close-custom" data-bs-dismiss="modal">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-body-custom">
+                                        <div class="payment-summary">
+                                            <div class="summary-item">
+                                                <span class="summary-label">Tổng đợt:</span>
+                                                <span class="summary-value">{{ ins.amount|floatformat:0 }} VNĐ</span>
+                                            </div>
+                                            <div class="summary-item">
+                                                <span class="summary-label">Đã trả:</span>
+                                                <span class="summary-value paid">{{ ins.paid_amount|floatformat:0 }} VNĐ</span>
+                                            </div>
+                                            <div class="summary-item highlight">
+                                                <span class="summary-label">Còn lại:</span>
+                                                <span class="summary-value">{{ ins.remaining_amount|floatformat:0 }} VNĐ</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">Số tiền thanh toán lần này:</label>
+                                            <input type="number" name="paid_amount" class="form-input-custom"
+                                                   min="1" max="{{ ins.remaining_amount }}"
+                                                   placeholder="Nhập số tiền" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer-custom">
+                                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                            Hủy
+                                        </button>
+                                        <button type="submit" class="btn-modal-confirm">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Xác nhận thanh toán
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- Service Details Card -->
+    <div class="service-card">
+        <div class="service-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <h5>Thông tin dịch vụ</h5>
+        </div>
+
+        <div class="service-content">
+{% if contract.service_type == 'nhanhieu' %}
+<!-- ============================================ -->
+<!-- NHÃN HIỆU -->
+<!-- ============================================ -->
+{% for s in service %}
+<div class="service-item-card">
+    <div class="service-item-header">
+        <h6 class="service-item-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            Nhãn hiệu: {{ s.trademark_name|default:'Chưa đặt tên' }}
+        </h6>
+        <a href="{% url 'trademark_detail' s.id %}" class="btn-view-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Xem chi tiết số đơn
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="detail-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Số đơn</span>
+                    <span class="highlight-text">{{ s.app_no }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Người nộp đơn</span>
+                    <span class="detail-value">{{ s.applicant }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Chủ đơn</span>
+                    <span class="detail-value">{{ contract.customer.name }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Ngày nộp đơn</span>
+                    <span class="detail-value">{{ s.filing_date|date:'d/m/Y' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">SĐT</span>
+                    <span class="detail-value">{{ s.phone }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Ngày cấp</span>
+                    <span class="detail-value">{{ s.decision_date|date:'d/m/Y' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ s.email }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Ngày công bố</span>
+                    <span class="detail-value">{{ s.publish_date|date:'d/m/Y' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Địa chỉ</span>
+                    <span class="detail-value">{{ s.address }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Ngày hợp lệ hình thức đơn</span>
+                    <span class="detail-value">{{ s.valid_date|date:'d/m/Y'|default:'Chưa có' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Phân loại dịch vụ</span>
+                    <span class="detail-value">{{ s.classification }}</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="image-section">
+                <div class="image-label">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Nhãn hiệu + hình</span>
+                </div>
+
+                {% if s.trademark_image %}
+                <div class="image-wrapper">
+                    <img src="{{ s.trademark_image.url }}" alt="Trademark Image" class="trademark-image"/>
+                </div>
+                {% else %}
+                <div class="no-image">
+                    <p>Chưa có hình ảnh</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="attachment-box"
+                 style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h6 style="margin-bottom: 15px;">📎 Tài liệu đính kèm ({{ s.certificates.count }})</h6>
+
+                <!-- FORM UPLOAD -->
+                <form method="post" action="{% url 'upload_certificate' %}" enctype="multipart/form-data"
+                      style="margin-bottom: 15px;">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="service_id" value="{{ s.id }}"/>
+                    <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
+
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="name" class="form-control" placeholder="Tên tài liệu"
+                               required style="max-width:200px;"/>
+
+                        <input type="file" name="file" class="form-control" required
+                               style="max-width:260px;"/>
+
+                        <button type="submit" class="btn btn-sm btn-success">➕ Thêm tài liệu</button>
+                    </div>
+                </form>
+
+                {% if s.certificates.exists %}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for cert in s.certificates.all %}
+                    <div class="attachment-item"
+                         style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" style="margin-right: 10px;">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+
+                        <div style="flex: 1;">
+                            <strong>{{ cert.name }}</strong>
+                            {% if cert.description %}
+                            <br/><small>{{ cert.description }}</small>
+                            {% endif %}
+                            <br/><small style="color: #6c757d;">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                        </div>
+
+                        <a href="{{ cert.file.url }}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+                        <a href="{% url 'delete_certificate' cert.id %}" class="delete-attachment"
+                           onclick="return confirm('Xoá file này?');">❌ Xoá</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
+        </div>
+    </div>
+</div>
+{% empty %}
+<p>❌ Chưa có nhãn hiệu nào</p>
+{% endfor %}
+            {% elif contract.service_type == 'banquyen' %}
+            <!-- ============================================ -->
+            <!-- BẢN QUYỀN -->
+            <!-- ============================================ -->
+            {% for s in service %}
+            <div class="service-item-card">
+                <div class="service-item-header">
+                    <h6 class="service-item-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M15 9.354a4 4 0 1 0 0 5.292"></path>
+                        </svg>
+                        Bản quyền: {{ s.work_name }}
+                    </h6>
+                    <a href="{% url 'copyright_detail' s.id %}" class="btn-view-detail">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Xem chi tiết bản quyền
+                    </a>
+                </div>
+
+                <div class="detail-grid">
+
+                    <div class="detail-item">
+                        <span class="detail-label">Số giấy chứng nhận</span>
+                        <span class="highlight-text">{{ s.certificate_no }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Tác phẩm</span>
+                        <span class="detail-value">{{ s.work_name }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Tác giả</span>
+                        <span class="detail-value">{{ s.author }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Chủ sở hữu</span>
+                        <span class="detail-value">{{ s.owner }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Địa chỉ chủ sở hữu</span>
+                        <span class="detail-value">{{ s.owner_address }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Loại hình</span>
+                        <span class="detail-value">{{ s.type }}</span>
+                    </div>
+
+                </div>
+                <!-- 🔥 HIỂN THỊ TÀI LIỆU ĐÍNH KÈM -->
+                <div class="attachment-box"
+                 style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h6 style="margin-bottom: 15px;">📎 Tài liệu đính kèm ({{ s.certificates.count }})</h6>
+
+                <!-- FORM UPLOAD -->
+                <form method="post" action="{% url 'upload_certificate' %}" enctype="multipart/form-data"
+                      style="margin-bottom: 15px;">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="service_id" value="{{ s.id }}"/>
+                    <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
+
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="name" class="form-control" placeholder="Tên tài liệu"
+                               required style="max-width:200px;"/>
+
+                        <input type="file" name="file" class="form-control" required
+                               style="max-width:260px;"/>
+
+                        <button type="submit" class="btn btn-sm btn-success">➕ Thêm tài liệu</button>
+                    </div>
+                </form>
+
+                {% if s.certificates.exists %}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for cert in s.certificates.all %}
+                    <div class="attachment-item"
+                         style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" style="margin-right: 10px;">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+
+                        <div style="flex: 1;">
+                            <strong>{{ cert.name }}</strong>
+                            {% if cert.description %}
+                            <br/><small>{{ cert.description }}</small>
+                            {% endif %}
+                            <br/><small style="color: #6c757d;">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                        </div>
+
+                        <a href="{{ cert.file.url }}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+                        <a href="{% url 'delete_certificate' cert.id %}" class="delete-attachment"
+                           onclick="return confirm('Xoá file này?');">❌ Xoá</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
+            </div>
+            {% empty %}
+            <p>❌ Chưa có bản quyền nào</p>
+            {% endfor %}
+            {% elif contract.service_type == 'dkkd' %}
+            <!-- ============================================ -->
+            <!-- ĐĂNG KÝ KINH DOANH -->
+            <!-- ============================================ -->
+            {% if service.first %}
+            {% with s=service.first %}
+            <div class="service-item-card">
+                <div class="service-item-header">
+                    <h6 class="service-item-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        {{ s.company_name }}
+                    </h6>
+                    <a href="{% url 'business_detail' s.id %}" class="btn-view-detail">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Xem chi tiết ĐKKD
+                    </a>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Tên công ty</span>
+                        <span class="detail-value">{{ s.company_name }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Người đại diện pháp luật</span>
+                        <span class="detail-value">{{ s.legal_representative }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Loại hình kinh doanh</span>
+                        <span class="detail-value">{{ s.business_type }}</span>
+                    </div>
+
+
+
+                    <div class="detail-item">
+                        <span class="detail-label">Chức danh</span>
+                        <span class="detail-value">{{ s.position }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Mã số thuế</span>
+                        <span class="highlight-text">{{ s.tax_code|default:'Chưa cập nhật' }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Số điện thoại</span>
+                        <span class="detail-value">{{ s.phone }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Địa chỉ</span>
+                        <span class="detail-value">{{ s.address }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ s.email }}</span>
+                    </div>
+
+                    
+
+                    <div class="detail-item">
+                        <span class="detail-label">Vốn điều lệ</span>
+                        <span class="detail-value">{{ s.charter_capital }}</span>
+                    </div>
+            </div>
+             <!-- 🔥 HIỂN THỊ TÀI LIỆU ĐÍNH KÈM -->
+                <div class="attachment-box"
+                 style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h6 style="margin-bottom: 15px;">📎 Tài liệu đính kèm ({{ s.certificates.count }})</h6>
+
+                <!-- FORM UPLOAD -->
+                <form method="post" action="{% url 'upload_certificate' %}" enctype="multipart/form-data"
+                      style="margin-bottom: 15px;">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="service_id" value="{{ s.id }}"/>
+                    <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
+
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="name" class="form-control" placeholder="Tên tài liệu"
+                               required style="max-width:200px;"/>
+
+                        <input type="file" name="file" class="form-control" required
+                               style="max-width:260px;"/>
+
+                        <button type="submit" class="btn btn-sm btn-success">➕ Thêm tài liệu</button>
+                    </div>
+                </form>
+
+                {% if s.certificates.exists %}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for cert in s.certificates.all %}
+                    <div class="attachment-item"
+                         style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" style="margin-right: 10px;">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+
+                        <div style="flex: 1;">
+                            <strong>{{ cert.name }}</strong>
+                            {% if cert.description %}
+                            <br/><small>{{ cert.description }}</small>
+                            {% endif %}
+                            <br/><small style="color: #6c757d;">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                        </div>
+
+                        <a href="{{ cert.file.url }}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+                        <a href="{% url 'delete_certificate' cert.id %}" class="delete-attachment"
+                           onclick="return confirm('Xoá file này?');">❌ Xoá</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
+            {% endwith %}
+            {% else %}
+            <p>❌ Chưa có thông tin đăng ký kinh doanh</p>
+            {% endif %}
+            {% elif contract.service_type == 'dautu' %}
+            <!-- ============================================ -->
+            <!-- ĐĂNG KÝ ĐẦU TƯ -->
+            <!-- ============================================ -->
+            {% if service.first %}
+            {% with s=service.first %}
+            <div class="service-item-card">
+                <div class="service-item-header">
+                    <h6 class="service-item-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>Dự án: 
+                        {{ s.project_name }}
+                    </h6>
+                    <a href="{% url 'investment_detail' s.id %}" class="btn-view-detail">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Xem chi tiết dự án
+                    </a>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Mã dự án</span>
+                        <span class="highlight-text">{{ s.project_code }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Nhà đầu tư</span>
+                        <span class="detail-value">{{ s.investor }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Tên dự án</span>
+                        <span class="detail-value">{{ s.project_name }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Mục tiêu dự án</span>
+                        <span class="detail-value">{{ s.objective }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Địa chỉ dự án</span>
+                        <span class="detail-value">{{ s.address }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Vốn đầu tư</span>
+                        <span class="detail-value">{{ s.total_capital }}</span>
+                    </div>
+                </div>
+                 <!-- 🔥 HIỂN THỊ TÀI LIỆU ĐÍNH KÈM -->
+                <div class="attachment-box"
+                 style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h6 style="margin-bottom: 15px;">📎 Tài liệu đính kèm ({{ s.certificates.count }})</h6>
+
+                <!-- FORM UPLOAD -->
+                <form method="post" action="{% url 'upload_certificate' %}" enctype="multipart/form-data"
+                      style="margin-bottom: 15px;">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="service_id" value="{{ s.id }}"/>
+                    <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
+
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="name" class="form-control" placeholder="Tên tài liệu"
+                               required style="max-width:200px;"/>
+
+                        <input type="file" name="file" class="form-control" required
+                               style="max-width:260px;"/>
+
+                        <button type="submit" class="btn btn-sm btn-success">➕ Thêm tài liệu</button>
+                    </div>
+                </form>
+
+                {% if s.certificates.exists %}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for cert in s.certificates.all %}
+                    <div class="attachment-item"
+                         style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" style="margin-right: 10px;">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+
+                        <div style="flex: 1;">
+                            <strong>{{ cert.name }}</strong>
+                            {% if cert.description %}
+                            <br/><small>{{ cert.description }}</small>
+                            {% endif %}
+                            <br/><small style="color: #6c757d;">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                        </div>
+
+                        <a href="{{ cert.file.url }}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+                        <a href="{% url 'delete_certificate' cert.id %}" class="delete-attachment"
+                           onclick="return confirm('Xoá file này?');">❌ Xoá</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
+            </div>
+            {% endwith %}
+            {% else %}
+            <p>❌ Chưa có thông tin đầu tư</p>
+            {% endif %}
+            {% elif contract.service_type == 'khac' %}
+            <!-- ============================================ -->
+            <!-- DỊCH VỤ KHÁC -->
+            <!-- ============================================ -->
+            {% for s in service %}
+            <div class="service-item-card">
+                <div class="service-item-header">
+                    <h6 class="service-item-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Dịch vụ khác
+                    </h6>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Người liên hệ</span>
+                        <span class="detail-value">{{ s.legal_representative }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Chức vụ</span>
+                        <span class="detail-value">{{ s.position }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Số điện thoại</span>
+                        <span class="detail-value">{{ s.phone }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ s.email }}</span>
+                    </div>
+
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Mô tả dịch vụ</span>
+                        <span class="detail-value">{{ s.description }}</span>
+                    </div>
+                </div>
+                 <!-- 🔥 HIỂN THỊ TÀI LIỆU ĐÍNH KÈM -->
+                <div class="attachment-box"
+                 style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h6 style="margin-bottom: 15px;">📎 Tài liệu đính kèm ({{ s.certificates.count }})</h6>
+
+                <!-- FORM UPLOAD -->
+                <form method="post" action="{% url 'upload_certificate' %}" enctype="multipart/form-data"
+                      style="margin-bottom: 15px;">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="service_id" value="{{ s.id }}"/>
+                    <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
+
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" name="name" class="form-control" placeholder="Tên tài liệu"
+                               required style="max-width:200px;"/>
+
+                        <input type="file" name="file" class="form-control" required
+                               style="max-width:260px;"/>
+
+                        <button type="submit" class="btn btn-sm btn-success">➕ Thêm tài liệu</button>
+                    </div>
+                </form>
+
+                {% if s.certificates.exists %}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for cert in s.certificates.all %}
+                    <div class="attachment-item"
+                         style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" style="margin-right: 10px;">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+
+                        <div style="flex: 1;">
+                            <strong>{{ cert.name }}</strong>
+                            {% if cert.description %}
+                            <br/><small>{{ cert.description }}</small>
+                            {% endif %}
+                            <br/><small style="color: #6c757d;">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                        </div>
+
+                        <a href="{{ cert.file.url }}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+                        <a href="{% url 'delete_certificate' cert.id %}" class="delete-attachment"
+                           onclick="return confirm('Xoá file này?');">❌ Xoá</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
+            </div>
+            {% empty %}
+            <p>❌ Chưa có dịch vụ khác</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <!-- Edit Button -->
+    <div class="bottom-actions">
+        <a href="{% url 'contract_edit' contract.id %}" class="btn-edit-contract">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+            Sửa hợp đồng
+        </a>
+    </div>
+</div>
+{% endblock %}
+

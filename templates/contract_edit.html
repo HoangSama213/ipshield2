@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block body_block %}
+{% load static %}
+<link href="{% static 'css/contract_edit.css' %}" rel="stylesheet">
+   <script src="{% static 'js/contract_edit.js' %}" defer></script>
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+            <h2 class="mb-0">Chỉnh sửa hợp đồng {{ contract.contract_no }}</h2>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="edit-card">
+        <form method="POST" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+
+            <!-- Custom Tabs -->
+            <div class="custom-tabs">
+                <button type="button" class="tab-btn active" data-tab="contract">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Thông tin hợp đồng
+                </button>
+                <button type="button" class="tab-btn" data-tab="service">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m0 6l-4.24 4.24M23 12h-6m-6 0H1m18.66 5.66l-4.24-4.24m0-6l-4.24-4.24"></path>
+                    </svg>
+                    Dịch vụ
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content-wrapper">
+                <!-- Contract Info Tab -->
+                <div class="tab-content active" data-content="contract">
+                    <div class="tab-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <h5>Thông tin hợp đồng</h5>
+                    </div>
+                    <div class="form-content">
+                        {{ contract_form.as_p }}
+                    </div>
+                </div>
+
+                <!-- Service Tab -->
+                <div class="tab-content" data-content="service">
+                    <div class="tab-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m0 6l-4.24 4.24M23 12h-6m-6 0H1m18.66 5.66l-4.24-4.24m0-6l-4.24-4.24"></path>
+                        </svg>
+                        <h5>Thông tin dịch vụ</h5>
+                    </div>
+                   <div class="form-content">
+
+    {% if contract.service_type == "nhanhieu" or contract.service_type == "banquyen" %}
+
+{{ service_formset.management_form }}
+
+<div id="service-formset">
+    {% for form in service_formset %}
+    <div class="service-box formset-item">
+        <h6>
+            {% if contract.service_type == "nhanhieu" %}
+                🔖 Nhãn hiệu {{ forloop.counter }}
+            {% else %}
+                📄 Bản quyền {{ forloop.counter }}
+            {% endif %}
+        </h6>
+
+        {{ form.as_p }}
+        <button type="button" class="btn-remove">
+            ❌ Xóa
+        </button>
+        <hr>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- EMPTY FORM TEMPLATE -->
+<template id="empty-form-template">
+    <div class="service-box formset-item">
+        {{ service_formset.empty_form.as_p }}
+        {{ service_formset.empty_form.DELETE }}
+
+        <button type="button" class="btn-remove">
+            ❌ Xóa
+        </button>
+        <hr>
+    </div>
+</template>
+
+<button type="button"
+        class="btn-add"
+        data-prefix="{{ service_formset.prefix }}">
+    ➕ Thêm
+</button>
+
+{% else %}
+
+{{ service_form.as_p }}
+{% endif %}
+
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Lưu thay đổi
+                </button>
+
+
+                <a href="{% url 'contract_detail' contract.id %}" class="btn-cancel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Trở lại
+                </a>
+            </div>
+
+        </form>
+                        <form method="POST"
+                    action="{% url 'contract_delete' contract.id %}"
+                    onsubmit="return confirm('Bạn có chắc muốn xoá hợp đồng?');"
+                    style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        ❌ Xóa hợp đồng
+                    </button>
+                </form>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

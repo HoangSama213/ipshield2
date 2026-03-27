@@ -1,0 +1,626 @@
+{% extends 'base.html' %}
+{% block body_block %}
+  {% load static %}
+
+  <div class="container mt-4">
+    <!-- Header -->
+    <div class="copyright-header">
+      <div class="header-left">
+        <div class="icon-wrapper">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M15 9.354a4 4 0 1 0 0 5.292"></path>
+          </svg>
+        </div>
+        <h2 class="mb-0">Chi tiết bản quyền</h2>
+      </div>
+      <div class="header-actions">
+        <a href="{% url 'copyright_search' %}" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>Tìm kiếm khác
+        </a>
+        <a href="{% url 'contract_detail' id=contract.id %}" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>Xem hợp đồng
+        </a>
+        <a href="{% url 'contract_copyright_search' %}" class="btn-back">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>Quay lại
+        </a>
+        <style>
+          .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          
+            padding: 10px 18px;
+            background-color: #ffffff;
+            color: #333;
+          
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+          
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+          
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            transition: all 0.25s ease;
+          }
+          
+          /* Icon */
+          .btn-back svg {
+            transition: transform 0.25s ease;
+          }
+          
+          /* Hover */
+          .btn-back:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+            color: #111;
+          
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+          }
+          
+          /* Icon hover */
+          .btn-back:hover svg {
+            transform: translateX(-4px);
+          }
+          
+          /* Click */
+          .btn-back:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          }
+          
+          @media print {
+            /* 1. Ẩn toàn bộ nội dung */
+            body * {
+              visibility: hidden !important;
+            }
+          
+            /* 2. Chỉ hiển thị info-card */
+            .info-card,
+            .info-card * {
+              visibility: visible !important;
+            }
+          
+            /* 3. Đưa info-card lên góc trang */
+            .info-card {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              box-shadow: none !important;
+              border: 1px solid #000 !important;
+            }
+          }
+        </style>
+      </div>
+    </div>
+
+    <!-- Copyright Info Card -->
+    <div class="info-card mb-4">
+      <div class="card-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M15 9.354a4 4 0 1 0 0 5.292"></path>
+        </svg>
+        <h5 class="mb-0">Bản quyền: {{ copyright.work_name }}</h5>
+      </div>
+      <div class="card-body">
+        <div class="detail-grid-compact">
+          <div class="detail-row">
+            <span class="detail-label">Số giấy chứng nhận:</span>
+            <span class="detail-value highlight">{{ copyright.certificate_no }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Tên tác phẩm:</span>
+            <span class="detail-value">{{ copyright.work_name }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Tác giả:</span>
+            <span class="detail-value">{{ copyright.author }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Chủ sở hữu:</span>
+            <span class="detail-value">{{ copyright.owner }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Địa chỉ chủ sở hữu:</span>
+            <span class="detail-value">{{ copyright.owner_address }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Loại hình:</span>
+            <span class="detail-value">{{ copyright.type }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Certificate Section -->
+    {% if copyright.certificates %}
+      <div class="card mb-4 download-card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+          <h5 class="mb-0">Tài liệu đính kèm</h5>
+        </div>
+
+        <div class="card-body">
+          {% for cert in copyright.certificates.all %}
+            <div class="attachment-item">
+              <div class="attachment-info">
+                <div class="attachment-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </div>
+                <div class="attachment-details">
+                  <strong class="attachment-name">{{ cert.name|default:'Giấy chứng nhận bản quyền' }}</strong>
+                  <small class="attachment-date">{{ cert.uploaded_at|date:'d/m/Y H:i' }}</small>
+                </div>
+              </div>
+
+              <div class="attachment-actions">
+                <a href="{{ cert.file.url }}" class="btn-attachment download" download>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>Tải xuống
+                </a>
+
+                <a href="{% url 'delete_certificate' cert.id %}" onclick="return confirm('Xoá file này?');" class="btn-attachment delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>Xoá
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    /* Variables */
+    :root {
+      --primary-red: #be1e2d;
+      --primary-red-dark: #a01827;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+    
+    /* Header */
+    .copyright-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 28px 32px;
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(190, 30, 45, 0.25);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .header-left h2 {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 26px;
+      margin: 0;
+    }
+    
+    .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+    }
+    
+    .icon-wrapper svg {
+      color: var(--white);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-back {
+      background: var(--white);
+      color: var(--primary-red);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-back:hover {
+      background: var(--gray-50);
+      transform: translateX(-4px);
+      text-decoration: none;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--white);
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: var(--white);
+      color: var(--primary-red);
+      font-weight: 700;
+    }
+    
+    .btn-primary:hover {
+      background: var(--gray-50);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+    
+    /* Cards */
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 28px;
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+      border: none;
+    }
+    
+    .card-header svg {
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    
+    .card-header h5 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--white);
+    }
+    
+    .card-body {
+      padding: 28px;
+    }
+    /* ===============================
+       COPYRIGHT INFO CARD – UI PRO
+       =============================== */
+    
+    .info-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 16px;
+      background: #ffffff;
+      transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+      border-color: #dc2626;
+      box-shadow: 0 10px 30px rgba(220, 38, 38, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    /* ===== Header ===== */
+    .info-card .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      background: transparent;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .info-card .card-header svg {
+      color: #dc2626;
+    }
+    
+    .info-card .card-header h5 {
+      font-weight: 600;
+      color: #111827;
+    }
+    
+    /* ===== Detail Grid ===== */
+    .detail-grid-compact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 40px;
+    }
+    
+    /* ===== Each Row ===== */
+    .detail-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: all 0.25s ease;
+    }
+    
+    .detail-row:hover {
+      background: #fef2f2;
+    }
+    
+    /* ===== Label ===== */
+    .detail-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #6b7280;
+      letter-spacing: 0.05em;
+    }
+    
+    /* ===== Value ===== */
+    .detail-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #111827;
+      word-break: break-word;
+    }
+    
+    /* ===== Highlight Certificate Number ===== */
+    .detail-value.highlight {
+      display: inline-block;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      width: fit-content;
+    }
+    
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .detail-grid-compact {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    
+      .detail-row {
+        padding: 10px;
+      }
+    
+      .detail-label {
+        font-size: 11px;
+      }
+    
+      .detail-value {
+        font-size: 14px;
+      }
+    }
+    
+    /* Download Card */
+    .download-card {
+      background: var(--white);
+      border: 2px solid var(--primary-red);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(190, 30, 45, 0.1);
+      overflow: hidden;
+    }
+    
+    /* Attachment Items */
+    .attachment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    
+    .attachment-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .attachment-item:hover {
+      background: var(--white);
+      border-color: var(--primary-red);
+      box-shadow: 0 2px 8px rgba(190, 30, 45, 0.1);
+    }
+    
+    .attachment-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    
+    .attachment-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--white);
+      border-radius: 8px;
+      border: 2px solid var(--gray-300);
+    }
+    
+    .attachment-icon svg {
+      color: var(--primary-red);
+    }
+    
+    .attachment-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .attachment-name {
+      color: var(--gray-800);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    
+    .attachment-date {
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+    
+    .attachment-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-attachment {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-attachment.download {
+      background: var(--primary-red);
+      color: var(--white);
+    }
+    
+    .btn-attachment.download:hover {
+      background: var(--primary-red-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(190, 30, 45, 0.3);
+      text-decoration: none;
+    }
+    
+    .btn-attachment.delete {
+      background: var(--white);
+      color: var(--gray-700);
+      border: 2px solid var(--gray-300);
+    }
+    
+    .btn-attachment.delete:hover {
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #dc2626;
+      text-decoration: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .copyright-header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px 20px;
+      }
+    
+      .header-left {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+      }
+    
+      .header-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+    
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    
+      .detail-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    
+      .detail-label {
+        font-size: 12px;
+      }
+    
+      .detail-value {
+        font-size: 13px;
+      }
+    
+      .attachment-item {
+        flex-direction: column;
+        gap: 12px;
+      }
+    
+      .attachment-info {
+        width: 100%;
+      }
+    
+      .attachment-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+    
+      .btn-attachment {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+{% endblock %}
+

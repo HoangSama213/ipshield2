@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<link href="{% static 'css/customer_edit.css' %}" rel="stylesheet">
+   <script src="{% static 'js/customer_edit.js' %}" defer></script>
+<div class="container mt-4">
+<!-- Header -->
+<div class="page-header">
+<div class="header-content">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+</svg>
+<h2 class="mb-0">Sửa Khách Hàng</h2>
+</div>
+</div>
+
+    <!-- Form Card -->
+<div class="form-card">
+<form method="POST" class="custom-form">
+            {% csrf_token %}
+<div class="form-grid">
+                {% for field in form %}
+<div class="form-group-custom">
+<label for="{{ field.id_for_label }}" class="form-label-custom">
+                        {{ field.label }}
+                        {% if field.field.required %}
+<span class="required-mark">*</span>
+                        {% endif %}
+</label>
+                    {{ field }}
+                    {% if field.errors %}
+<div class="field-error">
+                        {% for error in field.errors %}
+<small>{{ error }}</small>
+                        {% endfor %}
+</div>
+                    {% endif %}
+                    {% if field.help_text %}
+<small class="field-help">{{ field.help_text }}</small>
+                    {% endif %}
+</div>
+                {% endfor %}
+</div>
+
+            <div class="form-actions">
+<button type="submit" class="btn btn-save">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+<polyline points="17 21 17 13 7 13 7 21"></polyline>
+<polyline points="7 3 7 8 15 8"></polyline>
+</svg>
+                    Lưu thay đổi
+</button>
+<a href="{% url 'customer_detail' customer.id %}" class="btn btn-cancel">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<line x1="18" y1="6" x2="6" y2="18"></line>
+<line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+                    Hủy
+</a>
+</div>
+</form>
+</div>
+</div>
+
+{% endblock %}

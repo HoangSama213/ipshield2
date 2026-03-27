@@ -1,0 +1,407 @@
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    padding: 24px 30px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(190, 30, 45, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-content svg {
+    color: white;
+    flex-shrink: 0;
+}
+
+.page-header h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Edit Card */
+.edit-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+/* Custom Tabs */
+.custom-tabs {
+    display: flex;
+    background: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 24px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-btn svg {
+    flex-shrink: 0;
+}
+
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #BE1E2D;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: #f3f4f6;
+    color: #BE1E2D;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #BE1E2D;
+}
+
+.tab-btn.active::after {
+    transform: scaleX(1);
+}
+
+/* Tab Content Wrapper */
+.tab-content-wrapper {
+    padding: 32px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tab Header */
+.tab-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #BE1E2D;
+}
+
+.tab-header svg {
+    color: #BE1E2D;
+}
+
+.tab-header h5 {
+    margin: 0;
+    color: #BE1E2D;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* Form Content */
+.form-content {
+    display: grid;
+    gap: 20px;
+}
+
+/* Form Inputs */
+.edit-form input[type="text"],
+.edit-form input[type="email"],
+.edit-form input[type="tel"],
+.edit-form input[type="number"],
+.edit-form input[type="date"],
+.edit-form input[type="file"],
+.edit-form textarea,
+.edit-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #f9fafb;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus,
+.edit-form select:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.edit-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Form Labels */
+.edit-form label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.edit-form p {
+    margin-bottom: 20px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    padding: 24px 32px;
+    background: #f9fafb;
+    border-top: 2px solid #e5e7eb;
+}
+
+.btn-save,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-save {
+    background: #BE1E2D;
+    color: white;
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.3);
+}
+
+.btn-save:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+    color: white;
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.btn-save svg,
+.btn-cancel svg {
+    flex-shrink: 0;
+}
+
+/* Django Form Specific */
+.edit-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.edit-form .errorlist li {
+    color: #dc2626;
+    font-size: 13px;
+    padding: 8px 12px;
+    background: #fee2e2;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+/* Select Styling */
+.edit-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+/* Checkbox & Radio */
+.edit-form input[type="checkbox"],
+.edit-form input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+/* Help Text */
+.edit-form .helptext {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 20px;
+    }
+
+    .header-content h2 {
+        font-size: 18px;
+    }
+
+    .tab-content-wrapper {
+        padding: 24px 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .custom-tabs {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .tab-btn::after {
+        display: none;
+    }
+
+    .tab-btn.active {
+        background: #f3f4f6;
+    }
+}
+/* ====== FIX CHECKBOX DELETE THỪA ====== */
+
+/* Ẩn hoàn toàn phần DELETE checkbox trong formset */
+.service-box p:has(input[name$="-DELETE"]) {
+    display: none !important;
+}
+
+/* Backup - ẩn trực tiếp các phần tử DELETE */
+.service-box input[type="checkbox"][name$="-DELETE"] {
+    display: none !important;
+}
+
+.service-box label[for$="-DELETE"] {
+    display: none !important;
+}
+
+/* Style cho service box */
+.service-box {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-left: 4px solid #BE1E2D;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.service-box h6 {
+    color: #BE1E2D;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Style cho nút xóa */
+.btn-remove {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+    background: #fecaca;
+    border-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Style cho nút thêm */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #dcfce7;
+    color: #16a34a;
+    border: 2px solid #bbf7d0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 16px;
+    transition: all 0.2s ease;
+}
+
+.btn-add:hover {
+    background: #bbf7d0;
+    border-color: #16a34a;
+    transform: translateY(-1px);
+}
+
+/* Ẩn hr cuối cùng */
+.service-box hr:last-child {
+    display: none;
+}

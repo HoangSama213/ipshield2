@@ -1,0 +1,618 @@
+{% extends "base.html" %}
+{% block body_block %}
+{% load static %}
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="investment-header">
+        <div class="header-left">
+            <div class="icon-wrapper">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <h2 class="mb-0">Chi tiết dự án đầu tư</h2>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'investment_search' %}" class="btn btn-outline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                Tìm kiếm khác
+            </a>
+            <a href="{% url 'contract_detail' id=contract.id %}" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                Xem hợp đồng
+            </a>
+            <a href="{% url 'contract_investment_search' %}" class="btn-back">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Investment Info Card -->
+    <div class="info-card mb-4">
+        <div class="card-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <h5 class="mb-0">Thông tin dự án đầu tư</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Mã dự án</span>
+                            <span class="detail-value text-primary fw-bold">{{ investment.project_code }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Tên dự án</span>
+                            <span class="detail-value fw-bold">{{ investment.project_name }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Nhà đầu tư</span>
+                            <span class="detail-value">{{ investment.investor }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Địa chỉ dự án</span>
+                            <span class="detail-value">{{ investment.address }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Vốn đầu tư</span>
+                            <span class="detail-value text-primary fw-bold">{{ investment.total_capital }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="objective-box">
+                        <div class="objective-label">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>Mục tiêu dự án</span>
+                        </div>
+                        <div class="objective-content">{{ investment.objective }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Download Certificate Section -->
+    {% if investment.certificate_file %}
+    <div class="card mb-4 download-card">
+        <div class="card-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <h5 class="mb-0">Tải tài liệu</h5>
+        </div>
+        <div class="card-body text-center py-4">
+
+            <a href="{% url 'download_investment_certificate' investment.id %}"
+               class="btn btn-download">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Tải giấy chứng nhận đầu tư
+            </a>
+
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+/* ========================================
+   INVESTMENT DETAIL PAGE - CLEAN WHITE & RED
+   ======================================== */
+
+:root {
+    --primary-red: #BE1E2D;
+    --primary-red-dark: #a01827;
+    --primary-red-light: #d62839;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --success: #10b981;
+    --warning: #f59e0b;
+}
+
+/* Header */
+.investment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(190, 30, 45, 0.25);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-left h2 {
+    color: var(--white);
+    font-weight: 700;
+    font-size: 26px;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+}
+
+.icon-wrapper svg {
+    color: var(--white);
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-back {
+    background: var(--white);
+    color: var(--primary-red);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-back:hover {
+    background: var(--gray-50);
+    color: var(--primary-red-dark);
+    transform: translateX(-4px);
+    text-decoration: none;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--white);
+    color: var(--primary-red);
+    font-weight: 700;
+}
+
+.btn-primary:hover {
+    background: var(--gray-50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.3);
+    color: var(--primary-red-dark);
+    text-decoration: none;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.btn-download {
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+    color: var(--white);
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(190, 30, 45, 0.2);
+}
+
+.btn-download:hover {
+    background: linear-gradient(135deg, var(--primary-red-dark) 0%, #8a1522 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(190, 30, 45, 0.35);
+    color: var(--white);
+    text-decoration: none;
+}
+
+/* Cards */
+.card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--gray-300);
+}
+
+.info-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 28px;
+    background: var(--gray-50);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.card-header svg {
+    color: var(--primary-red);
+    flex-shrink: 0;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gray-800);
+}
+
+.card-body {
+    padding: 28px;
+}
+
+/* Download Card Special Style */
+.download-card {
+    border: 2px solid var(--primary-red);
+    background: linear-gradient(135deg, #fff 0%, #fff5f6 100%);
+}
+
+.download-card .card-header {
+    background: var(--primary-red);
+    border-bottom: none;
+}
+
+.download-card .card-header svg,
+.download-card .card-header h5 {
+    color: var(--white);
+}
+
+.download-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(190, 30, 45, 0.1) 0%, rgba(190, 30, 45, 0.05) 100%);
+    border-radius: 50%;
+    border: 3px solid rgba(190, 30, 45, 0.2);
+}
+
+.download-icon svg {
+    color: var(--primary-red);
+}
+
+.download-note {
+    font-size: 13px;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+/* Detail Grid */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--gray-50);
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s ease;
+}
+
+.detail-item:hover {
+    background: var(--white);
+    border-color: var(--primary-red);
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.1);
+}
+
+.detail-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.detail-value {
+    font-size: 15px;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+/* Objective Box */
+.objective-box {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(190, 30, 45, 0.05) 0%, rgba(190, 30, 45, 0.02) 100%);
+    border: 2px solid rgba(190, 30, 45, 0.1);
+    border-radius: 12px;
+}
+
+.objective-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: var(--primary-red);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.objective-label svg {
+    color: var(--primary-red);
+}
+
+.objective-content {
+    font-size: 15px;
+    color: var(--gray-800);
+    line-height: 1.7;
+    font-weight: 500;
+    white-space: pre-line;
+}
+
+/* Info Box for Contract Section */
+.info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 15px;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--primary-red) !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+.status-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.status-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.status-secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .investment-header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px 20px;
+    }
+
+    .header-left {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-left h2 {
+        font-size: 22px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .icon-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-header {
+        padding: 16px 20px;
+    }
+
+    .download-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .download-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .objective-box {
+        padding: 16px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn,
+    .btn-back,
+    .btn-primary,
+    .btn-outline,
+    .btn-download {
+        display: none !important;
+    }
+
+    .investment-header {
+        background: none !important;
+        border-bottom: 3px solid var(--gray-800) !important;
+        box-shadow: none !important;
+        padding: 20px 0 !important;
+    }
+
+    .header-left h2 {
+        color: var(--gray-900) !important;
+        font-size: 24pt !important;
+    }
+
+    .header-actions {
+        display: none !important;
+    }
+
+    .icon-wrapper {
+        display: none !important;
+    }
+
+    .card,
+    .info-card,
+    .download-card {
+        box-shadow: none !important;
+        border: 1px solid var(--gray-400) !important;
+        page-break-inside: avoid;
+    }
+
+    .card-header {
+        background: var(--gray-100) !important;
+        color: var(--gray-900) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .download-card {
+        border: 2px solid var(--gray-400) !important;
+    }
+
+    .detail-item {
+        border: 1px solid var(--gray-300) !important;
+        background: var(--white) !important;
+    }
+
+    .objective-box {
+        border: 1px solid var(--gray-400) !important;
+        background: var(--white) !important;
+    }
+}
+</style>
+
+{% endblock %}

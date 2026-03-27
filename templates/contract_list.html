@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body_block %}
+
+<h3 class="mb-3">Danh sách Hợp Đồng</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Khách hàng</th>
+            <th>Loại dịch vụ</th>
+            <th>Ngày tạo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in contracts %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.customer.name }}</td>
+            <td>{{ c.get_service_type_display }}</td>
+            <td>{{ c.created_at|date:"d/m/Y" }}</td>
+            <td>
+                <a href="{% url 'contract_detail' c.id %}" class="btn btn-sm btn-info">Xem</a>
+                <a href="{% url 'contract_edit' c.id %}" class="btn btn-sm btn-warning">Sửa</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">Chưa có hợp đồng nào</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+

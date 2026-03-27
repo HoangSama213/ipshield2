@@ -1,0 +1,614 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load humanize %}
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="edit-installment-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="header-info">
+                <h2>Nhập số tiền cho từng đợt thanh toán</h2>
+                <div class="contract-info">
+                    <span class="info-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Hợp đồng: <strong>{{ contract.contract_no }}</strong>
+                    </span>
+                    <span class="info-divider">|</span>
+                    <span class="info-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Giá trị: <strong>{{ contract.contract_value|intcomma }} VNĐ</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="edit-installment-card">
+        <form method="POST">
+            {% csrf_token %}
+            {{ formset.management_form }}
+
+            <!-- Alert Section -->
+            <div class="alert-section">
+                <div class="alert-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Lưu ý quan trọng</div>
+                    <div class="alert-details">
+                        <div class="alert-row">
+                            <span class="alert-label">Tổng số tiền các đợt nên bằng:</span>
+                            <span class="alert-value target">{{ contract.contract_value|intcomma }} VNĐ</span>
+                        </div>
+                        <div class="alert-row">
+                            <span class="alert-label">Tổng hiện tại:</span>
+                            <span class="alert-value current" id="currentTotal">{{ current_total|intcomma }} VNĐ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="installment-table-wrapper">
+                <table class="installment-edit-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="35%">
+                                Số tiền (VNĐ)
+                                <span class="required-mark">*</span>
+                            </th>
+                            <th width="30%">Ngày đến hạn</th>
+                            <th width="30%">Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr class="installment-edit-row {% if form.instance.is_paid %}paid-row{% endif %}">
+                            <td class="text-center">
+                                <div class="row-number-wrapper">
+                                    <span class="row-number">{{ forloop.counter }}</span>
+                                    {% if form.instance.is_paid %}
+                                        <span class="paid-badge">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Đã trả
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-field">
+                                    {{ form.amount }}
+                                    {% if form.amount.errors %}
+                                        <div class="field-error">{{ form.amount.errors }}</div>
+                                    {% endif %}
+                                    {% if form.instance.paid_amount > 0 %}
+                                        <div class="field-info">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Đã trả: {{ form.instance.paid_amount|floatformat:0|intcomma }} VNĐ
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-field">
+                                    {{ form.due_date }}
+                                    {% if form.due_date.errors %}
+                                        <div class="field-error">{{ form.due_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-field">
+                                    {{ form.notes }}
+                                </div>
+                            </td>
+                            {{ form.id }}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td class="text-end"><strong>TỔNG CỘNG:</strong></td>
+                            <td>
+                                <div class="total-amount-wrapper">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    <strong id="totalAmount">-</strong>
+                                </div>
+                            </td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'contract_detail' contract.id %}" class="btn-back-form">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Quay lại
+                </a>
+                <button type="submit" class="btn-save-form">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Lưu số tiền
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Tính tổng khi nhập
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInputs = document.querySelectorAll('input[name$="-amount"]');
+
+    function calculateTotal() {
+        let total = 0;
+        amountInputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            total += value;
+        });
+
+        const totalElement = document.getElementById('totalAmount');
+        const currentTotalElement = document.getElementById('currentTotal');
+
+        totalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+        currentTotalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+
+        // Đổi màu nếu không khớp
+        const contractValue = {{ contract.contract_value }};
+        const totalWrapper = totalElement.parentElement;
+        const currentWrapper = currentTotalElement.parentElement;
+
+        if (total === contractValue) {
+            totalWrapper.classList.remove('error');
+            totalWrapper.classList.add('success');
+            currentWrapper.classList.remove('error');
+            currentWrapper.classList.add('success');
+        } else {
+            totalWrapper.classList.remove('success');
+            totalWrapper.classList.add('error');
+            currentWrapper.classList.remove('success');
+            currentWrapper.classList.add('error');
+        }
+    }
+
+    amountInputs.forEach(input => {
+        input.addEventListener('input', calculateTotal);
+    });
+
+    calculateTotal(); // Tính ngay khi load
+});
+</script>
+
+<style>
+/* Header */
+.edit-installment-header {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(190, 30, 45, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    color: white;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.header-info {
+    flex: 1;
+}
+
+.header-info h2 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+}
+
+.contract-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.info-item svg {
+    flex-shrink: 0;
+}
+
+.info-divider {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Main Card */
+.edit-installment-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+/* Alert Section */
+.alert-section {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-bottom: 2px solid #fbbf24;
+}
+
+.alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.alert-icon svg {
+    color: #f59e0b;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.alert-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.alert-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-label {
+    color: #78350f;
+    font-size: 14px;
+}
+
+.alert-value {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.alert-value.target {
+    color: #BE1E2D;
+}
+
+.alert-value.current {
+    color: #374151;
+}
+
+.alert-value.current.success {
+    color: #10b981 !important;
+}
+
+.alert-value.current.error {
+    color: #dc2626 !important;
+}
+
+/* Table Section */
+.installment-table-wrapper {
+    overflow-x: auto;
+    padding: 24px;
+}
+
+.installment-edit-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.installment-edit-table thead {
+    background: linear-gradient(135deg, #BE1E2D 0%, #a01827 100%);
+}
+
+.installment-edit-table th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.required-mark {
+    color: #fbbf24;
+}
+
+.installment-edit-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.installment-edit-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.installment-edit-row.paid-row {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.installment-edit-table td {
+    padding: 16px 12px;
+}
+
+.row-number-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-weight: 700;
+    color: #BE1E2D;
+}
+
+.paid-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Form Fields */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field input[type="number"],
+.form-field input[type="date"],
+.form-field input[type="text"],
+.form-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: #BE1E2D;
+    box-shadow: 0 0 0 3px rgba(190, 30, 45, 0.1);
+}
+
+.field-error {
+    color: #dc2626;
+    font-size: 12px;
+    padding: 4px 8px;
+    background: #fee2e2;
+    border-radius: 4px;
+}
+
+.field-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #10b981;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.field-info svg {
+    flex-shrink: 0;
+}
+
+/* Total Row */
+.total-row {
+    background: #fef3c7;
+    border-top: 2px solid #fbbf24;
+}
+
+.total-row td {
+    padding: 16px 12px;
+    font-size: 15px;
+}
+
+.total-amount-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151;
+    font-size: 16px;
+}
+
+.total-amount-wrapper svg {
+    color: #BE1E2D;
+}
+
+.total-amount-wrapper.success {
+    color: #10b981 !important;
+}
+
+.total-amount-wrapper.success svg {
+    color: #10b981 !important;
+}
+
+.total-amount-wrapper.error {
+    color: #dc2626 !important;
+}
+
+.total-amount-wrapper.error svg {
+    color: #dc2626 !important;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: #f9fafb;
+    border-top: 2px solid #e5e7eb;
+}
+
+.btn-back-form,
+.btn-save-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-back-form {
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-back-form:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    transform: translateX(-3px);
+    color: #374151;
+}
+
+.btn-save-form {
+    background: #BE1E2D;
+    color: white;
+    box-shadow: 0 2px 8px rgba(190, 30, 45, 0.3);
+}
+
+.btn-save-form:hover {
+    background: #a01827;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(190, 30, 45, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .edit-installment-header {
+        padding: 20px;
+    }
+
+    .header-content {
+        flex-direction: column;
+    }
+
+    .header-info h2 {
+        font-size: 20px;
+    }
+
+    .contract-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .info-divider {
+        display: none;
+    }
+
+    .alert-section {
+        flex-direction: column;
+    }
+
+    .installment-table-wrapper {
+        padding: 16px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-back-form,
+    .btn-save-form {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+{% endblock %}

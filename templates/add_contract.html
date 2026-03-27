@@ -1,0 +1,617 @@
+{% extends 'base.html' %}
+{% block body_block %}
+  {% load static %}
+  <link href="{% static 'css/add_contract.css' %}" rel="stylesheet" />
+
+  <div class="container mt-4">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <h2 class="mb-0">Tạo hợp đồng dịch vụ</h2>
+      </div>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="form-card">
+      <form method="POST" enctype="multipart/form-data" class="contract-form">
+        {% csrf_token %}
+
+        <!-- THÔNG TIN HỢP ĐỒNG -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <h5>Thông tin hợp đồng</h5>
+          </div>
+          <div class="form-content">
+            <!-- Tìm kiếm khách hàng -->
+            <div class="customer-search-wrapper">
+              <label for="customer_search">Tìm kiếm khách hàng</label>
+              <div class="search-input-group">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="customer_search" class="customer-search-input" placeholder="Nhập mã khách hàng hoặc tên để tìm kiếm..." autocomplete="off" />
+              </div>
+              <div id="search_results" class="search-results"></div>
+              <div id="selected_customer" class="selected-customer"></div>
+            </div>
+
+            {{ contract_form.as_p }}
+
+        <!-- THÔNG TIN DỊCH VỤ -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <h5>Thông tin dịch vụ</h5>
+          </div>
+
+          <!-- Nhãn hiệu -->
+          <div id="nhanhieu_form" class="service-block">
+            <div class="service-header">
+              <h6>Dịch vụ Nhãn hiệu</h6>
+              <div class="header-buttons">
+                <button type="button" class="btn-detail" onclick="window.location.href='{% url 'contract_search' %}'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>Xem danh sách
+                </button>
+                <button type="button" class="btn-add" onclick="addForm('trademark')">➕ Thêm nhãn hiệu</button>
+              </div>
+            </div>
+
+            {{ trademark_formset.management_form }}
+
+            <div class="service-content" id="trademark-formset">
+              {% for form in trademark_formset %}
+                <div class="formset-item">
+                  {{ form.as_p }}
+
+                  <!-- 🔥 THÊM PHẦN UPLOAD FILE -->
+                  <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #495057;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px; vertical-align: middle;">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                      </svg>📎 Tài liệu đính kèm (có thể chọn nhiều file)
+                    </label>
+
+                    <input type="file" name="trademark_files_{{ forloop.counter0 }}" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" style="padding: 10px; border: 1px solid #ced4da; border-radius: 6px;" />
+
+                    <div class="selected-files-display" style="margin-top: 10px; font-size: 13px; color: #6c757d;"></div>
+
+                    <small style="display: block; margin-top: 8px; color: #6c757d;">💡 Chấp nhận: PDF, Word, Hình ảnh (JPG, PNG). Có thể chọn nhiều file cùng lúc.</small>
+                  </div>
+
+                  {{ form.DELETE }}
+                  <button type="button" class="btn-remove" onclick="removeItem(this)">❌ Xóa</button>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div id="trademark-empty-form" style="display:none">
+              <div class="formset-item">
+                {{ trademark_formset.empty_form.as_p }}
+
+                <!-- 🔥 THÊM PHẦN UPLOAD FILE CHO EMPTY FORM -->
+                <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                  <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #495057;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px; vertical-align: middle;">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>📎 Tài liệu đính kèm (có thể chọn nhiều file)
+                  </label>
+
+                  <input type="file" name="trademark_files___prefix__" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" style="padding: 10px; border: 1px solid #ced4da; border-radius: 6px;" />
+
+                  <div class="selected-files-display" style="margin-top: 10px; font-size: 13px; color: #6c757d;"></div>
+
+                  <small style="display: block; margin-top: 8px; color: #6c757d;">💡 Chấp nhận: PDF, Word, Hình ảnh. Có thể chọn nhiều file cùng lúc.</small>
+                </div>
+
+                {{ trademark_formset.empty_form.DELETE }}
+                <button type="button" class="btn-remove" onclick="removeItem(this)">❌ Xóa</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bản quyền - TƯƠNG TỰ -->
+          <div id="banquyen_form" class="service-block">
+            <div class="service-header">
+              <h6>Dịch vụ Bản quyền</h6>
+              <div class="header-buttons">
+                <button type="button" class="btn-detail" onclick="window.location.href='{% url 'contract_copyright_search' %}'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>Xem danh sách
+                </button>
+                <button type="button" class="btn-add" onclick="addForm('copyright')">➕ Thêm bản quyền</button>
+              </div>
+            </div>
+
+            {{ copyright_formset.management_form }}
+
+            <div class="service-content" id="copyright-formset">
+              {% for form in copyright_formset %}
+                <div class="formset-item">
+                  {{ form.as_p }}
+
+                  <!-- 🔥 UPLOAD FILE CHO BẢN QUYỀN -->
+                  <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #495057;">📎 Tài liệu đính kèm (có thể chọn nhiều file)</label>
+
+                    <input type="file" name="copyright_files_{{ forloop.counter0 }}" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" style="padding: 10px; border: 1px solid #ced4da; border-radius: 6px;" />
+
+                    <div class="selected-files-display" style="margin-top: 10px; font-size: 13px; color: #6c757d;"></div>
+                  </div>
+
+                  {{ form.DELETE }}
+                  <button type="button" class="btn-remove" onclick="removeItem(this)">❌ Xóa</button>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div id="copyright-empty-form" style="display:none">
+              <div class="formset-item">
+                {{ copyright_formset.empty_form.as_p }}
+
+                <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                  <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #495057;">📎 Tài liệu đính kèm</label>
+
+                  <input type="file" name="copyright_files___prefix__" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" style="padding: 10px;" />
+
+                  <div class="selected-files-display" style="margin-top: 10px;"></div>
+                </div>
+
+                {{ copyright_formset.empty_form.DELETE }}
+                <button type="button" class="btn-remove" onclick="removeItem(this)">❌ Xóa</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ĐKKD -->
+          <div id="dkkd_form" class="service-block">
+            <div class="service-header">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <h6>Đăng ký kinh doanh</h6>
+              </div>
+              <button type="button" class="btn-detail" onclick="window.location.href='{% url 'contract_business_search' %}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>Xem danh sách
+              </button>
+            </div>
+            <div class="service-content">
+              {{ business_form.as_p }}
+
+              <!-- 🔥 UPLOAD FILE CHO ĐKKD -->
+              <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">📎 Tài liệu đính kèm</label>
+
+                <input type="file" name="business_files" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" />
+
+                <div class="selected-files-display" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Đầu tư -->
+          <div id="dautu_form" class="service-block">
+            <div class="service-header">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <h6>Đầu tư</h6>
+              </div>
+              <button type="button" class="btn-detail" onclick="window.location.href='{% url 'contract_investment_search' %}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>Xem danh sách
+              </button>
+            </div>
+            <div class="service-content">
+              {{ investment_form.as_p }}
+
+              <!-- 🔥 UPLOAD FILE CHO ĐẦU TƯ -->
+              <div class="file-upload-section" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">📎 Tài liệu đính kèm</label>
+
+                <input type="file" name="investment_files" multiple class="form-control file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="displaySelectedFiles(this)" />
+
+                <div class="selected-files-display" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Khác -->
+          <div id="khac_form" class="service-block">
+            <div class="service-header">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <h6>Dịch vụ khác</h6>
+              </div>
+              <button type="button" class="btn-detail" onclick="window.location.href='{% url 'contract_other_service_search' %}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>Xem danh sách
+              </button>
+            </div>
+            <div class="service-content">{{ other_form.as_p }}</div>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>Lưu hợp đồng
+          </button>
+          <button type="button" class="btn-cancel" id="cancelBtn" data-home-url="{% url 'home' %}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>Hủy
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL XÁC NHẬN RỜI TRANG -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h4>Xác nhận rời trang</h4>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn rời khỏi trang này?</p>
+        <p class="modal-warning">⚠️ Dữ liệu chưa lưu sẽ bị mất!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="stayBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>Không, ở lại
+        </button>
+        <button type="button" class="btn btn-danger" id="leaveBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>Có, rời trang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery (PHẢI LOAD TRƯỚC) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- Select2 -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <!-- ✅ CHỈ LOAD FILE JS - KHÔNG CÓ INLINE SCRIPT NỮA -->
+  <script src="{% static 'js/add_contract.js' %}"></script>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentTypeSelect = document.getElementById('id_payment_type');
+    const installmentFields = document.getElementById('installment_fields'); // div chứa các trường trả góp
+    const prepaidField = document.querySelector('[name="prepaid_amount"]').closest('.mb-3');
+
+    function toggleInstallmentFields() {
+        const paymentType = paymentTypeSelect.value;
+
+        if (paymentType === 'installment') {
+            // Hiện các trường trả góp
+            installmentFields.style.display = 'block';
+            prepaidField.style.display = 'block';
+
+            // Thêm thông báo
+            if (!document.getElementById('installment-notice')) {
+                const notice = document.createElement('div');
+                notice.id = 'installment-notice';
+                notice.className = 'alert alert-info mt-2';
+                notice.innerHTML = `
+                    <strong>ℹ️ Lưu ý:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Hệ thống sẽ tạo <strong>${document.querySelector('[name="number_of_installments"]').value || 1} đợt</strong> thanh toán rỗng (chưa có số tiền)</li>
+                        <li>Sau khi tạo hợp đồng, bạn cần vào <strong>"Nhập số tiền đợt"</strong> để nhập số tiền cho từng đợt</li>
+                        <li>Số tiền trả trước sẽ được ghi nhận vào đợt đầu tiên</li>
+                    </ul>
+                `;
+                installmentFields.appendChild(notice);
+            }
+        } else {
+            // Ẩn các trường trả góp
+            installmentFields.style.display = 'none';
+            prepaidField.style.display = 'none';
+
+            // Xóa thông báo
+            const notice = document.getElementById('installment-notice');
+            if (notice) notice.remove();
+        }
+    }
+
+    // Cập nhật thông báo khi thay đổi số đợt
+    document.querySelector('[name="number_of_installments"]').addEventListener('input', function() {
+        const notice = document.getElementById('installment-notice');
+        if (notice && this.value) {
+            notice.querySelector('strong').textContent = `${this.value} đợt`;
+        }
+    });
+
+    paymentTypeSelect.addEventListener('change', toggleInstallmentFields);
+    toggleInstallmentFields(); // Chạy ngay khi load
+});
+</script>
+  <script>
+    // ✅ Logic hiển thị trường ngày thanh toán
+    $(document).ready(function () {
+      const paymentTypeField = $('#id_payment_type')
+      const paymentDateField = $('#payment_date_field')
+    
+      // Hàm kiểm tra và hiển thị/ẩn trường ngày thanh toán
+      function togglePaymentDate() {
+        if (paymentTypeField.val() === 'full') {
+          paymentDateField.show()
+        } else {
+          paymentDateField.hide()
+          $('#id_payment_date').val('') // Xóa giá trị khi ẩn
+        }
+      }
+    
+      // Chạy lần đầu khi load trang
+      togglePaymentDate()
+    
+      // Lắng nghe sự kiện thay đổi
+      paymentTypeField.on('change', togglePaymentDate)
+    })
+  </script>
+
+  <style>
+    /* Payment date field styling */
+    #payment_date_field {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+    }
+    
+    #payment_date_field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #166534;
+    }
+    
+    #payment_date_field input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #86efac;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    #payment_date_field input:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+    
+    #payment_date_field .form-text {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #16a34a;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    
+    .modal-overlay.show {
+      display: flex !important;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 0;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    .modal-header {
+      padding: 30px 30px 20px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .modal-header svg {
+      margin-bottom: 15px;
+    }
+    
+    .modal-header h4 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .modal-body {
+      padding: 25px 30px;
+      text-align: center;
+    }
+    
+    .modal-body p {
+      margin: 0 0 10px 0;
+      font-size: 15px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    
+    .modal-warning {
+      color: #f59e0b !important;
+      font-weight: 600;
+      font-size: 14px !important;
+      margin-top: 15px !important;
+    }
+    
+    .modal-footer {
+      padding: 20px 30px 30px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .modal-footer .btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+      transform: translateY(-1px);
+    }
+    
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    /* Styles cho nút "Xem danh sách" */
+    .btn-detail {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-detail:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-detail:active {
+      transform: translateY(0);
+    }
+    
+    /* Cập nhật service-header để chứa nhiều nút */
+    .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .service-header h6 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+{% endblock %}
+
