@@ -67,6 +67,9 @@ path('contract/<int:contract_id>/edit-installments/', views.edit_installment_amo
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 
+    #ho so
+    path('profile/', views.profile_view, name='profile'),
+
 ]
 
 

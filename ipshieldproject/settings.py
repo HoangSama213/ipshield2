@@ -48,6 +48,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ipshieldapp.context_processors.global_sliders",
+                "ipshieldapp.context_processors.user_profile", 
             ],
         },
     },
@@ -102,12 +103,14 @@ LOGIN_REDIRECT_URL = "home"
 CSRF_TRUSTED_ORIGINS = [
     "https://ipshield.vn",
     "https://www.ipshield.vn",
+     "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
-CSRF_COOKIE_DOMAIN = ".ipshield.vn"
-SESSION_COOKIE_DOMAIN = ".ipshield.vn"
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None

@@ -1061,6 +1061,7 @@ protect_views(
     download_certificate,
     add_customer,
     search_customer,
+  
 )
 
 # ===============================================
@@ -1404,3 +1405,29 @@ def upload_certificate(request):
         messages.success(request, 'Đã thêm tài liệu')
         return redirect(request.META.get('HTTP_REFERER'))
 
+
+#ho so
+from .models import UserProfile
+
+@login_required
+def profile_view(request):
+    # Tự động tạo profile nếu chưa có
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ Cập nhật hồ sơ thành công!')
+            return redirect('profile')
+        else:
+            for errors in form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+    else:
+        form = UserProfileForm(instance=profile, user=request.user)
+
+    return render(request, 'profile.html', {
+        'form': form,
+        'profile': profile,
+    })
