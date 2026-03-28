@@ -1,7 +1,0 @@
-# Bật chế độ hiển thị lỗi chi tiết cho Python/Passenger
-PassengerAppEnv development
-PassengerFriendlyErrorPages on
-
-# Đảm bảo server nhận diện đúng file chạy chính
-PassengerAppRoot /home/ipshield6949/domains/ipshield.vn/public_html
-PassengerPython /home/ipshield6949/virtualenv/domains/ipshield.vn/public_html/3.13/bin/python

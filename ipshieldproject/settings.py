@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-0f1o%1de=udhg@xz6o$k=&d$t_16^!gr2!p7lcrg(q_p8527l0"
 
 DEBUG = True
-ALLOWED_HOSTS = ["ipshield.vn", "www.ipshield.vn"]
+ALLOWED_HOSTS = ["ipshield.vn", "www.ipshield.vn",'127.0.0.1', 'localhost']
 
 
 INSTALLED_APPS = [
@@ -21,7 +21,6 @@ INSTALLED_APPS = [
      "django.contrib.staticfiles",
     'django.contrib.humanize',
     "ipshieldapp",
-    "nhomSIU",
 ]
 
 MIDDLEWARE = [
