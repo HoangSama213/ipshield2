@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% block body_block %}
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    .portal-page {
+      min-height: 80vh;
+      background: #f4f4f6;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      padding: 40px 20px 80px;
+    }
+
+    .portal-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .portal-heading {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #9a9a9a;
+      margin-bottom: 28px;
+    }
+
+    .portal-alert {
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .portal-alert.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+    .portal-alert.error   { background: #fdecea; color: #c62828; border-left: 4px solid #e53935; }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
+
+    .profile-left {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: sticky;
+      top: 20px;
+    }
+
+    .avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #c0392b, #e74c3c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(186,26,26,0.25);
+      margin-bottom: 20px;
+    }
+
+    .profile-username {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0 0 6px;
+    }
+
+    .profile-role {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #c0392b;
+      background: #fdecea;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .profile-meta {
+      width: 100%;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #666;
+      text-align: left;
+    }
+    .meta-item .material-symbols-rounded { font-size: 17px; color: #c0392b; flex-shrink: 0; }
+    .meta-item span:last-child { word-break: break-all; }
+
+    .left-actions {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn-action-left {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 50px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-action-left.back { background: #f4f4f6; color: #666; }
+    .btn-action-left.back:hover { background: #eaeaec; color: #333; }
+    .btn-action-left.logout { background: #fff; color: #c0392b; border: 2px solid #c0392b; }
+    .btn-action-left.logout:hover { background: #c0392b; color: #fff; }
+    .btn-action-left .material-symbols-rounded { font-size: 15px; }
+
+    .profile-right {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 36px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0 0 6px;
+    }
+
+    .section-bar {
+      width: 36px;
+      height: 4px;
+      background: linear-gradient(90deg, #c0392b, #e74c3c);
+      border-radius: 4px;
+      margin-bottom: 28px;
+    }
+
+    .section-sub-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0 0 6px;
+    }
+
+    .field-group { margin-bottom: 20px; }
+
+    .field-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 7px;
+      transition: color 0.2s;
+    }
+
+    .field-inner { position: relative; }
+
+    .field-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 17px;
+      color: #ccc;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .field-inner input {
+      width: 100%;
+      padding: 12px 16px 12px 44px !important;
+      background: #f7f7f8 !important;
+      border: 2px solid transparent !important;
+      border-radius: 14px !important;
+      font-family: 'Be Vietnam Pro', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      color: #1a1a2e !important;
+      outline: none !important;
+      transition: all 0.2s !important;
+      box-shadow: none !important;
+    }
+
+    .field-inner input:focus {
+      background: #fff !important;
+      border-color: #c0392b !important;
+      box-shadow: 0 0 0 4px rgba(192,57,43,0.08) !important;
+    }
+
+    .field-inner input[readonly] { color: #aaa !important; cursor: not-allowed; }
+    .field-inner:focus-within .field-icon { color: #c0392b; }
+    .field-group:focus-within .field-label { color: #c0392b; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+    .form-divider { border: none; border-top: 1px solid #f0f0f0; margin: 24px 0; }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .btn-save {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      background: linear-gradient(135deg, #c0392b, #e74c3c);
+      color: #fff;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(192,57,43,0.3);
+      transition: all 0.2s;
+    }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(192,57,43,0.4); }
+    .btn-save .material-symbols-rounded { font-size: 17px; }
+
+    .btn-cancel {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 20px;
+      background: #f4f4f6;
+      color: #666;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: #eaeaec; color: #333; }
+  </style>
+
+  <div class="portal-page">
+    <div class="portal-wrap">
+      <p class="portal-heading">⚙ Tài khoản / Hồ sơ cá nhân</p>
+
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="portal-alert {% if 'success' in msg.tags %}success{% else %}error{% endif %}">
+            <span class="material-symbols-rounded">
+              {% if 'success' in msg.tags %}check_circle{% else %}error{% endif %}
+            </span>
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="profile-grid">
+
+          <!-- LEFT -->
+          <div class="profile-left">
+            <div class="avatar-placeholder">{{ customer.name|first|upper }}</div>
+
+            <h2 class="profile-username">{{ customer.name }}</h2>
+            <span class="profile-role">Khách hàng</span>
+
+            <div class="profile-meta">
+              <div class="meta-item">
+                <span class="material-symbols-rounded">badge</span>
+                <span>{{ customer.customer_code }}</span>
+              </div>
+              {% if customer.email %}
+              <div class="meta-item">
+                <span class="material-symbols-rounded">mail</span>
+                <span>{{ customer.email }}</span>
+              </div>
+              {% endif %}
+              {% if customer.phone %}
+              <div class="meta-item">
+                <span class="material-symbols-rounded">call</span>
+                <span>{{ customer.phone }}</span>
+              </div>
+              {% endif %}
+              {% if customer.address %}
+              <div class="meta-item">
+                <span class="material-symbols-rounded">location_on</span>
+                <span>{{ customer.address }}</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="left-actions">
+              <a href="{% url 'portal_dashboard' %}" class="btn-action-left back">
+                <span class="material-symbols-rounded">arrow_back</span>
+                Quay lại
+              </a>
+              <a href="{% url 'customer_logout' %}" class="btn-action-left logout">
+                <span class="material-symbols-rounded">logout</span>
+                Đăng xuất
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="profile-right">
+            <h3 class="section-title">Thông tin cá nhân</h3>
+            <div class="section-bar"></div>
+
+            <div class="field-group">
+              <label class="field-label">Mã khách hàng</label>
+              <div class="field-inner">
+                <span class="material-symbols-rounded field-icon">badge</span>
+                <input type="text" value="{{ customer.customer_code }}" readonly />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Họ và tên</label>
+              <div class="field-inner">
+                <span class="material-symbols-rounded field-icon">person</span>
+                <input type="text" name="name" value="{{ customer.name }}" placeholder="Nhập họ và tên" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Email</label>
+                <div class="field-inner">
+                  <span class="material-symbols-rounded field-icon">mail</span>
+                  <input type="email" name="email" value="{{ customer.email|default:'' }}" placeholder="email@example.com" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Số điện thoại</label>
+                <div class="field-inner">
+                  <span class="material-symbols-rounded field-icon">call</span>
+                  <input type="text" name="phone" value="{{ customer.phone|default:'' }}" placeholder="0912 345 678" />
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Địa chỉ</label>
+              <div class="field-inner">
+                <span class="material-symbols-rounded field-icon">location_on</span>
+                <input type="text" name="address" value="{{ customer.address|default:'' }}" placeholder="Địa chỉ của bạn" />
+              </div>
+            </div>
+
+            <hr class="form-divider" />
+
+            <h3 class="section-sub-title">Đổi mật khẩu</h3>
+            <div class="section-bar"></div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Mật khẩu mới</label>
+                <div class="field-inner">
+                  <span class="material-symbols-rounded field-icon">lock</span>
+                  <input type="password" name="new_password" placeholder="Để trống nếu không đổi" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Xác nhận mật khẩu</label>
+                <div class="field-inner">
+                  <span class="material-symbols-rounded field-icon">lock_reset</span>
+                  <input type="password" name="confirm_password" placeholder="Nhập lại mật khẩu mới" />
+                </div>
+              </div>
+            </div>
+
+            <hr class="form-divider" />
+
+            <div class="form-actions">
+              <a href="{% url 'portal_dashboard' %}" class="btn-cancel">Hủy</a>
+              <button type="submit" class="btn-save">
+                <span class="material-symbols-rounded">save</span>
+                Lưu thay đổi
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.field-inner input').forEach(el => el.classList.remove('form-control'));
+  </script>
+{% endblock %}

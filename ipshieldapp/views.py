@@ -10,7 +10,7 @@ from django.db import IntegrityError
 import os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from .decorators import customer_login_required
 from .models import *
 from .forms import *
 
@@ -25,6 +25,8 @@ def lock_contract_fields(contract_form):
 # CUSTOMER LIST + SEARCH
 # ===============================================
 def home(request):
+    print(f"⚠️ HOME VIEW CALLED - URL: {request.path}")  # thêm dòng này
+
     q = request.GET.get('q', '').strip()
     customers = Customer.objects.all()
 
@@ -1023,16 +1025,34 @@ def search_customer(request):
 # LOGIN / LOGOUT
 # ===============================================
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    # Đã đăng nhập rồi → redirect đúng chỗ
+    if request.user.is_authenticated:
+        return redirect('home')
+    if request.customer:
+        return redirect('portal_dashboard')
 
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        # ── Thử đăng nhập Staff trước (Django User) ──────────────
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
             return redirect('home')
-        else:
-            messages.error(request, "Sai tên đăng nhập hoặc mật khẩu")
+
+        # ── Thử đăng nhập Khách hàng (Customer) ──────────────────
+        try:
+            customer = Customer.objects.get(customer_code=username)
+            if customer.check_password(password):
+                request.session['customer_id'] = customer.id
+                customer.last_login = timezone.now()
+                customer.save(update_fields=['last_login'])
+                return redirect('portal_dashboard')
+            else:
+                messages.error(request, '❌ Sai mật khẩu.')
+        except Customer.DoesNotExist:
+            messages.error(request, '❌ Tài khoản không tồn tại.')
 
     return render(request, 'login.html')
 
@@ -1431,3 +1451,132 @@ def profile_view(request):
         'form': form,
         'profile': profile,
     })
+
+
+# ===============================================
+# PORTAL KHÁCH HÀNG
+# ===============================================
+
+# ===============================================
+# ĐĂNG NHẬP / ĐĂNG XUẤT KHÁCH HÀNG
+# ===============================================
+from .decorators import customer_login_required
+from django.utils import timezone as tz
+
+def customer_login(request):
+    """
+    Khách hàng đăng nhập bằng mã khách hàng + mật khẩu riêng.
+    Không đụng vào Django User.
+    """
+    # Nếu đã đăng nhập rồi thì chuyển thẳng vào portal
+    if request.customer:
+        return redirect('portal_dashboard')
+    # Nếu là staff đang đăng nhập → trang chủ quản lý
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        customer_code = request.POST.get('customer_code', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        try:
+            customer = Customer.objects.get(customer_code=customer_code)
+            if customer.check_password(password):
+                # ✅ Đúng → lưu session
+                request.session['customer_id'] = customer.id
+                customer.last_login = tz.now()
+                customer.save(update_fields=['last_login'])
+                return redirect('portal_dashboard')
+            else:
+                messages.error(request, '❌ Mật khẩu không đúng.')
+        except Customer.DoesNotExist:
+            messages.error(request, '❌ Mã khách hàng không tồn tại.')
+
+    return render(request, 'customer_login.html')
+
+
+def customer_logout(request):
+    if 'customer_id' in request.session:
+        del request.session['customer_id']
+    return redirect('login')
+
+
+# ===============================================
+# PORTAL — DASHBOARD KHÁCH HÀNG
+# ===============================================
+@customer_login_required
+def portal_dashboard(request):
+    customer = request.customer
+    contracts = Contract.objects.filter(customer=customer).order_by('-created_at')
+
+    total     = contracts.count()
+    completed = contracts.filter(status='completed').count()
+    pending   = contracts.exclude(status='completed').count()
+
+    return render(request, 'portal/dashboard.html', {
+        'customer':  customer,
+        'contracts': contracts,
+        'total':     total,
+        'completed': completed,
+        'pending':   pending,
+    })
+
+
+# ===============================================
+# PORTAL — CHI TIẾT HỢP ĐỒNG
+# ===============================================
+@customer_login_required
+def portal_contract_detail(request, contract_id):
+    customer = request.customer
+
+    # 🔒 Luôn kèm customer= để khách không xem được HĐ người khác
+    contract = get_object_or_404(Contract, id=contract_id, customer=customer)
+    installments = contract.installments.all()
+
+    service = None
+    if contract.service_type == 'nhanhieu':
+        service = contract.trademarks.all()
+    elif contract.service_type == 'banquyen':
+        service = contract.copyrights.all()
+    elif contract.service_type == 'dkkd':
+        service = BusinessRegistrationService.objects.filter(contract=contract)
+    elif contract.service_type == 'dautu':
+        service = InvestmentService.objects.filter(contract=contract)
+    else:
+        service = OtherService.objects.filter(contract=contract)
+
+    return render(request, 'portal/contract_detail.html', {
+        'contract':     contract,
+        'service':      service,
+        'installments': installments,
+        'customer':     customer,
+    })
+@customer_login_required
+def portal_customer_profile(request):
+    customer = request.customer
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        if name:
+            customer.name = name
+        customer.email = email
+        customer.phone = phone
+        customer.address = address
+
+        if new_password:
+            if new_password != confirm_password:
+                messages.error(request, '❌ Mật khẩu xác nhận không khớp!')
+                return redirect('portal_customer_profile')
+            customer.set_password(new_password)
+
+        customer.save()
+        messages.success(request, '✅ Cập nhật hồ sơ thành công!')
+        return redirect('portal_customer_profile')
+
+    return render(request, 'portal/customer_profile.html', {'customer': customer})

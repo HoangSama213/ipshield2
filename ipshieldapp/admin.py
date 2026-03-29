@@ -3,15 +3,33 @@ from .models import *
 
 
 
-# ============================
-# KHÁCH HÀNG
-# ============================
+from django.contrib.auth.hashers import make_password
+
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("customer_code", "name", "customer_type", "phone", "email", "created_at")
-    list_filter = ("customer_type", "created_at")
+    list_display  = ("customer_code", "name", "customer_type", "phone", "email", "created_at")
+    list_filter   = ("customer_type", "created_at")
     search_fields = ("customer_code", "name", "phone", "email")
-    ordering = ("-created_at",)
+    ordering      = ("-created_at",)
+
+    # 🆕 Action đặt mật khẩu mặc định = mã khách hàng
+    actions = ['reset_password_to_code']
+
+    def reset_password_to_code(self, request, queryset):
+        for customer in queryset:
+            customer.set_password(customer.customer_code)
+            customer.save(update_fields=['password'])
+        self.message_user(request, f'✅ Đã reset mật khẩu về mã KH cho {queryset.count()} khách.')
+    reset_password_to_code.short_description = '🔑 Reset mật khẩu về mã khách hàng'
+
+    def save_model(self, request, obj, form, change):
+        # Nếu field password không phải hash thì tự hash
+        if obj.password and not obj.password.startswith('pbkdf2_'):
+            obj.set_password(obj.password)
+        # Nếu chưa có mật khẩu → đặt mặc định = mã KH
+        if not obj.password:
+            obj.set_password(obj.customer_code)
+        super().save_model(request, obj, form, change)
 
 
 # ============================
@@ -102,3 +120,21 @@ class NhanHieuDocQuyenAdmin(admin.ModelAdmin):
     list_filter = ("is_active",)
     search_fields = ("name",)
 
+# Thêm vào admin.py
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import UserProfile
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name = 'Hồ sơ & phân quyền'
+    # Hiển thị field customer để admin dễ liên kết
+    fields = ['avatar', 'phone', 'customer']
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [UserProfileInline]
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)

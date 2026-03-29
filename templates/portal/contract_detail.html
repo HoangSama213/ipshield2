@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+{% block body_block %}
+{% load humanize %}
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+<style>
+  * { box-sizing: border-box; }
+
+  .portal-page {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #f4f4f6;
+    min-height: 80vh;
+    padding: 40px 20px 80px;
+  }
+
+  .portal-wrap { max-width: 960px; margin: 0 auto; }
+
+  /* BACK */
+  .btn-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; background: white; color: #374151;
+    border-radius: 50px; font-size: 13px; font-weight: 700;
+    text-decoration: none; box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    transition: all 0.2s; margin-bottom: 28px;
+  }
+  .btn-back:hover { background: #f0f0f0; color: #BE1E2D; }
+  .btn-back .material-symbols-rounded { font-size: 16px; }
+
+  /* CARD BASE */
+  .portal-card {
+    background: white; border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden; margin-bottom: 20px;
+  }
+
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px; border-bottom: 1px solid #f0f0f0;
+  }
+
+  .card-title { font-size: 15px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .card-bar {
+    width: 28px; height: 3px;
+    background: linear-gradient(90deg, #BE1E2D, #e63946);
+    border-radius: 4px;
+  }
+
+  /* INFO GRID */
+  .info-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+
+  .info-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 18px 28px;
+    border-right: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .info-item:nth-child(even) { border-right: none; }
+  .info-item:nth-last-child(-n+2) { border-bottom: none; }
+
+  .info-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #fdecea; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .info-icon .material-symbols-rounded { font-size: 18px; color: #BE1E2D; }
+
+  .info-label {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #bbb; margin-bottom: 4px;
+  }
+  .info-value { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+
+  /* STATUS PILL */
+  .status-pill {
+    display: inline-flex; align-items: center;
+    padding: 5px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+  }
+  .status-pill.completed  { background: #e8f5e9; color: #2e7d32; }
+  .status-pill.processing { background: #e3f2fd; color: #1565c0; }
+  .status-pill.pending    { background: #fff8e1; color: #f57f17; }
+
+  /* FULL PAYMENT */
+  .payment-full-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white; border-radius: 14px; font-size: 15px;
+    font-weight: 700; box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+    margin-bottom: 20px;
+  }
+  .payment-full-badge .material-symbols-rounded { font-size: 20px; }
+
+  /* INSTALLMENT HEADER */
+  .installment-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px;
+    background: linear-gradient(135deg, #BE1E2D, #a01827);
+    color: white;
+  }
+  @media (max-width: 600px) { .installment-head { flex-direction: column; gap: 12px; align-items: flex-start; } }
+
+  .ins-head-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 800; margin-bottom: 5px;
+  }
+  .ins-head-title .material-symbols-rounded { font-size: 20px; }
+  .ins-head-stat { font-size: 13px; font-weight: 600; opacity: 0.9; }
+
+  .installment-body { padding: 24px 28px; }
+
+  /* PROGRESS */
+  .progress-section {
+    background: #f9fafb; border: 2px solid #e5e7eb;
+    border-radius: 14px; padding: 20px; margin-bottom: 22px;
+  }
+  .progress-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-label  { font-weight: 700; color: #374151; font-size: 14px; }
+  .progress-pct    { font-weight: 800; color: #BE1E2D; font-size: 20px; }
+
+  .custom-progress {
+    height: 28px; background: #e5e7eb; border-radius: 14px;
+    overflow: hidden; position: relative; margin-bottom: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #BE1E2D, #e63946);
+    border-radius: 14px; transition: width .6s ease;
+    position: relative; overflow: hidden;
+  }
+  .progress-shine {
+    position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+    animation: shine 2s infinite;
+  }
+  @keyframes shine { 0%{left:-100%} 100%{left:100%} }
+
+  .progress-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,.2);
+  }
+  .progress-footer { display: flex; justify-content: flex-end; gap: 6px; font-size: 13px; }
+  .remaining-label  { color: #6b7280; font-weight: 600; }
+  .remaining-amount { color: #BE1E2D; font-weight: 800; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e5e7eb; }
+
+  .ins-table { width: 100%; border-collapse: collapse; background: white; font-family: 'Be Vietnam Pro', sans-serif; }
+  .ins-table thead { background: linear-gradient(135deg, #BE1E2D, #a01827); }
+  .ins-table th {
+    padding: 12px 14px; text-align: left; font-size: 11px;
+    font-weight: 700; color: white; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .ins-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background .15s; }
+  .ins-table tbody tr:last-child { border-bottom: none; }
+  .ins-table tbody tr:hover td { background: #fafafa; }
+  .ins-table tbody tr.row-paid    { background: rgba(16,185,129,.04); }
+  .ins-table tbody tr.row-overdue { background: rgba(220,38,38,.04); }
+  .ins-table td { padding: 12px 14px; font-size: 13px; font-weight: 500; color: #374151; vertical-align: middle; }
+
+  .row-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; background: #f3f4f6;
+    border-radius: 50%; font-weight: 800; font-size: 12px; color: #BE1E2D;
+  }
+  .amount-text { font-weight: 800; color: #BE1E2D; }
+  .due-tag {
+    display: inline-block; padding: 3px 10px; background: #f3f4f6;
+    border-radius: 6px; font-size: 12px; font-weight: 600; color: #374151;
+  }
+
+  .badge-paid    { display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#dcfce7;color:#166534; }
+  .badge-unpaid  { display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#fef3c7;color:#92400e; }
+  .badge-overdue { display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#fee2e2;color:#991b1b; }
+  .badge-paid .material-symbols-rounded,
+  .badge-unpaid .material-symbols-rounded,
+  .badge-overdue .material-symbols-rounded { font-size: 13px; }
+  .paid-date { display:block;margin-top:3px;color:#6b7280;font-size:11px;font-weight:600; }
+
+  .bill-badge {
+    display:inline-flex;align-items:center;gap:4px;padding:5px 10px;
+    background:#fee2e2;color:#BE1E2D;border-radius:6px;
+    font-size:11px;font-weight:700;
+  }
+  .bill-badge .material-symbols-rounded { font-size:13px; }
+  .bill-date { display:block;margin-top:2px;color:#9ca3af;font-size:10px; }
+
+  /* SERVICE CARD */
+  .service-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 28px; border-bottom: 1px solid #f0f0f0;
+  }
+  .service-head .material-symbols-rounded { font-size: 20px; color: #BE1E2D; }
+  .service-head h5 { margin: 0; font-size: 15px; font-weight: 800; color: #1a1a2e; }
+
+  .service-body { padding: 24px 28px; }
+
+  .svc-block {
+    background: #f9fafb; border: 1px solid #e5e7eb;
+    border-radius: 14px; padding: 20px; margin-bottom: 16px;
+  }
+  .svc-block:last-child { margin-bottom: 0; }
+
+  .svc-block-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .svc-block-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 800; color: #1a1a2e; margin: 0;
+  }
+  .svc-block-title .material-symbols-rounded { font-size: 16px; color: #BE1E2D; }
+
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 16px;
+  }
+  @media (max-width: 560px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .detail-item label {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: #bbb; margin-bottom: 4px;
+  }
+  .detail-item .val     { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+  .detail-item .val-hi  { font-size: 15px; font-weight: 800; color: #BE1E2D; }
+  .detail-item.full     { grid-column: 1 / -1; }
+
+  .trademark-img {
+    max-height: 100px; border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08); margin-top: 6px;
+  }
+
+  /* ATTACHMENTS */
+  .attach-section {
+    background: white; border: 1px solid #e5e7eb;
+    border-radius: 12px; padding: 16px; margin-top: 14px;
+  }
+  .attach-title {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #bbb; margin-bottom: 10px;
+  }
+  .attach-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .attach-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; background: #f4f4f6; color: #1a1a2e;
+    border-radius: 50px; font-size: 12px; font-weight: 700;
+    text-decoration: none; transition: all .2s;
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+  .attach-btn:hover { background: #BE1E2D; color: white; }
+  .attach-btn .material-symbols-rounded { font-size: 14px; }
+  .attach-empty { font-size: 13px; color: #bbb; font-weight: 600; }
+</style>
+
+<div class="portal-page">
+  <div class="portal-wrap">
+
+    <a href="{% url 'portal_dashboard' %}" class="btn-back">
+      <span class="material-symbols-rounded">arrow_back</span>
+      Quay lại danh sách
+    </a>
+
+    <!-- INFO HỢP ĐỒNG -->
+    <div class="portal-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Chi tiết hợp đồng</div>
+          <div class="card-bar"></div>
+        </div>
+        {% if contract.status == 'completed' %}
+          <span class="status-pill completed">✓ Hoàn thành</span>
+        {% elif contract.status == 'processing' %}
+          <span class="status-pill processing">Đang xử lý</span>
+        {% else %}
+          <span class="status-pill pending">Chờ xử lý</span>
+        {% endif %}
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-icon"><span class="material-symbols-rounded">badge</span></div>
+          <div>
+            <span class="info-label">Số hợp đồng</span>
+            <span class="info-value">{{ contract.contract_no }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon"><span class="material-symbols-rounded">calendar_month</span></div>
+          <div>
+            <span class="info-label">Ngày tạo</span>
+            <span class="info-value">{{ contract.created_at|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon"><span class="material-symbols-rounded">work</span></div>
+          <div>
+            <span class="info-label">Loại dịch vụ</span>
+            <span class="info-value">{{ contract.get_service_type_display }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon"><span class="material-symbols-rounded">payments</span></div>
+          <div>
+            <span class="info-label">Giá trị hợp đồng</span>
+            <span class="info-value">{{ contract.contract_value|intcomma }} VNĐ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THANH TOÁN DỨT ĐIỂM -->
+    {% if contract.payment_type == 'full' %}
+    <div class="payment-full-badge">
+      <span class="material-symbols-rounded">verified</span>
+      Hợp đồng trả dứt điểm
+    </div>
+
+    <!-- THANH TOÁN TRẢ GÓP -->
+    {% elif contract.payment_type == 'installment' and installments %}
+    <div class="portal-card">
+      <div class="installment-head">
+        <div>
+          <div class="ins-head-title">
+            <span class="material-symbols-rounded">payments</span>
+            Lịch thanh toán trả góp
+          </div>
+          <div class="ins-head-stat">
+            Đã thanh toán: <strong>{{ installments|length }}</strong> đợt
+          </div>
+        </div>
+      </div>
+
+      <div class="installment-body">
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-label">Tiến độ thanh toán</span>
+            <span class="progress-pct">{{ contract.payment_progress }}%</span>
+          </div>
+          <div class="custom-progress">
+            <div class="progress-fill" style="width:{{ contract.payment_progress|floatformat:0 }}%">
+              <div class="progress-shine"></div>
+            </div>
+            <div class="progress-text">
+              {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+            </div>
+          </div>
+          <div class="progress-footer">
+            <span class="remaining-label">Còn lại:</span>
+            <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="ins-table">
+            <thead>
+              <tr>
+                <th width="5%">#</th>
+                <th>Đợt</th>
+                <th>Số tiền</th>
+                <th>Đến hạn</th>
+                <th>Trạng thái</th>
+                <th>Hóa đơn</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ins in installments %}
+              <tr class="{% if ins.is_paid %}row-paid{% elif ins.is_overdue %}row-overdue{% endif %}">
+                <td><span class="row-num">{{ forloop.counter }}</span></td>
+                <td><strong>{{ ins.notes }}</strong></td>
+                <td><span class="amount-text">{{ ins.amount|floatformat:0 }} VNĐ</span></td>
+                <td>
+                  {% if ins.due_date %}<span class="due-tag">{{ ins.due_date|date:"d/m/Y" }}</span>
+                  {% else %}—{% endif %}
+                </td>
+                <td>
+                  {% if ins.is_paid %}
+                    <span class="badge-paid"><span class="material-symbols-rounded">check_circle</span>Đã trả</span>
+                    {% if ins.paid_date %}<small class="paid-date">{{ ins.paid_date|date:"d/m/Y" }}</small>{% endif %}
+                  {% elif ins.is_overdue %}
+                    <span class="badge-overdue"><span class="material-symbols-rounded">warning</span>Quá hạn</span>
+                  {% else %}
+                    <span class="badge-unpaid"><span class="material-symbols-rounded">schedule</span>Chờ thanh toán</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if ins.is_exported_bill %}
+                    <span class="bill-badge"><span class="material-symbols-rounded">receipt_long</span>Đã xuất HĐ</span>
+                    {% if ins.bill_exported_at %}<small class="bill-date">{{ ins.bill_exported_at|date:"d/m/Y" }}</small>{% endif %}
+                  {% elif ins.is_paid %}
+                    <span style="font-size:12px;color:#bbb;font-weight:600;">Chờ xuất</span>
+                  {% else %}
+                    <span style="color:#ddd;">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- THÔNG TIN DỊCH VỤ -->
+    {% if service %}
+    <div class="portal-card">
+      <div class="service-head">
+        <span class="material-symbols-rounded">work</span>
+        <h5>Thông tin dịch vụ</h5>
+      </div>
+      <div class="service-body">
+
+        {% if contract.service_type == 'nhanhieu' %}
+          {% for s in service %}
+          <div class="svc-block">
+            <div class="svc-block-head">
+              <h6 class="svc-block-title">
+                <span class="material-symbols-rounded">star</span>
+                Nhãn hiệu: {{ s.trademark_name|default:"Chưa đặt tên" }}
+              </h6>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Số đơn</label><div class="val-hi">{{ s.app_no|default:"—" }}</div></div>
+              <div class="detail-item"><label>Người nộp đơn</label><div class="val">{{ s.applicant|default:"—" }}</div></div>
+              <div class="detail-item"><label>Ngày nộp đơn</label><div class="val">{{ s.filing_date|date:"d/m/Y"|default:"—" }}</div></div>
+              <div class="detail-item"><label>Ngày cấp</label><div class="val">{{ s.decision_date|date:"d/m/Y"|default:"—" }}</div></div>
+              <div class="detail-item"><label>Phân loại</label><div class="val">{{ s.classification|default:"—" }}</div></div>
+              {% if s.trademark_image %}
+              <div class="detail-item"><label>Hình ảnh nhãn hiệu</label><img src="{{ s.trademark_image.url }}" class="trademark-img"/></div>
+              {% endif %}
+            </div>
+            {% with certs=s.certificates.all %}
+            <div class="attach-section">
+              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+            </div>
+            {% endwith %}
+          </div>
+          {% empty %}<p class="attach-empty">Chưa có nhãn hiệu nào.</p>{% endfor %}
+
+        {% elif contract.service_type == 'banquyen' %}
+          {% for s in service %}
+          <div class="svc-block">
+            <div class="svc-block-head">
+              <h6 class="svc-block-title"><span class="material-symbols-rounded">copyright</span>Bản quyền: {{ s.work_name|default:"—" }}</h6>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Số giấy chứng nhận</label><div class="val-hi">{{ s.certificate_no|default:"—" }}</div></div>
+              <div class="detail-item"><label>Tác giả</label><div class="val">{{ s.author|default:"—" }}</div></div>
+              <div class="detail-item"><label>Chủ sở hữu</label><div class="val">{{ s.owner|default:"—" }}</div></div>
+              <div class="detail-item"><label>Loại hình</label><div class="val">{{ s.type|default:"—" }}</div></div>
+            </div>
+            {% with certs=s.certificates.all %}
+            <div class="attach-section">
+              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+            </div>
+            {% endwith %}
+          </div>
+          {% empty %}<p class="attach-empty">Chưa có bản quyền nào.</p>{% endfor %}
+
+        {% elif contract.service_type == 'dkkd' %}
+          {% for s in service %}
+          <div class="svc-block">
+            <div class="svc-block-head">
+              <h6 class="svc-block-title"><span class="material-symbols-rounded">business</span>{{ s.company_name|default:"Đăng ký kinh doanh" }}</h6>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Mã số thuế</label><div class="val-hi">{{ s.tax_code|default:"Chưa cập nhật" }}</div></div>
+              <div class="detail-item"><label>Người đại diện pháp luật</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
+              <div class="detail-item"><label>Loại hình kinh doanh</label><div class="val">{{ s.business_type|default:"—" }}</div></div>
+              <div class="detail-item"><label>Vốn điều lệ</label><div class="val">{{ s.charter_capital|default:"—" }}</div></div>
+              <div class="detail-item"><label>Địa chỉ</label><div class="val">{{ s.address|default:"—" }}</div></div>
+              <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
+            </div>
+            {% with certs=s.certificates.all %}
+            <div class="attach-section">
+              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+            </div>
+            {% endwith %}
+          </div>
+          {% empty %}<p class="attach-empty">Chưa có thông tin đăng ký kinh doanh.</p>{% endfor %}
+
+        {% elif contract.service_type == 'dautu' %}
+          {% for s in service %}
+          <div class="svc-block">
+            <div class="svc-block-head">
+              <h6 class="svc-block-title"><span class="material-symbols-rounded">trending_up</span>Dự án: {{ s.project_name|default:"—" }}</h6>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Mã dự án</label><div class="val-hi">{{ s.project_code|default:"—" }}</div></div>
+              <div class="detail-item"><label>Nhà đầu tư</label><div class="val">{{ s.investor|default:"—" }}</div></div>
+              <div class="detail-item"><label>Địa chỉ dự án</label><div class="val">{{ s.address|default:"—" }}</div></div>
+              <div class="detail-item"><label>Vốn đầu tư</label><div class="val">{{ s.total_capital|default:"—" }}</div></div>
+              <div class="detail-item full"><label>Mục tiêu dự án</label><div class="val">{{ s.objective|default:"—" }}</div></div>
+            </div>
+            {% with certs=s.certificates.all %}
+            <div class="attach-section">
+              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+            </div>
+            {% endwith %}
+          </div>
+          {% empty %}<p class="attach-empty">Chưa có thông tin đầu tư.</p>{% endfor %}
+
+        {% else %}
+          {% for s in service %}
+          <div class="svc-block">
+            <div class="svc-block-head">
+              <h6 class="svc-block-title"><span class="material-symbols-rounded">info</span>Dịch vụ khác</h6>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Người liên hệ</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
+              <div class="detail-item"><label>Chức vụ</label><div class="val">{{ s.position|default:"—" }}</div></div>
+              <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
+              <div class="detail-item"><label>Email</label><div class="val">{{ s.email|default:"—" }}</div></div>
+              <div class="detail-item full"><label>Mô tả dịch vụ</label><div class="val">{{ s.description|default:"—" }}</div></div>
+            </div>
+            {% with certs=s.certificates.all %}
+            <div class="attach-section">
+              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+            </div>
+            {% endwith %}
+          </div>
+          {% empty %}<p class="attach-empty">Chưa có dịch vụ nào.</p>{% endfor %}
+        {% endif %}
+
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block body_block %}
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    .portal-page {
+      min-height: 80vh;
+      background: #f4f4f6;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      padding: 40px 20px 80px;
+    }
+
+    .portal-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── TOPBAR ── */
+    .portal-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .portal-greeting h4 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0 0 2px;
+    }
+
+    .portal-greeting small {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #aaa;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-topbar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: 50px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-topbar.profile {
+      background: #fff;
+      color: #1a1a2e;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .btn-topbar.profile:hover {
+      background: #f0f0f0;
+      color: #1a1a2e;
+    }
+
+    .btn-topbar.logout {
+      background: #fff;
+      color: #c0392b;
+      border: 2px solid #c0392b;
+    }
+    .btn-topbar.logout:hover {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    .btn-topbar .material-symbols-rounded { font-size: 16px; }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .stat-card.total::before  { background: linear-gradient(90deg, #1a1a2e, #3a3a5e); }
+    .stat-card.done::before   { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+    .stat-card.pending::before{ background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-card.total  .stat-number { color: #1a1a2e; }
+    .stat-card.done   .stat-number { color: #27ae60; }
+    .stat-card.pending .stat-number { color: #c0392b; }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #aaa;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── TABLE CARD ── */
+    .portal-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .portal-card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .portal-card-header .title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a1a2e;
+    }
+
+    .portal-card-header .bar {
+      width: 28px;
+      height: 3px;
+      background: linear-gradient(90deg, #c0392b, #e74c3c);
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    .portal-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    .portal-table thead tr {
+      background: #f9f9fb;
+    }
+
+    .portal-table th {
+      padding: 12px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .portal-table td {
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      border-bottom: 1px solid #f7f7f9;
+      vertical-align: middle;
+    }
+
+    .portal-table tbody tr:last-child td { border-bottom: none; }
+
+    .portal-table tbody tr:hover td { background: #fafafa; }
+
+    .contract-no {
+      font-weight: 800;
+      color: #1a1a2e;
+      font-size: 13px;
+    }
+
+    /* Progress bar */
+    .mini-progress {
+      width: 80px;
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 3px;
+    }
+    .mini-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
+      border-radius: 10px;
+    }
+    .progress-pct {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 600;
+    }
+
+    /* Badges */
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .portal-badge.completed { background: #e8f5e9; color: #2e7d32; }
+    .portal-badge.processing { background: #e3f2fd; color: #1565c0; }
+    .portal-badge.pending    { background: #fff8e1; color: #f57f17; }
+    .portal-badge.other      { background: #f3f3f3; color: #666; }
+    .portal-badge.full-pay   { background: #e8f5e9; color: #2e7d32; }
+
+    /* Action btn */
+    .btn-detail {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 7px 14px;
+      background: #f4f4f6;
+      color: #1a1a2e;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .btn-detail:hover {
+      background: #c0392b;
+      color: #fff;
+    }
+    .btn-detail .material-symbols-rounded { font-size: 14px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #bbb;
+    }
+    .empty-state .material-symbols-rounded {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .empty-state p {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+    }
+  </style>
+
+  <div class="portal-page">
+    <div class="portal-wrap">
+
+      <!-- Topbar -->
+      <div class="portal-topbar">
+        <div class="portal-greeting">
+          <h4>Xin chào, {{ customer.name }} 👋</h4>
+          <small>MÃ KH: {{ customer.customer_code }}</small>
+        </div>
+        <div class="topbar-actions">
+          <a href="{% url 'portal_customer_profile' %}" class="btn-topbar profile">
+            <span class="material-symbols-rounded">person</span>
+            Hồ sơ
+          </a>
+          <a href="{% url 'customer_logout' %}" class="btn-topbar logout">
+            <span class="material-symbols-rounded">logout</span>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card total">
+          <div class="stat-number">{{ total }}</div>
+          <div class="stat-label">Tổng HĐ</div>
+        </div>
+        <div class="stat-card done">
+          <div class="stat-number">{{ completed }}</div>
+          <div class="stat-label">Hoàn thành</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-number">{{ pending }}</div>
+          <div class="stat-label">Đang xử lý</div>
+        </div>
+      </div>
+
+      <!-- Contract Table -->
+      <div class="portal-card">
+        <div class="portal-card-header">
+          <div>
+            <div class="title">Danh sách hợp đồng của bạn</div>
+            <div class="bar"></div>
+          </div>
+        </div>
+
+        {% if contracts %}
+        <div style="overflow-x:auto;">
+          <table class="portal-table">
+            <thead>
+              <tr>
+                <th>Số HĐ</th>
+                <th>Dịch vụ</th>
+                <th>Giá trị</th>
+                <th>Thanh toán</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for contract in contracts %}
+              <tr>
+                <td><span class="contract-no">{{ contract.contract_no }}</span></td>
+                <td>{{ contract.get_service_type_display }}</td>
+                <td>{{ contract.contract_value|floatformat:0 }} VNĐ</td>
+                <td>
+                  {% if contract.payment_type == 'installment' %}
+                    <div class="mini-progress">
+                      <div class="mini-progress-bar" style="width:{{ contract.payment_progress }}%"></div>
+                    </div>
+                    <span class="progress-pct">{{ contract.payment_progress }}%</span>
+                  {% else %}
+                    <span class="portal-badge full-pay">Dứt điểm</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if contract.status == 'completed' %}
+                    <span class="portal-badge completed">Hoàn thành</span>
+                  {% elif contract.status == 'processing' %}
+                    <span class="portal-badge processing">Đang xử lý</span>
+                  {% elif contract.status == 'pending' %}
+                    <span class="portal-badge pending">Chờ xử lý</span>
+                  {% else %}
+                    <span class="portal-badge other">{{ contract.get_status_display }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'portal_contract_detail' contract.id %}" class="btn-detail">
+                    <span class="material-symbols-rounded">arrow_forward</span>
+                    Chi tiết
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <span class="material-symbols-rounded">folder_open</span>
+          <p>Bạn chưa có hợp đồng nào.</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

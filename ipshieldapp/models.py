@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import Sum
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 # ============================
@@ -114,9 +115,28 @@ class Customer(models.Model):
     class Meta:
         verbose_name = 'Khách hàng'
         verbose_name_plural = 'Khách hàng'
+        # 🆕 THÊM 2 FIELD NÀY
+
+    password = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        verbose_name='Mật khẩu'
+    )
+    last_login = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Lần đăng nhập cuối'
+    )
 
     def __str__(self):
         return f"{self.customer_code} - {self.name}"
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password or '')
 
 
 # ============================
@@ -1053,7 +1073,17 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name='Ảnh đại diện')
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='Số điện thoại')
+    customer = models.OneToOneField(
+        'Customer',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='user_profile',
+        verbose_name='Khách hàng liên kết'
+    )
 
+    def is_customer(self):
+        return self.customer is not None
     def __str__(self):
         return f"Profile của {self.user.username}"
 

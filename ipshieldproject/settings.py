@@ -32,6 +32,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "ipshieldapp.middleware.CustomerSessionMiddleware",
 ]
 
 ROOT_URLCONF = "ipshieldproject.urls"
@@ -48,7 +49,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ipshieldapp.context_processors.global_sliders",
-                "ipshieldapp.context_processors.user_profile", 
+                "ipshieldapp.context_processors.user_profile",
+                'django.template.context_processors.request',
             ],
         },
     },

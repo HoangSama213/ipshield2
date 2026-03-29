@@ -70,6 +70,13 @@ path('contract/<int:contract_id>/edit-installments/', views.edit_installment_amo
     #ho so
     path('profile/', views.profile_view, name='profile'),
 
+# 🆕 PORTAL KHÁCH HÀNG
+path('portal/profile/', views.portal_customer_profile, name='portal_customer_profile'),
+
+    path('khach-hang/dang-xuat/',  views.customer_logout,          name='customer_logout'),
+    path('portal/', views.portal_dashboard, name='portal_dashboard'),
+    path('portal/hop-dong/<int:contract_id>/',
+                                   views.portal_contract_detail,   name='portal_contract_detail'),
 ]
 
 
