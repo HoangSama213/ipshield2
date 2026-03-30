@@ -311,6 +311,11 @@ class Contract(models.Model):
     def is_fully_paid(self):
         """Đã thanh toán đủ chưa"""
         return self.total_paid >= self.contract_value
+    
+    # Trong class Contract
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_status = self.status
 
     def __str__(self):
         return f"{self.contract_no} - {self.get_service_type_display()}"

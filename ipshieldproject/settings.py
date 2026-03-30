@@ -116,3 +116,12 @@ SESSION_COOKIE_SECURE = False
 
 CSRF_COOKIE_DOMAIN = None
 SESSION_COOKIE_DOMAIN = None
+
+
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.gmail.com'
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = 'hoang21384@gmail.com'
+EMAIL_HOST_PASSWORD = 'mxro faut qxki gnib'  # App Password Gmail
+DEFAULT_FROM_EMAIL  = 'Công ty SHTS <your@gmail.com>'
