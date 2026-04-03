@@ -1217,3 +1217,8 @@ IPShield
         return redirect('portal_customer_profile')
 
     return render(request, 'portal/customer_profile.html', {'customer': customer})
+
+
+
+def dashboard(request):
+    return render(request, 'dashboard.html')

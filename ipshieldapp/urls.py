@@ -69,6 +69,8 @@ path('contract/<int:contract_id>/edit-installments/', views.edit_installment_amo
 
     #ho so
     path('profile/', views.profile_view, name='profile'),
+    #dashboard
+    path('dashboard/', views.dashboard, name='dashboard'),
 
 # 🆕 PORTAL KHÁCH HÀNG
 path('portal/profile/', views.portal_customer_profile, name='portal_customer_profile'),
