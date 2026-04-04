@@ -1092,3 +1092,32 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"Profile của {self.user.username}"
 
+# ============================
+# NHẬT KÝ HOẠT ĐỘNG KHÁCH HÀNG
+# ============================
+class CustomerActivityLog(models.Model):
+    ACTION_CHOICES = (
+        ('login',           'Đăng Nhập'),
+        ('logout',          'Đăng Xuất'),
+        ('view_contract',   'Xem Hợp Đồng'),
+        ('change_password', 'Đổi Mật Khẩu'),
+        ('update_profile',  'Cập Nhật Hồ Sơ'),
+    )
+
+    customer   = models.ForeignKey(
+        Customer, on_delete=models.CASCADE,
+        related_name='activity_logs', verbose_name='Khách hàng'
+    )
+    action     = models.CharField(max_length=30, choices=ACTION_CHOICES, verbose_name='Hành động')
+    note       = models.CharField(max_length=255, blank=True, verbose_name='Ghi chú')
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name='IP')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Thời gian')
+
+    class Meta:
+        verbose_name = 'Nhật ký hoạt động KH'
+        verbose_name_plural = 'Nhật ký hoạt động KH'
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['-created_at'])]
+
+    def __str__(self):
+        return f"{self.customer.customer_code} — {self.get_action_display()} — {self.created_at:%d/%m/%Y %H:%M}"
