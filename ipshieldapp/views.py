@@ -10,9 +10,13 @@ from django.db.models import Q
 from django.http import FileResponse, Http404
 from django.db import IntegrityError
 import os
+import openpyxl
+from django.http import HttpResponse
+from .models import CustomerActivityLog
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .decorators import customer_login_required
+
 from .models import *
 from .forms import *
 from django.utils import timezone
@@ -35,7 +39,14 @@ def _send_email(to_email, subject, message):
     except Exception as e:
         print(f"❌ Email error: {e}")
 
-
+def _log_activity(customer, action, note='', request=None):
+    ip = None
+    if request:
+        x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+        ip = x_forwarded.split(',')[0] if x_forwarded else request.META.get('REMOTE_ADDR')
+    CustomerActivityLog.objects.create(
+        customer=customer, action=action, note=note, ip_address=ip
+    )
 def lock_contract_fields(contract_form):
     for field_name, field in contract_form.fields.items():
         field.disabled = True
@@ -1120,6 +1131,7 @@ def customer_login(request):
                 request.session['customer_id'] = customer.id
                 customer.last_login = timezone.now()
                 customer.save(update_fields=['last_login'])
+                _log_activity(customer, 'login', request=request)
                 return redirect('portal_dashboard')
             else:
                 messages.error(request, '❌ Mật khẩu không đúng.')
@@ -1131,6 +1143,12 @@ def customer_login(request):
 
 def customer_logout(request):
     if 'customer_id' in request.session:
+        if 'customer_id' in request.session:
+            try:
+                cust = Customer.objects.get(id=request.session['customer_id'])
+                _log_activity(cust, 'logout', request=request)
+            except Customer.DoesNotExist:
+                pass
         del request.session['customer_id']
     return redirect('login')
 
@@ -1165,7 +1183,7 @@ def portal_contract_detail(request, contract_id):
         service = InvestmentService.objects.filter(contract=contract)
     else:
         service = OtherService.objects.filter(contract=contract)
-
+    _log_activity(customer, 'view_contract', note=contract.contract_no, request=request)
     return render(request, 'portal/contract_detail.html', {
         'contract': contract, 'service': service,
         'installments': installments, 'customer': customer,
@@ -1189,7 +1207,8 @@ def portal_customer_profile(request):
         customer.email   = email
         customer.phone   = phone
         customer.address = address
-
+        if request.FILES.get('avatar'):
+            customer.avatar = request.FILES['avatar']
         if new_password:
             if new_password != confirm_password:
                 messages.error(request, '❌ Mật khẩu xác nhận không khớp!')
@@ -1197,7 +1216,8 @@ def portal_customer_profile(request):
             customer.set_password(new_password)
 
         customer.save()
-
+        action_type = 'change_password' if new_password else 'update_profile'
+        _log_activity(customer, action_type, request=request)
         # 🔔 GỬI MAIL CẬP NHẬT HỒ SƠ
         _send_email(
             to_email=customer.email,
@@ -1217,3 +1237,91 @@ IPShield
         return redirect('portal_customer_profile')
 
     return render(request, 'portal/customer_profile.html', {'customer': customer})
+
+
+
+
+
+@login_required
+def dashboard(request):
+    # --- Bộ lọc ---
+    action_filter = request.GET.get('action', '')
+    q             = request.GET.get('q', '').strip()
+    date_from     = request.GET.get('date_from', '')
+    date_to       = request.GET.get('date_to', '')
+
+    logs = CustomerActivityLog.objects.select_related('customer').order_by('-created_at')
+
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+    if q:
+        logs = logs.filter(
+            Q(customer__customer_code__icontains=q) |
+            Q(customer__name__icontains=q)
+        )
+    if date_from:
+        logs = logs.filter(created_at__date__gte=date_from)
+    if date_to:
+        logs = logs.filter(created_at__date__lte=date_to)
+
+    # --- Xuất Excel ---
+    if request.GET.get('export') == 'excel':
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Hoạt động KH"
+        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
+        for idx, log in enumerate(logs, 1):
+            ws.append([
+                idx,
+                log.customer.customer_code,
+                log.customer.name,
+                log.get_action_display(),
+                log.note,
+                log.ip_address or '',
+                log.created_at.strftime('%H:%M:%S — %d/%m/%Y'),
+            ])
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="hoat_dong_khach_hang.xlsx"'
+        wb.save(response)
+        return response
+
+    # --- Thống kê nhanh ---
+    from django.db.models import Count
+    stats = CustomerActivityLog.objects.values('action').annotate(total=Count('id'))
+    stats_dict = {s['action']: s['total'] for s in stats}
+
+    return render(request, 'dashboard.html', {
+        'logs':          logs[:200],   # giới hạn hiển thị
+        'action_filter': action_filter,
+        'q':             q,
+        'date_from':     date_from,
+        'date_to':       date_to,
+        'stats':         stats_dict,
+        'action_choices': CustomerActivityLog.ACTION_CHOICES,
+    })
+
+# YÊU CẦU HỖ TRỢ
+@customer_login_required
+def portal_support_request(request, contract_id):
+    if request.method != 'POST':
+        return redirect('portal_contract_detail', contract_id=contract_id)
+
+    customer       = request.customer
+    contract       = get_object_or_404(Contract, id=contract_id, customer=customer)
+    subject        = request.POST.get('subject', '').strip()
+    message        = request.POST.get('message', '').strip()
+    contact_method = request.POST.get('contact_method', 'email')
+
+    if not subject or not message:
+        return JsonResponse({'ok': False, 'error': 'Vui lòng nhập đầy đủ thông tin'}, status=400)
+
+    _log_activity(
+        customer,
+        'support_request',
+        note=f"[{contract.contract_no}] {subject} | {message} | Liên hệ: {contact_method}",
+        request=request
+    )
+
+    return JsonResponse({'ok': True})

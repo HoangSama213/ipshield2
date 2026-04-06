@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% block body_block %}
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Be Vietnam Pro', sans-serif; }
+  .badge-login          { background:#dcfce7; color:#15803d; }
+  .badge-logout         { background:#f3f4f6; color:#6b7280; }
+  .badge-view_contract  { background:#dbeafe; color:#1d4ed8; }
+  .badge-change_password{ background:#fef9c3; color:#a16207; }
+  .badge-update_profile { background:#ede9fe; color:#6d28d9; }
+  .badge-support_request{ background:#fee2e2; color:#be1e2d; }
+
+  .customer-row { cursor: pointer; transition: background .15s; }
+  .customer-row:hover td { background: #fafafa; }
+  .customer-row.active td { background: #fef2f2; }
+
+  .log-section { display: none; }
+  .log-section.open { display: table-row-group; }
+
+  .chevron { transition: transform .2s; }
+  .chevron.open { transform: rotate(180deg); }
+</style>
+
+<main class="min-h-screen p-6 bg-gray-50">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Hoạt Động Khách Hàng</h1>
+        <p class="text-sm text-gray-500 mt-0.5">Danh sách khách hàng — bấm vào để xem chi tiết hành động.</p>
+      </div>
+      <a href="?action={{ action_filter }}&q={{ q }}&date_from={{ date_from }}&date_to={{ date_to }}&export=excel"
+         class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
+        </svg>
+        Xuất Excel
+      </a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div class="bg-white rounded-xl border border-gray-200 px-4 py-4">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đăng nhập</p>
+        <p class="text-2xl font-bold text-gray-800">{{ stats.login|default:"0" }}</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 px-4 py-4">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Xem hợp đồng</p>
+        <p class="text-2xl font-bold text-gray-800">{{ stats.view_contract|default:"0" }}</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 px-4 py-4">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Cập nhật hồ sơ</p>
+        <p class="text-2xl font-bold text-gray-800">{{ stats.update_profile|default:"0" }}</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 px-4 py-4">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đổi mật khẩu</p>
+        <p class="text-2xl font-bold text-gray-800">{{ stats.change_password|default:"0" }}</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 px-4 py-4">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Yêu cầu hỗ trợ</p>
+        <p class="text-2xl font-bold text-gray-800">{{ stats.support_request|default:"0" }}</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="bg-white rounded-xl border border-gray-200 p-4 flex flex-wrap gap-3 items-end">
+      <div class="flex-1 min-w-[180px]">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Tìm mã / tên KH</label>
+        <input name="q" value="{{ q }}" type="text" placeholder="KA-001 hoặc Nguyễn..."
+               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"/>
+      </div>
+      <div class="min-w-[160px]">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Hành động</label>
+        <select name="action" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
+          <option value="">-- Tất cả --</option>
+          {% for code, label in action_choices %}
+          <option value="{{ code }}" {% if action_filter == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="min-w-[140px]">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Từ ngày</label>
+        <input name="date_from" value="{{ date_from }}" type="date"
+               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"/>
+      </div>
+      <div class="min-w-[140px]">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Đến ngày</label>
+        <input name="date_to" value="{{ date_to }}" type="date"
+               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"/>
+      </div>
+      <button type="submit"
+              class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        Lọc
+      </button>
+      <a href="{% url 'dashboard' %}"
+         class="border border-gray-200 hover:bg-gray-50 text-gray-600 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
+        Xóa lọc
+      </a>
+    </form>
+
+    <!-- Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <th class="px-5 py-4 w-10"></th>
+              <th class="px-5 py-4">Khách hàng</th>
+              <th class="px-5 py-4">Hoạt động gần nhất</th>
+              <th class="px-5 py-4">Thời gian</th>
+              <th class="px-5 py-4 text-center">Tổng hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {% regroup logs by customer as customer_logs %}
+            {% for group in customer_logs %}
+            {% with last=group.list.0 total=group.list|length %}
+
+            <!-- CUSTOMER ROW -->
+            <tr class="customer-row border-b border-gray-100"
+                onclick="toggleLogs('logs-{{ group.grouper.id }}', this)">
+              <td class="px-5 py-4 text-gray-400">
+                <svg class="chevron w-4 h-4 text-gray-400" id="chevron-{{ group.grouper.id }}"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </td>
+              <td class="px-5 py-4">
+                <div class="font-semibold text-gray-900">{{ group.grouper.name }}</div>
+                <div class="text-xs text-gray-400 mt-0.5">#{{ group.grouper.customer_code }}</div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold badge-{{ last.action }}">
+                  {{ last.get_action_display }}
+                </span>
+              </td>
+              <td class="px-5 py-4 text-gray-500 text-xs">
+                {{ last.created_at|date:"H:i — d/m/Y" }}
+              </td>
+              <td class="px-5 py-4 text-center">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">
+                  {{ total }}
+                </span>
+              </td>
+            </tr>
+
+            <!-- LOG DETAIL ROWS (ẨN MẶC ĐỊNH) -->
+            <tr>
+              <td colspan="5" class="p-0">
+                <div class="log-section" id="logs-{{ group.grouper.id }}">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="bg-gray-50 border-y border-gray-100">
+                        <th class="pl-16 pr-4 py-2 text-left font-semibold text-gray-400 uppercase tracking-wide w-48">Hành động</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-400 uppercase tracking-wide">Ghi chú</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-400 uppercase tracking-wide w-32">IP</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-400 uppercase tracking-wide w-40">Thời gian</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                      {% for log in group.list %}
+                      <tr class="hover:bg-gray-50">
+                        <td class="pl-16 pr-4 py-2.5">
+                          <span class="px-2 py-0.5 rounded-full text-xs font-semibold badge-{{ log.action }}">
+                            {{ log.get_action_display }}
+                          </span>
+                        </td>
+                        <td class="px-4 py-2.5 text-gray-500">{{ log.note|default:"—" }}</td>
+                        <td class="px-4 py-2.5 text-gray-400 font-mono">{{ log.ip_address|default:"—" }}</td>
+                        <td class="px-4 py-2.5 text-gray-400">{{ log.created_at|date:"H:i:s — d/m/Y" }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+
+            {% endwith %}
+            {% empty %}
+            <tr>
+              <td colspan="5" class="px-5 py-10 text-center text-gray-400">
+                Chưa có hoạt động nào được ghi nhận.
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+function toggleLogs(id, row) {
+  const section  = document.getElementById(id);
+  const chevron  = document.getElementById('chevron-' + id.replace('logs-', ''));
+  const isOpen   = section.classList.contains('open');
+
+  // Đóng tất cả
+  document.querySelectorAll('.log-section.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.chevron.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.customer-row.active').forEach(el => el.classList.remove('active'));
+
+  // Nếu chưa mở thì mở
+  if (!isOpen) {
+    section.classList.add('open');
+    chevron.classList.add('open');
+    row.classList.add('active');
+  }
+}
+</script>
+
+{% endblock %}
