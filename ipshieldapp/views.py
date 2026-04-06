@@ -1155,14 +1155,30 @@ def customer_logout(request):
 
 @customer_login_required
 def portal_dashboard(request):
-    customer  = request.customer
+    customer = request.customer
     contracts = Contract.objects.filter(customer=customer).order_by('-created_at')
+
+    from collections import defaultdict
+    grouped = defaultdict(list)
+
+    for c in contracts:
+        grouped[c.service_type].append(c)
+
+    # ✅ thêm grouped_tabs cho template
+    grouped_tabs = [('all', contracts)]
+
+    for key in ['nhanhieu', 'banquyen', 'dkkd', 'dautu', 'khac']:
+        if grouped.get(key):
+            grouped_tabs.append((key, grouped[key]))
+
     return render(request, 'portal/dashboard.html', {
-        'customer':  customer,
+        'customer': customer,
         'contracts': contracts,
-        'total':     contracts.count(),
+        'grouped': grouped,
+        'grouped_tabs': grouped_tabs,   # ✅ QUAN TRỌNG
+        'total': contracts.count(),
         'completed': contracts.filter(status='completed').count(),
-        'pending':   contracts.exclude(status='completed').count(),
+        'pending': contracts.exclude(status='completed').count(),
     })
 
 

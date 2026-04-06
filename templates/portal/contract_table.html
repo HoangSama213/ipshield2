@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Hợp Đồng Của Tôi{% endblock %}
+
+{% block body_block %}
+{% if service %}
+  {% for contract in rows %}
+    {% if contract.service_type == service %}
+      {% include "portal/_contract_row.html" %}
+    {% endif %}
+  {% empty %}
+    <div class="empty-state">
+      <span class="material-symbols-rounded">folder_open</span>
+      <p>Không có hợp đồng nào.</p>
+    </div>
+  {% endfor %}
+{% else %}
+  <div style="overflow-x:auto">
+    <table class="portal-table">
+      <thead>
+        <tr>
+          <th>Số HĐ</th>
+          <th>Dịch vụ</th>
+          <th>Giá trị</th>
+          <th>Thanh toán</th>
+          <th>Trạng thái</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contract in rows %}
+        <tr>
+          <td><span class="contract-no">{{ contract.contract_no }}</span></td>
+          <td>{{ contract.get_service_type_display }}</td>
+          <td>{{ contract.contract_value|floatformat:0 }} VNĐ</td>
+          <td>
+            {% if contract.payment_type == 'installment' %}
+              <div class="mini-progress">
+                <div class="mini-progress-bar" style="width:{{ contract.payment_progress }}%"></div>
+              </div>
+              <span class="progress-pct">{{ contract.payment_progress }}%</span>
+            {% else %}
+              <span class="portal-badge full-pay">Dứt điểm</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if contract.status == 'completed' %}
+              <span class="portal-badge completed">Hoàn thành</span>
+            {% elif contract.status == 'processing' %}
+              <span class="portal-badge processing">Đang xử lý</span>
+            {% elif contract.status == 'pending' %}
+              <span class="portal-badge pending">Chờ xử lý</span>
+            {% else %}
+              <span class="portal-badge other">{{ contract.get_status_display }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'portal_contract_detail' contract.id %}" class="btn-detail">
+              <span class="material-symbols-rounded">arrow_forward</span>
+              Chi tiết
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <span class="material-symbols-rounded">folder_open</span>
+              <p>Bạn chưa có hợp đồng nào.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}
