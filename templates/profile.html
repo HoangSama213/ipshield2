@@ -7,19 +7,19 @@
     * {
       box-sizing: border-box;
     }
-    
+
     .profile-page {
       min-height: 80vh;
       background: #f4f4f6;
       font-family: 'Be Vietnam Pro', sans-serif;
       padding: 40px 20px 80px;
     }
-    
+
     .profile-wrap {
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto;
     }
-    
+
     .profile-heading {
       font-size: 13px;
       font-weight: 700;
@@ -28,7 +28,7 @@
       color: #9a9a9a;
       margin-bottom: 28px;
     }
-    
+
     .profile-alert {
       padding: 14px 18px;
       border-radius: 12px;
@@ -49,7 +49,7 @@
       color: #c62828;
       border-left: 4px solid #e53935;
     }
-    
+
     .profile-grid {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -61,7 +61,7 @@
         grid-template-columns: 1fr;
       }
     }
-    
+
     /* LEFT CARD */
     .profile-left {
       background: #fff;
@@ -75,14 +75,14 @@
       position: sticky;
       top: 20px;
     }
-    
+
     .avatar-wrap {
       position: relative;
       width: 140px;
       height: 140px;
       margin-bottom: 20px;
     }
-    
+
     .avatar-img {
       width: 140px;
       height: 140px;
@@ -91,7 +91,7 @@
       border: 3px solid #fff;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     }
-    
+
     .avatar-placeholder {
       width: 140px;
       height: 140px;
@@ -105,7 +105,7 @@
       color: #fff;
       box-shadow: 0 8px 32px rgba(186, 26, 26, 0.25);
     }
-    
+
     .avatar-upload-btn {
       position: absolute;
       bottom: -8px;
@@ -130,14 +130,14 @@
     .avatar-upload-btn .material-symbols-rounded {
       font-size: 18px;
     }
-    
+
     .profile-username {
       font-size: 19px;
       font-weight: 800;
       color: #1a1a2e;
       margin: 0 0 4px;
     }
-    
+
     .profile-role {
       font-size: 12px;
       font-weight: 600;
@@ -149,7 +149,7 @@
       border-radius: 20px;
       margin-bottom: 24px;
     }
-    
+
     .profile-meta {
       width: 100%;
       border-top: 1px solid #f0f0f0;
@@ -158,7 +158,7 @@
       flex-direction: column;
       gap: 12px;
     }
-    
+
     .meta-item {
       display: flex;
       align-items: center;
@@ -175,22 +175,28 @@
     .meta-item span:last-child {
       word-break: break-all;
     }
-    
+
     /* RIGHT CARD */
     .profile-right {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card-block {
       background: #fff;
       border-radius: 24px;
       padding: 36px 36px 32px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     }
-    
+
     .section-title {
       font-size: 22px;
       font-weight: 800;
       color: #1a1a2e;
       margin: 0 0 6px;
     }
-    
+
     .section-bar {
       width: 40px;
       height: 4px;
@@ -198,11 +204,12 @@
       border-radius: 4px;
       margin-bottom: 32px;
     }
-    
+
+    /* READONLY FIELD */
     .field-group {
       margin-bottom: 24px;
     }
-    
+
     .field-label {
       display: block;
       font-size: 10px;
@@ -211,13 +218,79 @@
       text-transform: uppercase;
       color: #aaa;
       margin-bottom: 8px;
-      transition: color 0.2s;
     }
-    
+
+    .field-readonly {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      background: #f7f7f8;
+      border: 2px solid #ececec;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #555;
+      user-select: none;
+      cursor: not-allowed;
+    }
+    .field-readonly .material-symbols-rounded {
+      font-size: 18px;
+      color: #ccc;
+      flex-shrink: 0;
+    }
+
+    .field-lock-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #aaa;
+      letter-spacing: 0.04em;
+    }
+    .field-lock-badge .material-symbols-rounded {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .readonly-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #fffbe6;
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #7a6200;
+      font-weight: 500;
+      margin-bottom: 28px;
+    }
+    .readonly-notice .material-symbols-rounded {
+      font-size: 18px;
+      color: #f9a825;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 500px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* PASSWORD SECTION */
     .field-inner {
       position: relative;
     }
-    
+
     .field-icon {
       position: absolute;
       left: 14px;
@@ -228,10 +301,11 @@
       pointer-events: none;
       transition: color 0.2s;
     }
-    
-    .field-inner input {
+
+    .field-inner input[type="password"],
+    .field-inner input[type="text"] {
       width: 100%;
-      padding: 13px 16px 13px 44px !important;
+      padding: 13px 48px 13px 44px !important;
       background: #f7f7f8 !important;
       border: 2px solid transparent !important;
       border-radius: 14px !important;
@@ -243,31 +317,40 @@
       transition: all 0.2s !important;
       box-shadow: none !important;
     }
-    
+
     .field-inner input:focus {
       background: #fff !important;
       border-color: #c0392b !important;
       box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.08) !important;
     }
-    
+
     .field-inner:focus-within .field-icon {
       color: #c0392b;
     }
-    .field-group:focus-within .field-label {
+
+    .toggle-pw-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: #bbb;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .toggle-pw-btn:hover {
       color: #c0392b;
     }
-    
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    .toggle-pw-btn .material-symbols-rounded {
+      font-size: 20px;
     }
-    @media (max-width: 500px) {
-      .field-row {
-        grid-template-columns: 1fr;
-      }
-    }
-    
+
+    /* AVATAR UPLOAD */
     .avatar-file-label {
       display: flex;
       align-items: center;
@@ -291,7 +374,7 @@
       font-size: 20px;
       flex-shrink: 0;
     }
-    
+
     #avatar-filename {
       font-size: 13px;
       color: #c0392b;
@@ -299,21 +382,65 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 260px;
+      max-width: 220px;
     }
-    
+
+    /* DOCUMENT UPLOAD */
+    .doc-file-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      background: #f7f7f8;
+      border: 2px dashed #e0e0e0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: #888;
+      font-weight: 500;
+    }
+    .doc-file-label:hover {
+      border-color: #c0392b;
+      color: #c0392b;
+      background: #fdecea;
+    }
+    .doc-file-label .material-symbols-rounded {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    #doc-filename {
+      font-size: 13px;
+      color: #c0392b;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+
+    .doc-hint {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 6px;
+      padding-left: 2px;
+    }
+
     .form-divider {
       border: none;
       border-top: 1px solid #f0f0f0;
       margin: 28px 0;
     }
-    
+
     .form-actions {
       display: flex;
       gap: 12px;
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
-    
+
+    /* BUTTONS */
     .btn-save {
       display: inline-flex;
       align-items: center;
@@ -340,7 +467,7 @@
     .btn-save .material-symbols-rounded {
       font-size: 18px;
     }
-    
+
     .btn-cancel {
       display: inline-flex;
       align-items: center;
@@ -360,6 +487,128 @@
       background: #eaeaec;
       color: #333;
     }
+
+    .btn-request {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      background: #fff;
+      color: #c0392b;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: 2px solid #c0392b;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-request:hover {
+      background: #fdecea;
+      transform: translateY(-1px);
+    }
+    .btn-request .material-symbols-rounded {
+      font-size: 18px;
+    }
+
+    /* REQUEST MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #aaa;
+      padding: 4px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s, background 0.2s;
+    }
+    .modal-close:hover {
+      color: #c0392b;
+      background: #fdecea;
+    }
+    .modal-close .material-symbols-rounded {
+      font-size: 22px;
+    }
+    .modal-bar {
+      width: 36px;
+      height: 4px;
+      background: linear-gradient(90deg, #c0392b, #e74c3c);
+      border-radius: 4px;
+      margin-bottom: 24px;
+    }
+    .modal-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+    .modal-textarea {
+      width: 100%;
+      padding: 13px 16px;
+      background: #f7f7f8;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a2e;
+      outline: none;
+      resize: vertical;
+      min-height: 120px;
+      transition: all 0.2s;
+      margin-bottom: 20px;
+    }
+    .modal-textarea:focus {
+      background: #fff;
+      border-color: #c0392b;
+      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.08);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
   </style>
 
   <div class="profile-page">
@@ -368,21 +617,9 @@
 
       {% if messages %}
         {% for msg in messages %}
-          <div class="profile-alert {% if 'success' in msg.tags %}
-              
-              success
-
-            {% else %}
-              
-              error
-
-            {% endif %}">
+          <div class="profile-alert {% if 'success' in msg.tags %}success{% else %}error{% endif %}">
             <span class="material-symbols-rounded">
-              {% if 'success' in msg.tags %}
-                check_circle
-              {% else %}
-                error
-              {% endif %}
+              {% if 'success' in msg.tags %}check_circle{% else %}error{% endif %}
             </span>
             {{ msg }}
           </div>
@@ -392,11 +629,10 @@
       <form method="post" enctype="multipart/form-data" id="profile-form">
         {% csrf_token %}
 
-        {# Ẩn hoàn toàn widget Django gốc - chỉ giữ input file #}
         <div style="display:none;">{{ form.avatar }}</div>
 
         <div class="profile-grid">
-          <!-- LEFT: Avatar -->
+          <!-- LEFT: Avatar + Meta -->
           <div class="profile-left">
             <div class="avatar-wrap">
               {% if profile.avatar %}
@@ -405,8 +641,9 @@
                 <div class="avatar-placeholder" id="avatar-placeholder">{{ request.user.username|first|upper }}</div>
                 <img src="" class="avatar-img" id="avatar-display" style="display:none;" />
               {% endif %}
-
-              <label for="id_avatar" class="avatar-upload-btn" title="Đổi ảnh"><span class="material-symbols-rounded">photo_camera</span></label>
+              <label for="id_avatar" class="avatar-upload-btn" title="Đổi ảnh">
+                <span class="material-symbols-rounded">photo_camera</span>
+              </label>
             </div>
 
             <h2 class="profile-username">
@@ -418,13 +655,9 @@
             </h2>
 
             <span class="profile-role">
-              {% if request.user.is_superuser %}
-                Quản trị viên
-              {% elif request.user.is_staff %}
-                Nhân viên
-              {% else %}
-                Thành viên
-              {% endif %}
+              {% if request.user.is_superuser %}Quản trị viên
+              {% elif request.user.is_staff %}Nhân viên
+              {% else %}Thành viên{% endif %}
             </span>
 
             <div class="profile-meta">
@@ -451,76 +684,178 @@
             </div>
           </div>
 
-          <!-- RIGHT: Form -->
+          <!-- RIGHT: Cards -->
           <div class="profile-right">
-            <h3 class="section-title">Thông tin cá nhân</h3>
-            <div class="section-bar"></div>
 
-            <div class="field-row">
-              <div class="field-group">
-                <label class="field-label">Họ</label>
-                <div class="field-inner">
-                  <span class="material-symbols-rounded field-icon">person</span>
-                  {{ form.last_name }}
+            <!-- CARD 1: Thông tin khách hàng (READ ONLY) -->
+            <div class="card-block">
+              <h3 class="section-title">Thông tin khách hàng</h3>
+              <div class="section-bar"></div>
+
+              <div class="readonly-notice">
+                <span class="material-symbols-rounded">info</span>
+                <span>Thông tin khách hàng được khoá để đảm bảo tính chính xác. Nếu cần chỉnh sửa, vui lòng gửi yêu cầu để được hỗ trợ.</span>
+              </div>
+
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">Họ</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">person</span>
+                    <span>{{ request.user.last_name|default:"—" }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Tên</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">person</span>
+                    <span>{{ request.user.first_name|default:"—" }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
                 </div>
               </div>
+
               <div class="field-group">
-                <label class="field-label">Tên</label>
-                <div class="field-inner">
-                  <span class="material-symbols-rounded field-icon">person</span>
-                  {{ form.first_name }}
+                <label class="field-label">Mã số thuế</label>
+                <div class="field-readonly">
+                  <span class="material-symbols-rounded">receipt_long</span>
+                  <span>{{ profile.tax_code|default:"Chỉ dành cho Doanh Nghiệp" }}</span>
+                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
                 </div>
               </div>
-            </div>
 
-            <div class="field-group">
-              <label class="field-label">Email</label>
-              <div class="field-inner">
-                <span class="material-symbols-rounded field-icon">mail</span>
-                {{ form.email }}
+         
+
+              <div class="field-group">
+                <label class="field-label">Email</label>
+                <div class="field-readonly">
+                  <span class="material-symbols-rounded">mail</span>
+                  <span>{{ request.user.email|default:"—" }}</span>
+                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Đính kèm giấy phép ĐKKD / CCCD</label>
+                <label for="id_business_license" class="doc-file-label">
+                  <span class="material-symbols-rounded">attach_file</span>
+                  <span>Chọn tệp đính kèm...</span>
+                  <span id="doc-filename"></span>
+                </label>
+                <input type="file" id="id_business_license" name="business_license" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" />
+                <p class="doc-hint">Chấp nhận: PDF, JPG, PNG. Tối đa 5MB.</p>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; margin-top: 8px;">
+                <button type="button" class="btn-request" onclick="openRequestModal()">
+                  <span class="material-symbols-rounded">edit_note</span>
+                  Gửi yêu cầu chỉnh sửa thông tin
+                </button>
               </div>
             </div>
 
-            <div class="field-group">
-              <label class="field-label">Số điện thoại</label>
-              <div class="field-inner">
-                <span class="material-symbols-rounded field-icon">call</span>
-                {{ form.phone }}
+            <!-- CARD 2: Ảnh đại diện -->
+            <div class="card-block">
+              <h3 class="section-title">Ảnh đại diện</h3>
+              <div class="section-bar"></div>
+
+              <div class="field-group" style="margin-bottom: 0;">
+                <label for="id_avatar" class="avatar-file-label">
+                  <span class="material-symbols-rounded">upload</span>
+                  <span>Chọn ảnh mới...</span>
+                  <span id="avatar-filename"></span>
+                </label>
               </div>
             </div>
 
-            <hr class="form-divider" />
+            <!-- CARD 3: Đổi mật khẩu -->
+            <div class="card-block">
+              <h3 class="section-title">Đổi mật khẩu</h3>
+              <div class="section-bar"></div>
 
-            <div class="field-group">
-              <label class="field-label">Ảnh đại diện</label>
-              <label for="id_avatar" class="avatar-file-label">
-                <span class="material-symbols-rounded">upload</span>
-                <span>Chọn ảnh mới...</span>
-                <span id="avatar-filename"></span>
-              </label>
+              <div class="field-group">
+                <label class="field-label">Mật khẩu hiện tại</label>
+                <div class="field-inner">
+                  <span class="material-symbols-rounded field-icon">lock</span>
+                  <input type="password" name="current_password" id="id_current_password" placeholder="Nhập mật khẩu hiện tại" />
+                  <button type="button" class="toggle-pw-btn" onclick="togglePw('id_current_password', this)" tabindex="-1">
+                    <span class="material-symbols-rounded">visibility</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">Mật khẩu mới</label>
+                  <div class="field-inner">
+                    <span class="material-symbols-rounded field-icon">lock_open</span>
+                    <input type="password" name="new_password1" id="id_new_password1" placeholder="Mật khẩu mới" />
+                    <button type="button" class="toggle-pw-btn" onclick="togglePw('id_new_password1', this)" tabindex="-1">
+                      <span class="material-symbols-rounded">visibility</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Xác nhận mật khẩu</label>
+                  <div class="field-inner">
+                    <span class="material-symbols-rounded field-icon">lock_open</span>
+                    <input type="password" name="new_password2" id="id_new_password2" placeholder="Nhập lại mật khẩu" />
+                    <button type="button" class="toggle-pw-btn" onclick="togglePw('id_new_password2', this)" tabindex="-1">
+                      <span class="material-symbols-rounded">visibility</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="form-divider" />
+
+              <div class="form-actions">
+                <a href="{% url 'home' %}" class="btn-cancel">Hủy</a>
+                <button type="submit" class="btn-save">
+                  <span class="material-symbols-rounded">save</span>
+                  Lưu thay đổi
+                </button>
+              </div>
             </div>
 
-            <hr class="form-divider" />
-
-            <div class="form-actions">
-              <a href="{% url 'home' %}" class="btn-cancel">Hủy</a>
-              <button type="submit" class="btn-save">
-                <span class="material-symbols-rounded">save</span>
-                Lưu thay đổi
-              </button>
-            </div>
-          </div>
-        </div>
+          </div><!-- end profile-right -->
+        </div><!-- end profile-grid -->
       </form>
     </div>
   </div>
 
+  <!-- MODAL: Gửi yêu cầu chỉnh sửa -->
+  <div class="modal-overlay" id="requestModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h4 class="modal-title">Yêu cầu chỉnh sửa thông tin</h4>
+        <button class="modal-close" onclick="closeRequestModal()" type="button">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+      <div class="modal-bar"></div>
+
+      <label class="modal-label">Nội dung yêu cầu</label>
+      <textarea class="modal-textarea" id="requestContent" placeholder="Mô tả thông tin bạn muốn chỉnh sửa (họ tên, mã số thuế, email...) và lý do..."></textarea>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeRequestModal()">Đóng</button>
+        <button type="button" class="btn-save" onclick="submitRequest()">
+          <span class="material-symbols-rounded">send</span>
+          Gửi yêu cầu
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    /* ── Avatar preview ── */
     const avatarInput = document.getElementById('id_avatar')
     const avatarDisplay = document.getElementById('avatar-display')
     const avatarPlaceholder = document.getElementById('avatar-placeholder')
     const avatarFilename = document.getElementById('avatar-filename')
-    
+
     if (avatarInput) {
       avatarInput.addEventListener('change', function () {
         const file = this.files[0]
@@ -535,8 +870,70 @@
         reader.readAsDataURL(file)
       })
     }
-    
-    // Gỡ class Bootstrap để CSS tùy chỉnh hoạt động đúng
+
+    /* ── Document file name display ── */
+    const docInput = document.getElementById('id_business_license')
+    const docFilename = document.getElementById('doc-filename')
+    if (docInput) {
+      docInput.addEventListener('change', function () {
+        const file = this.files[0]
+        if (!file) return
+        docFilename.textContent = file.name
+      })
+    }
+
+    /* ── Toggle password visibility ── */
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId)
+      const icon = btn.querySelector('.material-symbols-rounded')
+      if (input.type === 'password') {
+        input.type = 'text'
+        icon.textContent = 'visibility_off'
+      } else {
+        input.type = 'password'
+        icon.textContent = 'visibility'
+      }
+    }
+
+    /* ── Request modal ── */
+    function openRequestModal() {
+      document.getElementById('requestModal').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeRequestModal() {
+      document.getElementById('requestModal').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+
+    function submitRequest() {
+      const content = document.getElementById('requestContent').value.trim()
+      if (!content) {
+        alert('Vui lòng nhập nội dung yêu cầu.')
+        return
+      }
+      /* Gửi qua AJAX hoặc form hidden — tuỳ backend xử lý */
+      const form = document.createElement('form')
+      form.method = 'post'
+      form.action = '' /* Thay bằng URL endpoint gửi yêu cầu nếu cần */
+      form.style.display = 'none'
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value
+      form.innerHTML = `
+        <input name="csrfmiddlewaretoken" value="${csrf}" />
+        <input name="request_type" value="edit_profile" />
+        <input name="request_content" value="${content.replace(/"/g, '&quot;')}" />
+      `
+      document.body.appendChild(form)
+      form.submit()
+      closeRequestModal()
+    }
+
+    /* ── Close modal on backdrop click ── */
+    document.getElementById('requestModal').addEventListener('click', function (e) {
+      if (e.target === this) closeRequestModal()
+    })
+
+    /* ── Remove Bootstrap form-control class ── */
     document.querySelectorAll('.field-inner input').forEach((el) => {
       el.classList.remove('form-control')
     })
