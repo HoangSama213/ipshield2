@@ -149,6 +149,33 @@ class Customer(models.Model):
 # ============================
 # HỢP ĐỒNG
 # ============================
+class ContractImage(models.Model):
+    contract = models.ForeignKey(
+        'Contract',
+        on_delete=models.CASCADE,
+        related_name='contract_images'
+    )
+    image = models.ImageField(
+        upload_to='images/contracts/',
+        verbose_name='Ảnh chụp hợp đồng'
+    )
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Tên ảnh'
+    )
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Ngày tải lên'
+    )
+
+    class Meta:
+        verbose_name = 'Ảnh hợp đồng'
+        verbose_name_plural = 'Ảnh hợp đồng'
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return f"Ảnh HĐ {self.contract.contract_no} - {self.name or self.id}"
 # ============================
 # HỢP ĐỒNG (Contract Model - CẬP NHẬT ĐẦY ĐỦ)
 # ============================

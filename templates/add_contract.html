@@ -48,7 +48,25 @@
             </div>
 
             {{ contract_form.as_p }}
-
+            <!-- ẢNH CHỤP HỢP ĐỒNG -->
+            <div style="margin-top: 20px;">
+              <label style="display:block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                File scan hợp đồng & giấy phép kinh doanh
+              </label>
+              <div class="file-upload-section" style="padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                <input type="file"
+                       name="contract_images"
+                       multiple
+                       class="form-control file-input"
+                       accept=".jpg,.jpeg,.png,.webp,.pdf"
+                       onchange="displaySelectedFiles(this)"
+                       style="padding: 10px; border: 1px solid #ced4da; border-radius: 6px;" />
+                <div class="selected-files-display" style="margin-top: 10px; font-size: 13px; color: #6c757d;"></div>
+                <small style="display: block; margin-top: 8px; color: #6c757d;">
+                  💡 Chấp nhận: JPG, PNG, WEBP. Có thể chọn nhiều ảnh cùng lúc.
+                </small>
+              </div>
+            </div>
         <!-- THÔNG TIN DỊCH VỤ -->
         <div class="form-section">
           <div class="section-header">

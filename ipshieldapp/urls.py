@@ -32,6 +32,8 @@ urlpatterns = [
     path('customer/<int:id>/delete/', views.customer_delete, name='customer_delete'),
 
     # CONTRACT
+path('contracts/images/upload/', views.upload_contract_image, name='upload_contract_image'),
+path('contracts/images/delete/<int:pk>/', views.delete_contract_image, name='delete_contract_image'),
     path("contracts/add/", views.add_contract, name="add_contract"),
     path('contracts/delete/<int:pk>/', views.contract_delete, name='contract_delete'),
     path("contracts/", views.contract_list, name="contract_list"),

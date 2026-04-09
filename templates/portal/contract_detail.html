@@ -440,6 +440,58 @@
           </div>
         </div>
       </div>
+       <!-- ẢNH CHỤP HỢP ĐỒNG -->
+<div style="margin-top: 24px; border-top: 1px solid #f0f0f0; padding-top: 24px;">
+
+  <!-- Tiêu đề -->
+  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 0 28px;">
+    <span class="material-symbols-rounded" style="font-size: 18px; color: #BE1E2D;">photo_library</span>
+    <span style="font-size: 13px; font-weight: 800; color: #1a1a2e; letter-spacing: 0.04em;">File scan hợp đồng & giấy phép kinh doanh</span>
+    <span style="margin-left: auto; background: #fdecea; color: #BE1E2D; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
+      {{ contract.contract_images.count }} ảnh
+    </span>
+  </div>
+
+
+
+  <!-- GALLERY -->
+{% if contract.contract_images.exists %}
+<div style="padding: 0 28px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
+  {% for img in contract.contract_images.all %}
+  <div style="border-radius: 12px; overflow: hidden; border: 1px solid #f0f0f0; background: white; transition: transform 0.2s, box-shadow 0.2s;"
+       onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.12)'"
+       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
+
+    <!-- Ảnh click xem full -->
+    <a href="{{ img.image.url }}" target="_blank" style="display: block;">
+      <img src="{{ img.image.url }}" alt="{{ img.name }}"
+           style="width: 100%; height: 110px; object-fit: cover; display: block;" />
+    </a>
+
+    <!-- Info + nút tải -->
+    <div style="padding: 8px 10px 10px;">
+      <div style="font-size: 11px; font-weight: 700; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">
+        {{ img.name|default:"Ảnh hợp đồng" }}
+      </div>
+      <div style="font-size: 10px; color: #9ca3af; margin-bottom: 8px;">{{ img.uploaded_at|date:"d/m/Y" }}</div>
+
+      <!-- Nút tải xuống -->
+      <a href="{{ img.image.url }}" download
+         style="display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 0; background: #fdecea; color: #BE1E2D; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none; transition: background 0.2s;"
+         onmouseover="this.style.background='#BE1E2D';this.style.color='white'"
+         onmouseout="this.style.background='#fdecea';this.style.color='#BE1E2D'">
+        <span class="material-symbols-rounded" style="font-size: 14px;">download</span>
+        Tải xuống
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+...
+{% endif %}
+
+</div>
     </div>
 
     <!-- THANH TOÁN DỨT ĐIỂM -->
@@ -718,7 +770,20 @@
     </div>
   </div>
 </div>
-
+<script>
+function updateFileLabel(input) {
+  const label = document.getElementById('fileLabel');
+  if (input.files && input.files.length > 0) {
+    label.textContent = input.files.length === 1
+      ? input.files[0].name
+      : input.files.length + ' file đã chọn';
+    label.style.color = '#BE1E2D';
+  } else {
+    label.textContent = 'Chưa chọn file';
+    label.style.color = '#9ca3af';
+  }
+}
+</script>
 <script>
 function openSupportModal() {
   document.getElementById('supportModal').style.display = 'flex';

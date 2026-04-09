@@ -124,6 +124,10 @@ def add_contract(request):
             contract.save()
             print(f"✅ Contract saved: {contract.contract_no}")
 
+            # 📷 LƯU ẢNH CHỤP HỢP ĐỒNG
+            contract_images = request.FILES.getlist('contract_images')
+            for f in contract_images:
+                ContractImage.objects.create(contract=contract, image=f, name=f.name)
             service_type = contract.service_type
             print(f"\n📦 Processing service type: {service_type}")
 
@@ -347,7 +351,29 @@ def contract_delete(request, pk):
     contract.delete()
     return redirect('contract_list')
 
+def upload_contract_image(request):
+    if request.method == 'POST':
+        contract_id = request.POST.get('contract_id')
+        contract = get_object_or_404(Contract, id=contract_id)
+        name = request.POST.get('name', '').strip()
+        files = request.FILES.getlist('images')
+        if not files:
+            messages.error(request, 'Chưa chọn ảnh')
+            return redirect(request.META.get('HTTP_REFERER'))
+        for f in files:
+            ContractImage.objects.create(contract=contract, image=f, name=name or f.name)
+        messages.success(request, f'Đã tải lên {len(files)} ảnh hợp đồng')
+        return redirect(request.META.get('HTTP_REFERER'))
 
+
+def delete_contract_image(request, pk):
+    img = get_object_or_404(ContractImage, pk=pk)
+    contract_id = img.contract.id
+    if img.image:
+        img.image.delete(save=False)
+    img.delete()
+    messages.success(request, '✅ Đã xóa ảnh')
+    return redirect('contract_detail', id=contract_id)
 # ===============================================
 # CUSTOMER DETAIL
 # ===============================================
