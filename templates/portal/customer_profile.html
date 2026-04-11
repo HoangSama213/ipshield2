@@ -671,14 +671,19 @@
               </div>
 
               <div class="field-group">
-                <label class="field-label">Đính kèm giấy phép ĐKKD / CCCD</label>
-                <label for="id_business_license" class="doc-file-label">
-                  <span class="material-symbols-rounded">attach_file</span>
-                  <span>Chọn tệp đính kèm...</span>
-                  <span id="doc-filename"></span>
-                </label>
-                <input type="file" id="id_business_license" name="business_license" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" />
-                <p class="doc-hint">Chấp nhận: PDF, JPG, PNG. Tối đa 5MB.</p>
+                <label class="field-label">Giấy phép đăng ký kinh doanh</label>
+                <div class="field-readonly">
+                  <span class="material-symbols-rounded">description</span>
+                  {% if customer.business_license %}
+                    <a href="{{ customer.business_license.url }}" target="_blank" style="color:#c0392b;font-weight:600;font-size:13px;text-decoration:none;">
+                      <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">download</span>
+                      Xem / Tải tệp
+                    </a>
+                  {% else %}
+                    <span style="color:#bbb">Chưa có tệp đính kèm</span>
+                  {% endif %}
+                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                </div>
               </div>
 
               <div style="display:flex; justify-content:flex-end; margin-top: 8px;">

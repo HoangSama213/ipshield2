@@ -42,6 +42,7 @@ class CustomerForm(forms.ModelForm):
             'manager',
             'position',
             'note',
+            'business_license', 
         ]
 
         labels = {
@@ -57,6 +58,7 @@ class CustomerForm(forms.ModelForm):
             'manager': 'Người phụ trách',
             'position': 'Chức danh',
             'note': 'Ghi chú',
+            'business_license': 'Giấy phép kinh doanh',
         }
 
         widgets = {
@@ -72,6 +74,7 @@ class CustomerForm(forms.ModelForm):
             'manager': forms.TextInput(attrs={'class': 'form-control'}),
             'position': forms.TextInput(attrs={'class': 'form-control'}),
             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'business_license': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
     # 🔒 KHÓA LOẠI KHÁCH HÀNG KHI EDIT
@@ -134,6 +137,7 @@ class ContractForm(forms.ModelForm):
             'prepaid_amount',
             'number_of_installments',  # 🆕
             'installment_interval_days',  # 🆕
+            
         ]
 
         labels = {

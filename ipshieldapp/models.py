@@ -111,6 +111,14 @@ class Customer(models.Model):
         auto_now_add=True,
         verbose_name='Ngày tạo'
     )
+    
+    business_license = models.FileField(
+        upload_to='images/business_licenses/',
+        blank=True,
+        null=True,
+        verbose_name='File giấy phép kinh doanh'
+    )
+
 
     class Meta:
         verbose_name = 'Khách hàng'

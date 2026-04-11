@@ -306,7 +306,7 @@ def add_contract(request):
             # 🔔 GỬI MAIL HỢP ĐỒNG MỚI
             _send_email(
                 to_email=contract.customer.email,
-                subject=f"[SHTS] Hợp đồng mới – {contract.contract_no}",
+                subject=f"[IPSHIELD] Hợp đồng mới – {contract.contract_no}",
                 message=f"""Kính gửi {contract.customer.name},
 
 Hợp đồng của bạn đã được tạo thành công:
@@ -399,7 +399,7 @@ def customer_change_status(request, pk):
 def customer_edit(request, id):
     customer = get_object_or_404(Customer, id=id)
     if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
             try:
                 form.save()
@@ -509,7 +509,7 @@ def contract_detail(request, id):
                 # 🔔 GỬI MAIL THANH TOÁN ĐỢT
                 _send_email(
                     to_email=contract.customer.email,
-                    subject=f"[SHTS] Xác nhận thanh toán – {contract.contract_no}",
+                    subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
                     message=f"""Kính gửi {contract.customer.name},
 
 Đợt thanh toán "{ins.notes}" của hợp đồng {contract.contract_no} đã được ghi nhận.
@@ -566,7 +566,7 @@ IPShield
                 # 🔔 GỬI MAIL THANH TOÁN TỪNG PHẦN
                 _send_email(
                     to_email=contract.customer.email,
-                    subject=f"[SHTS] Xác nhận thanh toán – {contract.contract_no}",
+                    subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
                     message=f"""Kính gửi {contract.customer.name},
 
 Thanh toán của hợp đồng {contract.contract_no} đã được ghi nhận.
@@ -703,7 +703,7 @@ def contract_edit(request, id):
         def send_service_updated_email():
             _send_email(
                 to_email=contract.customer.email,
-                subject=f"[SHTS] Hợp đồng {contract.contract_no} vừa được cập nhật",
+                subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
                 message=f"""Kính gửi {contract.customer.name},
 
 Thông tin hợp đồng {contract.contract_no} vừa được chỉnh sửa.
@@ -1097,7 +1097,7 @@ def upload_certificate(request):
         # 🔔 GỬI MAIL UPLOAD FILE
         _send_email(
             to_email=service.contract.customer.email,
-            subject=f"[SHTS] Tài liệu mới – {service.contract.contract_no}",
+            subject=f"[IPSHIELD] Tài liệu mới – {service.contract.contract_no}",
             message=f"""Kính gửi {service.contract.customer.name},
 
 Một tài liệu mới vừa được thêm vào hợp đồng {service.contract.contract_no}.
@@ -1237,20 +1237,41 @@ def portal_customer_profile(request):
     customer = request.customer
 
     if request.method == 'POST':
-        name             = request.POST.get('name', '').strip()
-        email            = request.POST.get('email', '').strip()
-        phone            = request.POST.get('phone', '').strip()
-        address          = request.POST.get('address', '').strip()
+
+        # 🔔 XỬ LÝ YÊU CẦU CHỈNH SỬA THÔNG TIN
+        if request.POST.get('request_type') == 'edit_profile':
+            content = request.POST.get('request_content', '').strip()
+            if content:
+                _log_activity(
+                    customer,
+                    'support_request',
+                    note=f"[Yêu cầu chỉnh sửa thông tin] {content}",
+                    request=request
+                )
+                _send_email(
+                    to_email=settings.DEFAULT_FROM_EMAIL,
+                    subject=f"[IPSHIELD] Yêu cầu chỉnh sửa thông tin – {customer.customer_code}",
+                    message=f"""Khách hàng {customer.name} ({customer.customer_code}) vừa gửi yêu cầu chỉnh sửa thông tin:
+
+  • Email  : {customer.email}
+  • SĐT    : {customer.phone}
+
+Nội dung yêu cầu:
+{content}
+""",
+                )
+                messages.success(request, '✅ Yêu cầu chỉnh sửa đã được ghi nhận! Chúng tôi sẽ liên hệ sớm nhất.')
+            else:
+                messages.error(request, '❌ Vui lòng nhập nội dung yêu cầu.')
+            return redirect('portal_customer_profile')
+
+        # ĐỔI MẬT KHẨU / CẬP NHẬT HỒ SƠ
         new_password     = request.POST.get('new_password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
 
-        if name:
-            customer.name = name
-        customer.email   = email
-        customer.phone   = phone
-        customer.address = address
         if request.FILES.get('avatar'):
             customer.avatar = request.FILES['avatar']
+
         if new_password:
             if new_password != confirm_password:
                 messages.error(request, '❌ Mật khẩu xác nhận không khớp!')
@@ -1260,10 +1281,10 @@ def portal_customer_profile(request):
         customer.save()
         action_type = 'change_password' if new_password else 'update_profile'
         _log_activity(customer, action_type, request=request)
-        # 🔔 GỬI MAIL CẬP NHẬT HỒ SƠ
+
         _send_email(
             to_email=customer.email,
-            subject="[SHTS] Hồ sơ của bạn đã được cập nhật",
+            subject="[IPSHIELD] Hồ sơ của bạn đã được cập nhật",
             message=f"""Kính gửi {customer.name},
 
 Thông tin hồ sơ cá nhân của bạn đã được cập nhật lúc {timezone.now().strftime("%d/%m/%Y %H:%M")}.
@@ -1283,10 +1304,16 @@ IPShield
 
 
 
-
 @login_required
 def dashboard(request):
-    # --- Bộ lọc ---
+    import datetime
+    from django.db.models import Count
+    from django.db.models.functions import TruncDate
+
+    today       = datetime.date.today()
+    year_range  = range(today.year - 3, today.year + 1)
+    month_range = range(1, 13)
+
     action_filter = request.GET.get('action', '')
     q             = request.GET.get('q', '').strip()
     date_from     = request.GET.get('date_from', '')
@@ -1306,43 +1333,120 @@ def dashboard(request):
     if date_to:
         logs = logs.filter(created_at__date__lte=date_to)
 
-    # --- Xuất Excel ---
-    if request.GET.get('export') == 'excel':
+    # ── Xuất theo ngày: toàn bộ hoạt động của mọi KH trong ngày được chọn ──
+    if request.GET.get('export') == 'excel_by_date':
+        export_date = request.GET.get('export_date', str(today))
+        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
+            created_at__date=export_date
+        ).order_by('customer__customer_code', 'created_at')
+
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = "Hoạt động KH"
+        ws.title = "Hoạt động theo ngày"
         ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
-        for idx, log in enumerate(logs, 1):
+        for idx, log in enumerate(export_logs, 1):
             ws.append([
                 idx,
                 log.customer.customer_code,
                 log.customer.name,
                 log.get_action_display(),
-                log.note,
+                log.note or '',
                 log.ip_address or '',
                 log.created_at.strftime('%H:%M:%S — %d/%m/%Y'),
             ])
+
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-        response['Content-Disposition'] = 'attachment; filename="hoat_dong_khach_hang.xlsx"'
+        response['Content-Disposition'] = (
+            f'attachment; filename="hoat_dong_ngay_{export_date}.xlsx"'
+        )
         wb.save(response)
         return response
 
-    # --- Thống kê nhanh ---
-    from django.db.models import Count
+    # ── Xuất theo KH: hoạt động của một KH cụ thể trong ngày được chọn ──
+    if request.GET.get('export') == 'excel_by_customer':
+        export_date        = request.GET.get('export_date', str(today))
+        export_customer_id = request.GET.get('export_customer_id', '').strip()
+
+        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
+            created_at__date=export_date
+        ).order_by('created_at')
+
+        if export_customer_id:
+            export_logs = export_logs.filter(customer__id=export_customer_id)
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Theo KH"
+        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
+        for idx, log in enumerate(export_logs, 1):
+            ws.append([
+                idx,
+                log.customer.customer_code,
+                log.customer.name,
+                log.get_action_display(),
+                log.note or '',
+                log.ip_address or '',
+                log.created_at.strftime('%H:%M:%S — %d/%m/%Y'),
+            ])
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename="hoat_dong_kh_{export_customer_id}_{export_date}.xlsx"'
+        )
+        wb.save(response)
+        return response
+
+    # ── Thống kê nhanh ──
     stats = CustomerActivityLog.objects.values('action').annotate(total=Count('id'))
     stats_dict = {s['action']: s['total'] for s in stats}
 
+    # Danh sách KH để chọn khi xuất theo KH
+    customers = CustomerActivityLog.objects.select_related('customer') \
+        .values('customer__id', 'customer__customer_code', 'customer__name') \
+        .distinct().order_by('customer__customer_code')
+
     return render(request, 'dashboard.html', {
-        'logs':          logs[:200],   # giới hạn hiển thị
-        'action_filter': action_filter,
-        'q':             q,
-        'date_from':     date_from,
-        'date_to':       date_to,
-        'stats':         stats_dict,
+        'logs':           logs[:200],
+        'action_filter':  action_filter,
+        'q':              q,
+        'date_from':      date_from,
+        'date_to':        date_to,
+        'stats':          stats_dict,
         'action_choices': CustomerActivityLog.ACTION_CHOICES,
+        'today':          str(today),
+        'current_month':  today.month,
+        'current_year':   today.year,
+        'year_range':     year_range,
+        'month_range':    month_range,
+        'customers':      customers,   # <-- thêm mới
     })
+
+
+@login_required
+def dashboard_stats_api(request):
+    import datetime
+    from django.db.models import Count
+
+    period = request.GET.get('period', 'month')
+    logs   = CustomerActivityLog.objects.all()
+
+    if period == 'day':
+        date = request.GET.get('date', str(datetime.date.today()))
+        logs = logs.filter(created_at__date=date)
+    elif period == 'month':
+        month = int(request.GET.get('month', datetime.date.today().month))
+        year  = int(request.GET.get('year',  datetime.date.today().year))
+        logs  = logs.filter(created_at__month=month, created_at__year=year)
+    elif period == 'year':
+        year = int(request.GET.get('year', datetime.date.today().year))
+        logs = logs.filter(created_at__year=year)
+
+    stats = logs.values('action').annotate(total=Count('id'))
+    return JsonResponse({s['action']: s['total'] for s in stats})
 
 # YÊU CẦU HỖ TRỢ
 @customer_login_required
@@ -1365,5 +1469,25 @@ def portal_support_request(request, contract_id):
         note=f"[{contract.contract_no}] {subject} | {message} | Liên hệ: {contact_method}",
         request=request
     )
+    _send_email(
+                    to_email=settings.DEFAULT_FROM_EMAIL,
+                    subject=f"[IPSHIELD] Yêu cầu chỉnh sửa thông tin – {customer.customer_code}",
+                    message=f"""Khách hàng {customer.name} ({customer.customer_code}) vừa gửi yêu cầu chỉnh sửa thông tin:
+
+  • Email  : {customer.email}
+  • SĐT    : {customer.phone}
+
+Tiêu đề: {subject}
+Nội dung yêu cầu:
+{message}
+Liên hệ qua: {contact_method}
+
+Trân trọng, 
+{ customer.name }
+""",
+                )
+    messages.success(request, '✅ Yêu cầu chỉnh sửa đã được ghi nhận! Chúng tôi sẽ liên hệ sớm nhất.')
+
 
     return JsonResponse({'ok': True})
+

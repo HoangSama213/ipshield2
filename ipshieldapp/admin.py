@@ -81,7 +81,7 @@ class ContractAdmin(admin.ModelAdmin):
     # Hiển thị label tiếng Việt
     fieldsets = (
         ("Thông tin hợp đồng", {
-            "fields": ("customer", "service_type", "contract_no","prepaid_amount","contract_value")
+            "fields": ("customer", "service_type", "contract_no","prepaid_amount","contract_value",)
         }),
     )
 
