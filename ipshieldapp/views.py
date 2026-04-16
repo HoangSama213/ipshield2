@@ -58,27 +58,82 @@ def lock_contract_fields(contract_form):
 # CUSTOMER LIST + SEARCH
 # ===============================================
 def home(request):
-    print(f"⚠️ HOME VIEW CALLED - URL: {request.path}")
+    import datetime
+    from django.db.models import Count
     q = request.GET.get('q', '').strip()
-    customers = Customer.objects.all()
+    today = datetime.date.today()
+    year_range  = range(today.year - 3, today.year + 1)
+    month_range = range(1, 13)
 
+    # ── Xuất theo ngày ──
+    if request.GET.get('export') == 'excel_by_date':
+        export_date = request.GET.get('export_date', str(today))
+        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
+            created_at__date=export_date
+        ).order_by('customer__customer_code', 'created_at')
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Hoạt động theo ngày"
+        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
+        for idx, log in enumerate(export_logs, 1):
+            ws.append([idx, log.customer.customer_code, log.customer.name,
+                       log.get_action_display(), log.note or '',
+                       log.ip_address or '', log.created_at.strftime('%H:%M:%S — %d/%m/%Y')])
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="hoat_dong_ngay_{export_date}.xlsx"'
+        wb.save(response)
+        return response
+
+    # ── Xuất theo KH ──
+    if request.GET.get('export') == 'excel_by_customer':
+        export_date = request.GET.get('export_date', str(today))
+        export_customer_id = request.GET.get('export_customer_id', '').strip()
+        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
+            created_at__date=export_date
+        ).order_by('created_at')
+        if export_customer_id:
+            export_logs = export_logs.filter(customer__id=export_customer_id)
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Theo KH"
+        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
+        for idx, log in enumerate(export_logs, 1):
+            ws.append([idx, log.customer.customer_code, log.customer.name,
+                       log.get_action_display(), log.note or '',
+                       log.ip_address or '', log.created_at.strftime('%H:%M:%S — %d/%m/%Y')])
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="hoat_dong_kh_{export_customer_id}_{export_date}.xlsx"'
+        wb.save(response)
+        return response
+
+    customers_all = Customer.objects.all()
     if q:
-        customers = customers.filter(
-            Q(customer_code__icontains=q) |
-            Q(name__icontains=q) |
-            Q(email__icontains=q) |
-            Q(phone__icontains=q)
+        customers_all = customers_all.filter(
+            Q(customer_code__icontains=q) | Q(name__icontains=q) |
+            Q(email__icontains=q) | Q(phone__icontains=q)
         )
+
+    # Danh sách KH cho modal export (chỉ KH có activity log)
+    export_customers = CustomerActivityLog.objects.select_related('customer') \
+        .values('customer__id', 'customer__customer_code', 'customer__name') \
+        .distinct().order_by('customer__customer_code')
 
     sliders = Slider.objects.filter(is_active=True)
     mascots = Mascot.objects.filter(is_active=True)
     nhanhieudocquyen = NhanHieuDocQuyen.objects.filter(is_active=True).order_by('id')
 
     return render(request, 'khachhang.html', {
-        'customers': customers,
+        'customers': customers_all,
+        'export_customers': export_customers,   # <-- cho modal
         'sliders': sliders,
         'mascots': mascots,
-        "nhanhieudocquyen": nhanhieudocquyen,
+        'nhanhieudocquyen': nhanhieudocquyen,
+        'year_range': year_range,
+        'month_range': month_range,
+        'current_month': today.month,
+        'current_year':  today.year,
+        'today': str(today),
+        'q': q,
     })
 
 
@@ -439,7 +494,7 @@ def contract_list(request):
 # ===============================================
 # CONTRACT DETAIL
 # ===============================================
-from datetime import date
+from datetime import date, datetime
 from django.db.models import QuerySet
 
 
@@ -911,9 +966,18 @@ from .models import Contract, TrademarkService
 
 
 def contract_search(request):
+    import datetime
     q = request.GET.get('q', '').strip()
+    customers = Customer.objects.all().order_by('created_at')
     contracts = Contract.objects.filter(service_type='nhanhieu').order_by('-created_at')
+    filled_count = contracts.filter(trademarks__filing_date__isnull=False).distinct().count()
+    decision_count = contracts.filter(trademarks__decision_date__isnull=False).distinct().count()
+    valid_count = contracts.filter(trademarks__valid_date__isnull=False).distinct().count()
     trademarks = []
+    today = datetime.date.today()
+    year_range  = range(today.year - 3, today.year + 1)
+    month_range = range(1, 13)
+    
 
     if q:
         trademarks = TrademarkService.objects.filter(
@@ -929,7 +993,16 @@ def contract_search(request):
                 Q(customer__name__icontains=q)
             ).distinct()
 
-    return render(request, 'contract_search.html', {'contracts': contracts, 'trademarks': trademarks, 'q': q})
+    return render(request, 'contract_search.html', {'contracts': contracts, 'trademarks': trademarks, 'q': q,
+                                                    'year_range': year_range,
+                                                    'filled_count': filled_count,
+                                                    'decision_count': decision_count,
+                                                    'valid_count': valid_count,
+                                                    'customers': customers,
+        'month_range': month_range,
+        'current_month':  today.month,
+        'current_year':   today.year,
+        'today': str(today),})
 
 
 def contract_copyright_search(request):
@@ -1426,6 +1499,7 @@ def dashboard(request):
     })
 
 
+# LOG ACTIVITIES
 @login_required
 def dashboard_stats_api(request):
     import datetime
@@ -1448,6 +1522,123 @@ def dashboard_stats_api(request):
     stats = logs.values('action').annotate(total=Count('id'))
     return JsonResponse({s['action']: s['total'] for s in stats})
 
+# API KHÁCH HÀNG
+@login_required
+def dashboard_customer_stats_api(request):
+    from django.db.models import Count
+    import datetime
+    period = request.GET.get('period', 'month')
+    customers = Customer.objects.all()
+
+    today = datetime.date.today()
+
+    # ─────────────────────────────
+    # 📅 FILTER THEO THỜI GIAN
+    # ─────────────────────────────
+    if period == 'day':
+        date_str = request.GET.get('date')
+        if date_str:
+            customers = customers.filter(register_year=date_str)
+
+    elif period == 'month':
+        month = request.GET.get('month')
+        year  = request.GET.get('year')
+
+        if month and year:
+            customers = customers.filter(
+                register_year__month=int(month),
+                register_year__year=int(year)
+            )
+
+    elif period == 'year':
+        year = request.GET.get('year')
+        if year:
+            customers = customers.filter(register_year__year=int(year))
+
+    # ─────────────────────────────
+    # 📊 THỐNG KÊ
+    # ─────────────────────────────
+
+    # Tổng KH
+    total = customers.count()
+
+    # KH mới (từ năm 2026)
+    new_customers = customers.filter(register_year__year=today.year).count()
+
+    # group theo status
+    status_stats = Customer.objects.values('status').annotate(total=Count('id'))
+    status_data = {s['status']: s['total'] for s in status_stats}
+
+    # ─────────────────────────────
+    # 📦 RESPONSE
+    # ─────────────────────────────
+    data = {
+        "total": total,
+        "new": new_customers,
+        "approved": status_data.get('approved', 0),     # chờ duyệt
+        "pending": status_data.get('pending', 0),       # đang duyệt
+        "completed": status_data.get('completed', 0),   # hoàn tất
+    }
+    return JsonResponse(data)
+
+@login_required
+def dashboard_trademark_stats_api(request):
+    import datetime
+    from django.http import JsonResponse
+    from .models import TrademarkService
+
+    period = request.GET.get('period', 'month')
+
+    qs = TrademarkService.objects.all()
+
+    date_str = request.GET.get('date')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    def filter_by_date(queryset, field):
+        if period == 'day' and date_str:
+            return queryset.filter(**{field: date_str})
+
+        elif period == 'month' and month and year:
+            return queryset.filter(
+                **{
+                    f"{field}__month": int(month),
+                    f"{field}__year": int(year)
+                }
+            )
+
+        elif period == 'year' and year:
+            return queryset.filter(**{f"{field}__year": int(year)})
+
+        return queryset
+
+    # ✅ TOTAL (nên thống nhất theo filing_date)
+    total = filter_by_date(qs, 'filing_date').count()
+
+    # ✅ ĐÃ NỘP ĐƠN
+    filing_date_count = filter_by_date(qs, 'filing_date') \
+        .filter(filing_date__isnull=False).count()
+
+    # ✅ ĐÃ CẤP
+    decision_date_count = filter_by_date(qs, 'decision_date') \
+        .filter(decision_date__isnull=False).count()
+
+    # ✅ HỢP LỆ
+    valid_date_count = filter_by_date(qs, 'valid_date') \
+        .filter(valid_date__isnull=False).count()
+
+    # ✅ BỊ TỪ CHỐI (KHÔNG filter theo date)
+    deny_document_count = qs.filter(deny_document=True).count()
+
+    return JsonResponse({
+        'total': total,
+        "filled": filing_date_count,
+        "decision": decision_date_count,
+        "valid": valid_date_count,
+        "deny": deny_document_count,
+    })
+
+    
 # YÊU CẦU HỖ TRỢ
 @customer_login_required
 def portal_support_request(request, contract_id):

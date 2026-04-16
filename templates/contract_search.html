@@ -1,8 +1,171 @@
 {% extends 'base.html' %}
 {% block body_block %}
-{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Be Vietnam Pro', sans-serif; }
+  .period-btn { transition: all .15s; }
+  .period-btn.active { background: #dc2626; color: white; border-color: #dc2626; }
+</style>
 
-<form method="get">
+<main class="min-h-screen p-6 bg-gray-50">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Hoạt Động Khách Hàng</h1>
+        <p class="text-sm text-gray-500 mt-0.5">Danh sách khách hàng — bấm vào để xem chi tiết hành động.</p>
+      </div>
+
+      <!-- XUẤT FILE -->
+      <div class="flex gap-2 flex-wrap items-center">
+        <!-- Nút mở modal xuất theo ngày -->
+        <button onclick="document.getElementById('modal-export-date').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
+          </svg>
+          Xuất theo ngày
+        </button>
+
+        <!-- Nút mở modal xuất theo KH -->
+        <button onclick="document.getElementById('modal-export-customer').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
+          </svg>
+          Xuất theo KH
+        </button>
+      </div>
+    </div>
+
+    <!-- ── MODAL: Xuất theo ngày ── -->
+    <div id="modal-export-date" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
+        <h2 class="text-base font-bold text-gray-800">Xuất hoạt động theo ngày</h2>
+        <p class="text-xs text-gray-400">Xuất toàn bộ hoạt động của <strong>tất cả khách hàng</strong> trong ngày được chọn.</p>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Chọn ngày</label>
+          <input type="date" id="export-date-val" value="{{ today }}"
+                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300"/>
+        </div>
+        <div class="flex gap-3 justify-end pt-1">
+          <button onclick="document.getElementById('modal-export-date').classList.add('hidden')"
+                  class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
+          <button onclick="doExportByDate()"
+                  class="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg">Xuất Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MODAL: Xuất theo KH ── -->
+    <div id="modal-export-customer" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
+        <h2 class="text-base font-bold text-gray-800">Xuất hoạt động theo khách hàng</h2>
+        <p class="text-xs text-gray-400">Chọn khách hàng và ngày cần xuất.</p>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Khách hàng <span class="text-red-500">*</span></label>
+          <select id="export-customer-id"
+                  class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <option value="">-- Chọn khách hàng --</option>
+            {% for c in customers %}
+            <option value="{{ c.id }}">{{ c.customer_code }} — {{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Ngày <span class="text-red-500">*</span></label>
+          <input type="date" id="export-customer-date" value="{{ today }}"
+                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+        </div>
+        <p id="export-customer-err" class="text-xs text-red-500 hidden">Vui lòng chọn khách hàng.</p>
+        <div class="flex gap-3 justify-end pt-1">
+          <button onclick="document.getElementById('modal-export-customer').classList.add('hidden')"
+                  class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
+          <button onclick="doExportByCustomer()"
+                  class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Xuất Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAT PERIOD SELECTOR -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <p class="text-sm font-semibold text-gray-600">Thống kê theo:</p>
+        <div class="flex gap-2">
+          <button onclick="setPeriod('day')"   id="btn-day"   class="period-btn px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-600 hover:border-red-400">Ngày</button>
+          <button onclick="setPeriod('month')" id="btn-month" class="period-btn px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-600 hover:border-red-400 active">Tháng</button>
+          <button onclick="setPeriod('year')"  id="btn-year"  class="period-btn px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-600 hover:border-red-400">Năm</button>
+        </div>
+      </div>
+
+      <!-- Chọn ngày/tháng/năm -->
+      <div id="picker-day" class="period-picker hidden flex gap-3 flex-wrap">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">Chọn ngày</label>
+          <input type="date" id="stat-date" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                 value="{{ today }}"/>
+        </div>
+      </div>
+
+      <div id="picker-month" class="period-picker flex gap-3 flex-wrap">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">Tháng</label>
+          <select id="stat-month" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
+            {% for i in month_range %}
+            <option value="{{ i }}" {% if i == current_month %}selected{% endif %}>Tháng {{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">Năm</label>
+          <select id="stat-month-year" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
+            {% for y in year_range %}
+            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div id="picker-year" class="period-picker hidden flex gap-3 flex-wrap">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">Năm</label>
+          <select id="stat-year" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
+            {% for y in year_range %}
+            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
+        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng nhãn hiệu</p>
+          <p class="text-2xl font-bold text-gray-800">{{ contracts.count|default:"0" }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã nộp đơn</p>
+          <p class="text-2xl font-bold text-gray-800" id="stat-filled">{{ stats.filled|default:"0" }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã cấp bằng</p>
+          <p class="text-2xl font-bold text-gray-800" id="stat-decision">{{ stats.decision|default:"0" }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hợp lệ hình thức</p>
+          <p class="text-2xl font-bold text-gray-800" id="stat-valid">{{ stats.valid|default:"0" }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Bị từ chối</p>
+          <p class="text-2xl font-bold text-gray-800" id="stat-deny">{{ stats.deny|default:"0" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="get">
     <div class="search-section">
         <h3>🔍 Tìm kiếm hợp đồng nhãn hiệu</h3>
 
@@ -26,34 +189,6 @@
     </div>
 </form>
 
-<style>
-    .table-responsive {
-        max-height: 420px;      /* ≈ 10 dòng bootstrap */
-        overflow-y: auto;       /* hiện thanh cuộn dọc */
-    }
-
-    /* Hover effect cho ảnh */
-    .trademark-image-thumb:hover {
-        opacity: 0.8;
-        transform: scale(1.05);
-        transition: all 0.2s ease;
-    }
-</style>
-
-<!-- 🔥 MODAL XEM ẢNH PHÓNG TO -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Hình ảnh nhãn hiệu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- 🔥 HIỂN THỊ DANH SÁCH NHÃN HIỆU (NẾU TÌM THEO SỐ ĐƠN) -->
 {% if trademarks %}
@@ -184,25 +319,194 @@
 </div>
 {% endif %}
 
+
+  </div>
+</main>
+
 <script>
-// Hàm hiển thị ảnh phóng to trong modal
-function showImageModal(imageUrl, imageName) {
-    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-    document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('imageModalLabel').textContent = imageName;
-    modal.show();
+// ── Period switcher ──
+let currentPeriod = 'month';
+
+function setPeriod(p) {
+  currentPeriod = p;
+
+  document.querySelectorAll('.period-picker').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'));
+
+  document.getElementById('picker-' + p).classList.remove('hidden');
+  document.getElementById('btn-' + p).classList.add('active');
+
+  fetchStats();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('input[name="q"]');
+// ── Lấy params ──
+function getParams() {
+  if (currentPeriod === 'day') {
+    return {
+      period: 'day',
+      date: document.getElementById('stat-date').value
+    };
+  } 
+  else if (currentPeriod === 'month') {
+    return {
+      period: 'month',
+      month: document.getElementById('stat-month').value,
+      year: document.getElementById('stat-month-year').value
+    };
+  } 
+  else {
+    return {
+      period: 'year',
+      year: document.getElementById('stat-year').value
+    };
+  }
+}
 
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.closest('form').submit();
-        }
-    });
+// ── FETCH STATS ──
+function fetchStats() {
+  const params = new URLSearchParams(getParams());
+
+  fetch(`{% url 'dashboard_trademark_stats_api' %}?${params.toString()}`)
+    .then(res => res.json())
+    .then(data => {
+      // map đúng key backend trả về
+      const map = {
+        total: 'total',
+        filled: 'filled',
+        decision: 'decision',
+        valid: 'valid',
+        deny: 'deny'
+      };
+
+      Object.keys(map).forEach(key => {
+        const el = document.getElementById('stat-' + key);
+        if (el) el.textContent = data[map[key]] || 0;
+      });
+    })
+    .catch(err => console.error('Stats error:', err));
+}
+
+// ── AUTO LOAD ──
+['stat-date','stat-month','stat-month-year','stat-year'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', fetchStats);
+  }
 });
-</script>
 
+fetchStats();
+
+
+// ─────────────────────────────
+// 🔍 FILTER (SEARCH KHÔNG RELOAD)
+// ─────────────────────────────
+function doFilter() {
+  const keyword = document.querySelector('input[name="q"]').value;
+
+  // nếu rỗng thì reload lại danh sách ban đầu
+  if (!keyword) {
+    window.location.href = window.location.pathname;
+    return;
+  }
+
+  window.location.href = `?q=${encodeURIComponent(keyword)}`;
+}
+
+// Enter để search
+document.querySelector('input[name="q"]').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    doFilter();
+  }
+});
+
+
+// ─────────────────────────────
+// 📤 EXPORT
+// ─────────────────────────────
+
+// Xuất theo ngày
+function doExportByDate() {
+  const date = document.getElementById('export-date-val').value;
+
+  if (!date) {
+    alert('Vui lòng chọn ngày');
+    return;
+  }
+
+  window.location.href = `?export=excel_by_date&export_date=${date}`;
+
+  document.getElementById('modal-export-date').classList.add('hidden');
+}
+
+// Xuất theo khách hàng
+function doExportByCustomer() {
+  const customerId = document.getElementById('export-customer-id').value;
+  const date = document.getElementById('export-customer-date').value;
+  const err = document.getElementById('export-customer-err');
+
+  if (!customerId) {
+    err.classList.remove('hidden');
+    return;
+  }
+
+  err.classList.add('hidden');
+
+  window.location.href = `?export=excel_by_customer&export_customer_id=${customerId}&export_date=${date}`;
+
+  document.getElementById('modal-export-customer').classList.add('hidden');
+}
+
+
+// ─────────────────────────────
+// 📂 MODAL CLOSE
+// ─────────────────────────────
+['modal-export-date', 'modal-export-customer'].forEach(id => {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.add('hidden');
+    }
+  });
+});
+
+
+// ─────────────────────────────
+// 📂 TOGGLE LOG
+// ─────────────────────────────
+function toggleLogs(id, row) {
+  const section = document.getElementById(id);
+  const chevron = document.getElementById('chevron-' + id.replace('logs-', ''));
+  const isOpen  = section.classList.contains('open');
+
+  document.querySelectorAll('.log-section.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.chevron.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.customer-row.active').forEach(el => el.classList.remove('active'));
+
+  if (!isOpen) {
+    section.classList.add('open');
+    chevron.classList.add('open');
+    row.classList.add('active');
+  }
+}
+
+// ── Export helpers ──
+function doExportByDate() {
+  const date = document.getElementById('export-date-val').value;
+  if (!date) return;
+
+  window.location.href = `/export-excel/?type=trademark&date=${date}`;
+}
+
+function doExportByCustomer() {
+  const customerId = document.getElementById('export-customer-id').value;
+  const date = document.getElementById('export-customer-date').value;
+
+  if (!customerId) return;
+
+  window.location.href = `/export-excel/?type=customer&customer_id=${customerId}&date=${date}`;
+}
+</script>
 {% endblock %}

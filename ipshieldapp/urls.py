@@ -74,6 +74,8 @@ path('contract/<int:contract_id>/edit-installments/', views.edit_installment_amo
     #dashboard
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/stats/', views.dashboard_stats_api, name='dashboard_stats_api'),
+    path('dashboard-customer-stats/', views.dashboard_customer_stats_api, name='dashboard_customer_stats_api'),
+    path('dashboard-trademark-stats/', views.dashboard_trademark_stats_api, name='dashboard_trademark_stats_api'),
 
 # 🆕 PORTAL KHÁCH HÀNG
 path('portal/profile/', views.portal_customer_profile, name='portal_customer_profile'),

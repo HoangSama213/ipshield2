@@ -119,6 +119,12 @@ class Customer(models.Model):
         verbose_name='File giấy phép kinh doanh'
     )
 
+    register_year = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Năm đăng ký'
+    )
+
 
     class Meta:
         verbose_name = 'Khách hàng'
@@ -269,6 +275,8 @@ class Contract(models.Model):
         choices=CONTRACT_STATUS_CHOICES,
         default='pending'
     )
+    
+    
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(default=timezone.now)
@@ -700,7 +708,11 @@ class TrademarkService(models.Model):
         Certificate,
         related_query_name='trademark'
     )
-
+    
+    deny_document = models.BooleanField(
+        default=False,
+        verbose_name='Tài liệu từ chối'
+    )
     class Meta:
         verbose_name = 'Nhãn hiệu'
         verbose_name_plural = 'Nhãn hiệu'
