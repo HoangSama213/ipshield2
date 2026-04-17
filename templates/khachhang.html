@@ -27,77 +27,54 @@
     
     <div class="flex gap-2 flex-wrap items-center">
         <!-- Nút mở modal xuất theo ngày -->
-        <button onclick="document.getElementById('modal-export-date').classList.remove('hidden')"
-            class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+        <!-- Nút mở modal -->
+      <button onclick="document.getElementById('modal-export-month').classList.remove('hidden')"
+              class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
         </svg>
-        Xuất theo ngày
-    </button>
-    <button onclick="document.getElementById('modal-export-customer').classList.remove('hidden')"
-            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 8l-3-3m3 3l3-3"/>
-        </svg>
-        Xuất theo KH
-    </button>
-      </div>
+        Xuất theo tháng
+      </button>
+    </div>
   </div>
 
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <!-- XUẤT FILE -->
-      
+      <!-- XUẤT FILE -->  
     </div>
 
-    <!-- ── MODAL: Xuất theo ngày ── -->
-    <div id="modal-export-date" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
-        <h2 class="text-base font-bold text-gray-800">Xuất hoạt động theo ngày</h2>
-        <p class="text-xs text-gray-400">Xuất toàn bộ hoạt động của <strong>tất cả khách hàng</strong> trong ngày được chọn.</p>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Chọn ngày</label>
-          <input type="date" id="export-date-val" value="{{ today }}"
-                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300"/>
-        </div>
-        <div class="flex gap-3 justify-end pt-1">
-          <button onclick="document.getElementById('modal-export-date').classList.add('hidden')"
-                  class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
-          <button onclick="doExportByDate()"
-                  class="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg">Xuất Excel</button>
-        </div>
+<!-- MODAL -->
+<div id="modal-export-month" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
+    <h2 class="text-base font-bold text-gray-800">Xuất thống kê theo tháng</h2>
+    <p class="text-xs text-gray-400">Xuất tổng quan và danh sách KH mới trong tháng được chọn.</p>
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Tháng</label>
+        <select id="export-month-val"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
+          {% for i in month_range %}
+          <option value="{{ i }}" {% if i == current_month %}selected{% endif %}>Tháng {{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex-1">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Năm</label>
+        <select id="export-month-year-val"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
+          {% for y in year_range %}
+          <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
       </div>
     </div>
-
-    <!-- ── MODAL: Xuất theo KH ── -->
-    <div id="modal-export-customer" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
-        <h2 class="text-base font-bold text-gray-800">Xuất hoạt động theo khách hàng</h2>
-        <p class="text-xs text-gray-400">Chọn khách hàng và ngày cần xuất.</p>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Khách hàng <span class="text-red-500">*</span></label>
-          <select id="export-customer-id"
-                  class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
-            <option value="">-- Chọn khách hàng --</option>
-            {% for c in customers %}
-
-            <option value="{{ c.id }}">{{ c.customer_code }} — {{ c.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Ngày <span class="text-red-500">*</span></label>
-          <input type="date" id="export-customer-date" value="{{ today }}"
-                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"/>
-        </div>
-        <p id="export-customer-err" class="text-xs text-red-500 hidden">Vui lòng chọn khách hàng.</p>
-        <div class="flex gap-3 justify-end pt-1">
-          <button onclick="document.getElementById('modal-export-customer').classList.add('hidden')"
-                  class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
-          <button onclick="doExportByCustomer()"
-                  class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Xuất Excel</button>
-        </div>
-      </div>
+    <div class="flex gap-3 justify-end pt-1">
+      <button onclick="document.getElementById('modal-export-month').classList.add('hidden')"
+              class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
+      <button onclick="doExportByMonth()"
+              class="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg">Xuất Excel</button>
     </div>
+  </div>
+</div>
 
     <!-- STAT PERIOD SELECTOR -->
 <div class="bg-white rounded-xl border border-gray-200 p-4">
@@ -632,26 +609,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// ── Export helpers ──
-function doExportByDate() {
-  const date = document.getElementById('export-date-val').value;
-  if (!date) return;
-  window.location.href = `?export=excel_by_date&export_date=${date}`;
-  document.getElementById('modal-export-date').classList.add('hidden');
+function doExportByMonth() {
+  const month = document.getElementById('export-month-val').value;
+  const year  = document.getElementById('export-month-year-val').value;
+  window.location.href = `?export=excel_by_month&export_month=${month}&export_year=${year}`;
+  document.getElementById('modal-export-month').classList.add('hidden');
 }
-function doExportByCustomer() {
-  const customerId = document.getElementById('export-customer-id').value;
-  const date = document.getElementById('export-customer-date').value;
-  const err = document.getElementById('export-customer-err');
-  if (!customerId) { err.classList.remove('hidden'); return; }
-  err.classList.add('hidden');
-  window.location.href = `?export=excel_by_customer&export_customer_id=${customerId}&export_date=${date}`;
-  document.getElementById('modal-export-customer').classList.add('hidden');
-}
-['modal-export-date', 'modal-export-customer'].forEach(id => {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) this.classList.add('hidden');
-  });
+
+document.getElementById('modal-export-month').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.add('hidden');
 });
+
+
 </script>
 {% endblock %}

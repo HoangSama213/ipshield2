@@ -65,44 +65,70 @@ def home(request):
     year_range  = range(today.year - 3, today.year + 1)
     month_range = range(1, 13)
 
-    # ── Xuất theo ngày ──
-    if request.GET.get('export') == 'excel_by_date':
-        export_date = request.GET.get('export_date', str(today))
-        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
-            created_at__date=export_date
-        ).order_by('customer__customer_code', 'created_at')
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Hoạt động theo ngày"
-        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
-        for idx, log in enumerate(export_logs, 1):
-            ws.append([idx, log.customer.customer_code, log.customer.name,
-                       log.get_action_display(), log.note or '',
-                       log.ip_address or '', log.created_at.strftime('%H:%M:%S — %d/%m/%Y')])
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename="hoat_dong_ngay_{export_date}.xlsx"'
-        wb.save(response)
-        return response
+    # ── Xuất theo tháng (thống kê KH) ──
+    if request.GET.get('export') == 'excel_by_month':
+        import datetime
+        from django.db.models import Count
+        from django.db.models.functions import TruncDate
 
-    # ── Xuất theo KH ──
-    if request.GET.get('export') == 'excel_by_customer':
-        export_date = request.GET.get('export_date', str(today))
-        export_customer_id = request.GET.get('export_customer_id', '').strip()
-        export_logs = CustomerActivityLog.objects.select_related('customer').filter(
-            created_at__date=export_date
-        ).order_by('created_at')
-        if export_customer_id:
-            export_logs = export_logs.filter(customer__id=export_customer_id)
+        export_month = int(request.GET.get('export_month', datetime.date.today().month))
+        export_year  = int(request.GET.get('export_year',  datetime.date.today().year))
+
+        # Lấy tất cả KH tạo trong tháng được chọn
+        customers_in_month = Customer.objects.filter(
+            register_year__month=export_month,
+            register_year__year=export_year,
+        ).order_by('register_year')
+
+        total     = Customer.objects.count()
+        new_count = customers_in_month.count()
+        approved  = Customer.objects.filter(status='approved').count()
+        pending   = Customer.objects.filter(status='pending').count()
+        completed = Customer.objects.filter(status='completed').count()
+
         wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Theo KH"
-        ws.append(['STT', 'Mã KH', 'Tên KH', 'Hành động', 'Ghi chú', 'IP', 'Thời gian'])
-        for idx, log in enumerate(export_logs, 1):
-            ws.append([idx, log.customer.customer_code, log.customer.name,
-                       log.get_action_display(), log.note or '',
-                       log.ip_address or '', log.created_at.strftime('%H:%M:%S — %d/%m/%Y')])
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename="hoat_dong_kh_{export_customer_id}_{export_date}.xlsx"'
+
+        # ── Sheet 1: Tổng quan tháng ──
+        ws1 = wb.active
+        ws1.title = f"Tổng quan T{export_month}-{export_year}"
+        ws1.append(['Chỉ số', 'Số lượng'])
+        ws1.append(['Tổng khách hàng',        total])
+        ws1.append([f'KH mới T{export_month}/{export_year}', new_count])
+        ws1.append(['Chờ duyệt (approved)',   approved])
+        ws1.append(['Đang xử lý (pending)',   pending])
+        ws1.append(['Hoàn tất (completed)',   completed])
+
+        # ── Sheet 2: Danh sách KH mới trong tháng ──
+        ws2 = wb.create_sheet(title=f"Khách hàng mới T{export_month} - {export_year}")
+        ws2.append(['STT', 'Mã Khách hàng', 'Tên Khách hàng', 'Email', 'SĐT', 'Trạng thái', 'Ngày tạo'])
+        for idx, c in enumerate(customers_in_month, 1):
+            ws2.append([
+                idx,
+                c.customer_code,
+                c.name,
+                c.email or '',
+                c.phone or '',
+                c.get_status_display(),
+                c.created_at.strftime('%d/%m/%Y %H:%M'),
+            ])
+            
+        # - Sheet 3: Thống kê trạng thái khách hàng
+        ws3 = wb.create_sheet(title="Thống kê trạng thái")
+        ws3.append(['STT', 'Mã khách hàng', 'Tên khách hàng', 'Trạng thái'])
+        for idx, c in enumerate(Customer.objects.all(), 1):
+            ws3.append([
+                idx,
+                c.customer_code,
+                c.name,
+                c.get_status_display()
+            ])
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename="thong_ke_kh_T{export_month}_{export_year}.xlsx"'
+        )
         wb.save(response)
         return response
 
@@ -992,6 +1018,138 @@ def contract_search(request):
                 Q(customer__customer_code__icontains=q) |
                 Q(customer__name__icontains=q)
             ).distinct()
+            
+    import openpyxl
+    from django.http import HttpResponse
+
+    # =========================================================
+    # 🔹 1. EXPORT THEO THÁNG + NĂM (TRADESMARK)
+    # =========================================================
+    if request.GET.get('export') == 'excel_by_month':
+
+        month = int(request.GET.get('month', today.month))
+        year  = int(request.GET.get('year',  today.year))
+
+        trademarks_qs = TrademarkService.objects.select_related(
+            'contract', 'contract__customer'
+        ).filter(
+            filing_date__isnull=False,
+            filing_date__month=month,
+            filing_date__year=year
+        ).order_by('-filing_date')
+
+        wb = openpyxl.Workbook()
+
+        ws = wb.active
+        ws.title = f"NhanHieu T{month}-{year}"
+
+        ws.append([
+            'STT',
+            'Số đơn',
+            'Số hợp đồng',
+            'Khách hàng',
+            'Ngày nộp',
+            'Ngày QĐ',
+            'Ngày hiệu lực'
+        ])
+
+        for idx, t in enumerate(trademarks_qs, 1):
+            ws.append([
+                idx,
+                t.app_no,
+                t.contract.contract_no if t.contract else '',
+                t.contract.customer.name if t.contract and t.contract.customer else '',
+                t.filing_date.strftime('%d/%m/%Y') if t.filing_date else '',
+                t.decision_date.strftime('%d/%m/%Y') if t.decision_date else '',
+                t.valid_date.strftime('%d/%m/%Y') if t.valid_date else '',
+            ])
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+        response['Content-Disposition'] = f'attachment; filename="nhanhieu_T{month}_{year}.xlsx"'
+
+        wb.save(response)
+        return response
+
+
+    # =========================================================
+    # 🔹 2. EXPORT THEO KHÁCH HÀNG
+    # =========================================================
+    if request.GET.get('export') == 'excel_by_customer':
+
+        import openpyxl
+        from django.http import HttpResponse
+
+        customer_id = request.GET.get('customer_id')
+
+        if not customer_id:
+            return HttpResponse("Thiếu customer", status=400)
+
+        # 🔥 LẤY CONTRACT TRƯỚC (QUAN TRỌNG)
+        contracts = Contract.objects.filter(
+            service_type='nhanhieu',
+            customer_id=customer_id
+        ).select_related('customer').prefetch_related('trademarks').order_by('-contract_no')
+
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Danh sách nhãn hiệu"
+
+        ws.append([
+        'STT',
+        'Số hợp đồng',
+        'Khách hàng',
+        'Số đơn',
+        'Tên nhãn hiệu',
+        'Ngày nộp',
+        'Ngày quyết định',
+        'Ngày hiệu lực'
+        ])
+
+        idx = 1
+
+        for c in contracts:
+            trademarks = c.trademarks.all()
+
+            if trademarks:
+                for t in trademarks:
+                    ws.append([
+                        idx,
+                        c.contract_no,
+                        c.customer.name if c.customer else '',
+                        t.app_no,
+                        t.trademark_name,
+                        t.filing_date.strftime('%d/%m/%Y') if t.filing_date else '',
+                        t.decision_date.strftime('%d/%m/%Y') if t.decision_date else '',
+                        t.valid_date.strftime('%d/%m/%Y') if t.valid_date else '',
+                    ])
+                    idx += 1
+            else:
+                # 🔥 CONTRACT KHÔNG CÓ NHÃN HIỆU → VẪN HIỆN
+                ws.append([
+                    idx,
+                    c.contract_no,
+                    c.customer.name if c.customer else '',
+                    'Chưa có thông tin nhãn hiệu',
+                    'Chưa có thông tin nhãn hiệu',
+                    'Chưa có thông tin nhãn hiệu',
+                    'Chưa có thông tin nhãn hiệu',
+                    'Chưa có thông tin nhãn hiệu',
+                ])
+                idx += 1
+
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+        response['Content-Disposition'] = f'attachment; filename="nhanhieu_kh_{customer_id}.xlsx"'
+
+        wb.save(response)
+        return response
 
     return render(request, 'contract_search.html', {'contracts': contracts, 'trademarks': trademarks, 'q': q,
                                                     'year_range': year_range,
