@@ -708,11 +708,13 @@ class TrademarkService(models.Model):
         Certificate,
         related_query_name='trademark'
     )
-    
-    deny_document = models.BooleanField(
-        default=False,
-        verbose_name='Tài liệu từ chối'
+
+    deny_document = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Ngày từ chối'
     )
+
     class Meta:
         verbose_name = 'Nhãn hiệu'
         verbose_name_plural = 'Nhãn hiệu'
@@ -1176,3 +1178,30 @@ class CustomerActivityLog(models.Model):
 
     def __str__(self):
         return f"{self.customer.customer_code} — {self.get_action_display()} — {self.created_at:%d/%m/%Y %H:%M}"
+class CustomerDocument(models.Model):
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.CASCADE,
+        related_name='documents'
+    )
+    file = models.FileField(
+        upload_to='images/customer_documents/',
+        verbose_name='File đính kèm'
+    )
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Tên file'
+    )
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Ngày tải lên'
+    )
+
+    class Meta:
+        verbose_name = 'Tài liệu khách hàng'
+        verbose_name_plural = 'Tài liệu khách hàng'
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return f"{self.customer.customer_code} - {self.name or self.file.name}"

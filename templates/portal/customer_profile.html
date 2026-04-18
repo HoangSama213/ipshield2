@@ -670,21 +670,68 @@
                 </div>
               </div>
 
-              <div class="field-group">
-                <label class="field-label">Giấy phép đăng ký kinh doanh</label>
-                <div class="field-readonly">
-                  <span class="material-symbols-rounded">description</span>
-                  {% if customer.business_license %}
-                    <a href="{{ customer.business_license.url }}" target="_blank" style="color:#c0392b;font-weight:600;font-size:13px;text-decoration:none;">
-                      <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">download</span>
-                      Xem / Tải tệp
-                    </a>
-                  {% else %}
-                    <span style="color:#bbb">Chưa có tệp đính kèm</span>
-                  {% endif %}
-                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
-                </div>
-              </div>
+             <div class="field-group">
+  <label class="field-label">Giấy phép đăng ký kinh doanh</label>
+
+  {% with docs=customer.documents.all %}
+  {% if docs %}
+  <div style="display:flex; flex-direction:column; gap:8px;">
+    {% for doc in docs %}
+    <div style="display:flex; align-items:center; justify-content:space-between;
+                padding:12px 16px; background:#f7f7f8; border:2px solid #ececec;
+                border-radius:14px;">
+
+      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+        <span class="material-symbols-rounded" style="font-size:18px;color:#c0392b;flex-shrink:0;">
+          description
+        </span>
+        <div style="min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:#1a1a2e;
+                      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            {{ doc.name|default:"Tài liệu" }}
+          </div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">
+            {{ doc.uploaded_at|date:"d/m/Y" }}
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-shrink:0; margin-left:12px;">
+        <a href="{{ doc.file.url }}" target="_blank"
+           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;
+                  background:#fdecea;color:#c0392b;border-radius:50px;
+                  font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
+           onmouseover="this.style.background='#f5c6cb'"
+           onmouseout="this.style.background='#fdecea'">
+          <span class="material-symbols-rounded" style="font-size:14px;">open_in_new</span>
+          Xem
+        </a>
+        <a href="{{ doc.file.url }}" download
+           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;
+                  background:#f0fdf4;color:#16a34a;border-radius:50px;
+                  font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
+           onmouseover="this.style.background='#dcfce7'"
+           onmouseout="this.style.background='#f0fdf4'">
+          <span class="material-symbols-rounded" style="font-size:14px;">download</span>
+          Tải
+        </a>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;
+              background:#f7f7f8;border:2px solid #ececec;border-radius:14px;">
+    <span class="material-symbols-rounded" style="font-size:17px;color:#ccc;">description</span>
+    <span style="color:#bbb;font-size:14px;font-weight:500;">Chưa có tài liệu đính kèm</span>
+    <span class="field-lock-badge" style="margin-left:auto;">
+      <span class="material-symbols-rounded">lock</span>
+    </span>
+  </div>
+  {% endif %}
+  {% endwith %}
+</div>
 
               <div style="display:flex; justify-content:flex-end; margin-top: 8px;">
                 <button type="button" class="btn-request" onclick="openRequestModal()">
@@ -787,12 +834,7 @@
       reader.readAsDataURL(file);
     }
 
-    /* ── Document filename display ── */
-    document.getElementById('id_business_license').addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-      document.getElementById('doc-filename').textContent = file.name;
-    });
+
 
     /* ── Toggle password visibility ── */
     function togglePw(inputId, btn) {

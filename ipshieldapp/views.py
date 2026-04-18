@@ -484,6 +484,10 @@ def customer_edit(request, id):
         if form.is_valid():
             try:
                 form.save()
+                obj = form.save()
+                docs = request.FILES.getlist('customer_documents')
+                for f in docs:
+                    CustomerDocument.objects.create(customer=obj, file=f, name=f.name)
                 messages.success(request, "✅ Cập nhật khách hàng thành công!")
                 return redirect('customer_detail', id=id)
             except IntegrityError:
@@ -893,6 +897,11 @@ def add_customer(request):
         if form.is_valid():
             try:
                 form.save()
+                customer = form.save()
+                # Lưu nhiều file tài liệu
+                docs = request.FILES.getlist('customer_documents')
+                for f in docs:
+                    CustomerDocument.objects.create(customer=customer, file=f, name=f.name)
                 messages.success(request, "✅ Thêm khách hàng thành công!")
                 return redirect('home')
             except IntegrityError:
@@ -1786,8 +1795,8 @@ def dashboard_trademark_stats_api(request):
         .filter(valid_date__isnull=False).count()
 
     # ✅ BỊ TỪ CHỐI (KHÔNG filter theo date)
-    deny_document_count = qs.filter(deny_document=True).count()
 
+    deny_document_count = qs.filter(deny_document__isnull=False).count()
     return JsonResponse({
         'total': total,
         "filled": filing_date_count,
@@ -1840,3 +1849,29 @@ Trân trọng,
 
     return JsonResponse({'ok': True})
 
+def upload_customer_document(request):
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer_id')
+        customer = get_object_or_404(Customer, id=customer_id)
+        files = request.FILES.getlist('documents')
+        if not files:
+            messages.error(request, 'Chưa chọn file')
+            return redirect(request.META.get('HTTP_REFERER'))
+        for f in files:
+            CustomerDocument.objects.create(
+                customer=customer,
+                file=f,
+                name=f.name
+            )
+        messages.success(request, f'Đã tải lên {len(files)} tài liệu')
+        return redirect(request.META.get('HTTP_REFERER'))
+
+
+def delete_customer_document(request, pk):
+    doc = get_object_or_404(CustomerDocument, pk=pk)
+    customer_id = doc.customer.id
+    if doc.file:
+        doc.file.delete(save=False)
+    doc.delete()
+    messages.success(request, '✅ Đã xóa tài liệu')
+    return redirect('customer_detail', id=customer_id)

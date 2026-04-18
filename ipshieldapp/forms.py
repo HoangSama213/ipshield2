@@ -253,6 +253,7 @@ class TrademarkForm(forms.ModelForm):
             'classification': 'Nhóm sản phẩm/dịch vụ',
             'publish_date': 'Ngày công bố',
             'decision_date': 'Ngày cấp',
+            'deny_document': 'Ngày từ chối',
             'certificates': 'File chứng nhận',
         }
 
@@ -267,6 +268,8 @@ class TrademarkForm(forms.ModelForm):
             'classification': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'publish_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'decision_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+
+            'deny_document': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'trademark_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'certificates': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

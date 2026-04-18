@@ -529,8 +529,9 @@
 
       <button onclick="window.print()" class="btn-print">
         <span class="material-symbols-rounded">print</span>
-        In hợp đồng
+        In trang thông tin
       </button>
+
 
     </div>
     <!-- INFO HỢP ĐỒNG -->
@@ -747,8 +748,14 @@
               <div class="detail-item"><label>Số đơn</label><div class="val-hi">{{ s.app_no|default:"—" }}</div></div>
               <div class="detail-item"><label>Người nộp đơn</label><div class="val">{{ s.applicant|default:"—" }}</div></div>
               <div class="detail-item"><label>Ngày nộp đơn</label><div class="val">{{ s.filing_date|date:"d/m/Y"|default:"—" }}</div></div>
-              <div class="detail-item"><label>Ngày cấp</label><div class="val">{{ s.decision_date|date:"d/m/Y"|default:"—" }}</div></div>
-              <div class="detail-item"><label>Phân loại</label><div class="val">{{ s.classification|default:"—" }}</div></div>
+                <div class="detail-item">
+                <label>Ngày từ chối</label>
+                <div class="{% if s.deny_document %}val-hi{% else %}val{% endif %}"
+                     {% if s.deny_document %}style="color:#dc2626"{% endif %}>
+                    {% if s.deny_document %}❌ {{ s.deny_document|date:"d/m/Y" }}{% else %}—{% endif %}
+                </div>
+            </div>
+             <div class="detail-item"><label>Ngày cấp</label><div class="val">{{ s.decision_date|date:"d/m/Y"|default:"—" }}</div></div><div class="detail-item"><label>Phân loại</label><div class="val">{{ s.classification|default:"—" }}</div></div>
               {% if s.trademark_image %}
               <div class="detail-item"><label>Hình ảnh nhãn hiệu</label><img src="{{ s.trademark_image.url }}" class="trademark-img"/></div>
               {% endif %}

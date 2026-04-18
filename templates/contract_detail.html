@@ -1139,7 +1139,16 @@
                     <span class="detail-label">Ngày cấp</span>
                     <span class="detail-value">{{ s.decision_date|date:'d/m/Y' }}</span>
                 </div>
-
+                <div class="detail-item">
+                    <span class="detail-label">Ngày từ chối</span>
+                    <span class="detail-value">
+                        {% if s.deny_document %}
+                            <span style="color: #dc2626; font-weight: 700;">{{ s.deny_document|date:'d/m/Y' }}</span>
+                        {% else %}
+                            <span style="color: #9ca3af;">Chưa có</span>
+                        {% endif %}
+                    </span>
+                </div>
                 <div class="detail-item">
                     <span class="detail-label">Email</span>
                     <span class="detail-value">{{ s.email }}</span>

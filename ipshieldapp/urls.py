@@ -30,7 +30,8 @@ urlpatterns = [
     path('customer/<int:id>/', views.customer_detail, name='customer_detail'),
     path('customer/<int:id>/edit/', views.customer_edit, name='customer_edit'),
     path('customer/<int:id>/delete/', views.customer_delete, name='customer_delete'),
-
+path('customer/upload-document/', views.upload_customer_document, name='upload_customer_document'),
+path('customer/delete-document/<int:pk>/', views.delete_customer_document, name='delete_customer_document'),
     # CONTRACT
 path('contracts/images/upload/', views.upload_contract_image, name='upload_contract_image'),
 path('contracts/images/delete/<int:pk>/', views.delete_contract_image, name='delete_contract_image'),
