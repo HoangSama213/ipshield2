@@ -10,13 +10,41 @@
       min-height: 80vh;
       background: #f4f4f6;
       font-family: 'Be Vietnam Pro', sans-serif;
-      padding: 40px 20px 80px;
+      padding: 40px 0 80px;
     }
 
-    .portal-wrap {
-      max-width: 980px;
+    /* ── LAYOUT ── */
+    .portal-layout-outer {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      max-width: 1500px;
       margin: 0 auto;
+      padding: 0 20px;
     }
+
+    .portal-wrap { flex: 1; min-width: 0; }
+
+    /* ── BANNER 2 BÊN ── */
+    .banner-side {
+      width: 250px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+    }
+    .banner-side a {
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .banner-side a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .banner-side img { width: 100%; height: auto; display: block; }
+    @media (max-width: 1100px) { .banner-side { display: none; } }
 
     .portal-heading {
       font-size: 13px;
@@ -85,11 +113,7 @@
       overflow: hidden;
     }
 
-    .avatar-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .avatar-placeholder img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-overlay {
       position: absolute;
@@ -128,12 +152,7 @@
     .avatar-upload-btn:hover { transform: scale(1.1); background: #a93226; }
     .avatar-upload-btn .material-symbols-rounded { font-size: 17px; }
 
-    .profile-username {
-      font-size: 18px;
-      font-weight: 800;
-      color: #1a1a2e;
-      margin: 0 0 6px;
-    }
+    .profile-username { font-size: 18px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; }
 
     .profile-role {
       font-size: 11px;
@@ -156,24 +175,11 @@
       gap: 12px;
     }
 
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: #666;
-      text-align: left;
-    }
+    .meta-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666; text-align: left; }
     .meta-item .material-symbols-rounded { font-size: 17px; color: #c0392b; flex-shrink: 0; }
     .meta-item span:last-child { word-break: break-all; }
 
-    .left-actions {
-      margin-top: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-    }
+    .left-actions { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
 
     .btn-action-left {
       display: inline-flex;
@@ -198,11 +204,7 @@
     .btn-action-left .material-symbols-rounded { font-size: 15px; }
 
     /* ── RIGHT ── */
-    .profile-right {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
+    .profile-right { display: flex; flex-direction: column; gap: 24px; }
 
     .card-block {
       background: #fff;
@@ -211,12 +213,7 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.06);
     }
 
-    .section-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #1a1a2e;
-      margin: 0 0 6px;
-    }
+    .section-title { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; }
 
     .section-bar {
       width: 36px;
@@ -226,7 +223,6 @@
       margin-bottom: 28px;
     }
 
-    /* READONLY NOTICE */
     .readonly-notice {
       display: flex;
       align-items: flex-start;
@@ -242,7 +238,6 @@
     }
     .readonly-notice .material-symbols-rounded { font-size: 18px; color: #f9a825; flex-shrink: 0; margin-top: 1px; }
 
-    /* READONLY FIELD */
     .field-group { margin-bottom: 20px; }
 
     .field-label {
@@ -289,7 +284,6 @@
     }
     @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
 
-    /* EDITABLE INPUT (password section) */
     .field-inner { position: relative; }
 
     .field-icon {
@@ -345,44 +339,9 @@
     .toggle-pw-btn:hover { color: #c0392b; }
     .toggle-pw-btn .material-symbols-rounded { font-size: 19px; }
 
-    /* DOCUMENT UPLOAD */
-    .doc-file-label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #f7f7f8;
-      border: 2px dashed #e0e0e0;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-      color: #888;
-      font-weight: 500;
-    }
-    .doc-file-label:hover { border-color: #c0392b; color: #c0392b; background: #fdecea; }
-    .doc-file-label .material-symbols-rounded { font-size: 19px; flex-shrink: 0; }
-
-    #doc-filename {
-      font-size: 13px;
-      color: #c0392b;
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 200px;
-    }
-
-    .doc-hint { font-size: 12px; color: #aaa; margin-top: 6px; padding-left: 2px; }
-
     .form-divider { border: none; border-top: 1px solid #f0f0f0; margin: 24px 0; }
 
-    .form-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
+    .form-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 
     .btn-save {
       display: inline-flex;
@@ -465,23 +424,12 @@
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .modal-title { font-size: 18px; font-weight: 800; color: #1a1a2e; margin: 0; }
 
     .modal-close {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #aaa;
-      padding: 4px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
+      background: none; border: none; cursor: pointer; color: #aaa;
+      padding: 4px; border-radius: 50%; display: flex; align-items: center;
       transition: color 0.2s, background 0.2s;
     }
     .modal-close:hover { color: #c0392b; background: #fdecea; }
@@ -490,30 +438,18 @@
     .modal-bar { width: 36px; height: 4px; background: linear-gradient(90deg, #c0392b, #e74c3c); border-radius: 4px; margin-bottom: 24px; }
 
     .modal-label {
-      display: block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #bbb;
-      margin-bottom: 8px;
+      display: block; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: #bbb; margin-bottom: 8px;
     }
 
     .modal-textarea {
-      width: 100%;
-      padding: 13px 16px;
-      background: #f7f7f8;
-      border: 2px solid transparent;
-      border-radius: 14px;
-      font-family: 'Be Vietnam Pro', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      color: #1a1a2e;
-      outline: none;
-      resize: vertical;
-      min-height: 120px;
-      transition: all 0.2s;
-      margin-bottom: 20px;
+      width: 100%; padding: 13px 16px;
+      background: #f7f7f8; border: 2px solid transparent;
+      border-radius: 14px; font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px; font-weight: 500; color: #1a1a2e;
+      outline: none; resize: vertical; min-height: 120px;
+      transition: all 0.2s; margin-bottom: 20px;
     }
     .modal-textarea:focus { background: #fff; border-color: #c0392b; box-shadow: 0 0 0 4px rgba(192,57,43,0.08); }
 
@@ -521,281 +457,282 @@
   </style>
 
   <div class="portal-page">
-    <div class="portal-wrap">
-      <p class="portal-heading">⚙ Tài khoản / Hồ sơ cá nhân</p>
+    <div class="portal-layout-outer">
 
-      {% if messages %}
-        {% for msg in messages %}
-          <div class="portal-alert {% if 'success' in msg.tags %}success{% else %}error{% endif %}">
-            <span class="material-symbols-rounded">
-              {% if 'success' in msg.tags %}check_circle{% else %}error{% endif %}
-            </span>
-            {{ msg }}
-          </div>
-        {% endfor %}
-      {% endif %}
+      <!-- ── BANNER TRÁI ── -->
+      <div class="banner-side" {% if not banner_left %}style="visibility:hidden"{% endif %}>
+        {% if banner_left %}
+        <a href="{{ banner_left.link }}" target="_blank" rel="noopener">
+          <img src="{{ banner_left.image.url }}" alt="Banner trái">
+        </a>
+        {% endif %}
+      </div>
 
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+      <!-- ── NỘI DUNG CHÍNH ── -->
+      <div class="portal-wrap">
+        <p class="portal-heading">⚙ Tài khoản / Hồ sơ cá nhân</p>
 
-        <div class="profile-grid">
-
-          <!-- LEFT -->
-          <div class="profile-left">
-            <div class="avatar-wrap" onclick="document.getElementById('avatarInput').click()">
-              <div class="avatar-placeholder" id="avatarPreview">
-                {% if customer.avatar %}
-                  <img src="{{ customer.avatar.url }}" alt="Avatar" />
-                {% else %}
-                  {{ customer.name|first|upper }}
-                {% endif %}
-              </div>
-              <div class="avatar-overlay">
-                <span class="material-symbols-rounded">photo_camera</span>
-                <span>Thay ảnh</span>
-              </div>
-              <label for="avatarInput" class="avatar-upload-btn" onclick="event.stopPropagation()">
-                <span class="material-symbols-rounded">photo_camera</span>
-              </label>
-              <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display:none" onchange="previewAvatar(event)" />
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="portal-alert {% if 'success' in msg.tags %}success{% else %}error{% endif %}">
+              <span class="material-symbols-rounded">
+                {% if 'success' in msg.tags %}check_circle{% else %}error{% endif %}
+              </span>
+              {{ msg }}
             </div>
+          {% endfor %}
+        {% endif %}
 
-            <h2 class="profile-username">{{ customer.name }}</h2>
-            <span class="profile-role">Khách hàng</span>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
 
-            <div class="profile-meta">
-              <div class="meta-item">
-                <span class="material-symbols-rounded">badge</span>
-                <span>{{ customer.customer_code }}</span>
-              </div>
-              {% if customer.email %}
-              <div class="meta-item">
-                <span class="material-symbols-rounded">mail</span>
-                <span>{{ customer.email }}</span>
-              </div>
-              {% endif %}
-              {% if customer.phone %}
-              <div class="meta-item">
-                <span class="material-symbols-rounded">call</span>
-                <span>{{ customer.phone }}</span>
-              </div>
-              {% endif %}
-              {% if customer.address %}
-              <div class="meta-item">
-                <span class="material-symbols-rounded">location_on</span>
-                <span>{{ customer.address }}</span>
-              </div>
-              {% endif %}
-            </div>
+          <div class="profile-grid">
 
-            <div class="left-actions">
-              <a href="{% url 'portal_dashboard' %}" class="btn-action-left back">
-                <span class="material-symbols-rounded">arrow_back</span>
-                Quay lại
-              </a>
-              <a href="{% url 'customer_logout' %}" class="btn-action-left logout">
-                <span class="material-symbols-rounded">logout</span>
-                Đăng xuất
-              </a>
-            </div>
-          </div>
-
-          <!-- RIGHT -->
-          <div class="profile-right">
-
-            <!-- CARD 1: Thông tin khách hàng (READ ONLY) -->
-            <div class="card-block">
-              <h3 class="section-title">Thông tin khách hàng</h3>
-              <div class="section-bar"></div>
-
-              <div class="readonly-notice">
-                <span class="material-symbols-rounded">info</span>
-                <span>Thông tin khách hàng được khoá để đảm bảo tính chính xác. Nếu cần chỉnh sửa, vui lòng gửi yêu cầu để được hỗ trợ.</span>
+            <!-- LEFT -->
+            <div class="profile-left">
+              <div class="avatar-wrap" onclick="document.getElementById('avatarInput').click()">
+                <div class="avatar-placeholder" id="avatarPreview">
+                  {% if customer.avatar %}
+                    <img src="{{ customer.avatar.url }}" alt="Avatar" />
+                  {% else %}
+                    {{ customer.name|first|upper }}
+                  {% endif %}
+                </div>
+                <div class="avatar-overlay">
+                  <span class="material-symbols-rounded">photo_camera</span>
+                  <span>Thay ảnh</span>
+                </div>
+                <label for="avatarInput" class="avatar-upload-btn" onclick="event.stopPropagation()">
+                  <span class="material-symbols-rounded">photo_camera</span>
+                </label>
+                <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display:none" onchange="previewAvatar(event)" />
               </div>
 
-              <div class="field-group">
-                <label class="field-label">Mã khách hàng</label>
-                <div class="field-readonly">
+              <h2 class="profile-username">{{ customer.name }}</h2>
+              <span class="profile-role">Khách hàng</span>
+
+              <div class="profile-meta">
+                <div class="meta-item">
                   <span class="material-symbols-rounded">badge</span>
                   <span>{{ customer.customer_code }}</span>
-                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
                 </div>
-              </div>
-
-              <div class="field-group">
-                <label class="field-label">Họ và tên</label>
-                <div class="field-readonly">
-                  <span class="material-symbols-rounded">person</span>
-                  <span>{{ customer.name|default:"—" }}</span>
-                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                {% if customer.email %}
+                <div class="meta-item">
+                  <span class="material-symbols-rounded">mail</span>
+                  <span>{{ customer.email }}</span>
                 </div>
-              </div>
-
-              <div class="field-group">
-                <label class="field-label">Mã số thuế</label>
-                <div class="field-readonly">
-                  <span class="material-symbols-rounded">receipt_long</span>
-                  <span>{{ customer.tax_code|default:"chỉ có doanh nghiệp mới có mã số thuế" }}</span>
-                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                {% endif %}
+                {% if customer.phone %}
+                <div class="meta-item">
+                  <span class="material-symbols-rounded">call</span>
+                  <span>{{ customer.phone }}</span>
                 </div>
-              </div>
-
-
-
-              <div class="field-row">
-                <div class="field-group">
-                  <label class="field-label">Email</label>
-                  <div class="field-readonly">
-                    <span class="material-symbols-rounded">mail</span>
-                    <span>{{ customer.email|default:"—" }}</span>
-                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label">Số điện thoại</label>
-                  <div class="field-readonly">
-                    <span class="material-symbols-rounded">call</span>
-                    <span>{{ customer.phone|default:"—" }}</span>
-                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="field-group">
-                <label class="field-label">Địa chỉ</label>
-                <div class="field-readonly">
+                {% endif %}
+                {% if customer.address %}
+                <div class="meta-item">
                   <span class="material-symbols-rounded">location_on</span>
-                  <span>{{ customer.address|default:"—" }}</span>
-                  <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  <span>{{ customer.address }}</span>
                 </div>
+                {% endif %}
               </div>
 
-             <div class="field-group">
-  <label class="field-label">Giấy phép đăng ký kinh doanh</label>
-
-  {% with docs=customer.documents.all %}
-  {% if docs %}
-  <div style="display:flex; flex-direction:column; gap:8px;">
-    {% for doc in docs %}
-    <div style="display:flex; align-items:center; justify-content:space-between;
-                padding:12px 16px; background:#f7f7f8; border:2px solid #ececec;
-                border-radius:14px;">
-
-      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-        <span class="material-symbols-rounded" style="font-size:18px;color:#c0392b;flex-shrink:0;">
-          description
-        </span>
-        <div style="min-width:0;">
-          <div style="font-size:13px;font-weight:700;color:#1a1a2e;
-                      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-            {{ doc.name|default:"Tài liệu" }}
-          </div>
-          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">
-            {{ doc.uploaded_at|date:"d/m/Y" }}
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex; gap:8px; flex-shrink:0; margin-left:12px;">
-        <a href="{{ doc.file.url }}" target="_blank"
-           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;
-                  background:#fdecea;color:#c0392b;border-radius:50px;
-                  font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
-           onmouseover="this.style.background='#f5c6cb'"
-           onmouseout="this.style.background='#fdecea'">
-          <span class="material-symbols-rounded" style="font-size:14px;">open_in_new</span>
-          Xem
-        </a>
-        <a href="{{ doc.file.url }}" download
-           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;
-                  background:#f0fdf4;color:#16a34a;border-radius:50px;
-                  font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
-           onmouseover="this.style.background='#dcfce7'"
-           onmouseout="this.style.background='#f0fdf4'">
-          <span class="material-symbols-rounded" style="font-size:14px;">download</span>
-          Tải
-        </a>
-      </div>
-
-    </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;
-              background:#f7f7f8;border:2px solid #ececec;border-radius:14px;">
-    <span class="material-symbols-rounded" style="font-size:17px;color:#ccc;">description</span>
-    <span style="color:#bbb;font-size:14px;font-weight:500;">Chưa có tài liệu đính kèm</span>
-    <span class="field-lock-badge" style="margin-left:auto;">
-      <span class="material-symbols-rounded">lock</span>
-    </span>
-  </div>
-  {% endif %}
-  {% endwith %}
-</div>
-
-              <div style="display:flex; justify-content:flex-end; margin-top: 8px;">
-                <button type="button" class="btn-request" onclick="openRequestModal()">
-                  <span class="material-symbols-rounded">edit_note</span>
-                  Gửi yêu cầu chỉnh sửa thông tin
-                </button>
+              <div class="left-actions">
+                <a href="{% url 'portal_dashboard' %}" class="btn-action-left back">
+                  <span class="material-symbols-rounded">arrow_back</span>
+                  Quay lại
+                </a>
+                <a href="{% url 'customer_logout' %}" class="btn-action-left logout">
+                  <span class="material-symbols-rounded">logout</span>
+                  Đăng xuất
+                </a>
               </div>
             </div>
 
-            <!-- CARD 2: Đổi mật khẩu -->
-            <div class="card-block">
-              <h3 class="section-title">Đổi mật khẩu</h3>
-              <div class="section-bar"></div>
+            <!-- RIGHT -->
+            <div class="profile-right">
 
-              <div class="field-group">
-                <label class="field-label">Mật khẩu hiện tại</label>
-                <div class="field-inner">
-                  <span class="material-symbols-rounded field-icon">lock</span>
-                  <input type="password" name="current_password" id="id_current_password" placeholder="Nhập mật khẩu hiện tại" />
-                  <button type="button" class="toggle-pw-btn" onclick="togglePw('id_current_password', this)" tabindex="-1">
-                    <span class="material-symbols-rounded">visibility</span>
+              <!-- CARD 1: Thông tin khách hàng (READ ONLY) -->
+              <div class="card-block">
+                <h3 class="section-title">Thông tin khách hàng</h3>
+                <div class="section-bar"></div>
+
+                <div class="readonly-notice">
+                  <span class="material-symbols-rounded">info</span>
+                  <span>Thông tin khách hàng được khoá để đảm bảo tính chính xác. Nếu cần chỉnh sửa, vui lòng gửi yêu cầu để được hỗ trợ.</span>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Mã khách hàng</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">badge</span>
+                    <span>{{ customer.customer_code }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Họ và tên</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">person</span>
+                    <span>{{ customer.name|default:"—" }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Mã số thuế</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">receipt_long</span>
+                    <span>{{ customer.tax_code|default:"chỉ có doanh nghiệp mới có mã số thuế" }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                </div>
+
+                <div class="field-row">
+                  <div class="field-group">
+                    <label class="field-label">Email</label>
+                    <div class="field-readonly">
+                      <span class="material-symbols-rounded">mail</span>
+                      <span>{{ customer.email|default:"—" }}</span>
+                      <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label">Số điện thoại</label>
+                    <div class="field-readonly">
+                      <span class="material-symbols-rounded">call</span>
+                      <span>{{ customer.phone|default:"—" }}</span>
+                      <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Địa chỉ</label>
+                  <div class="field-readonly">
+                    <span class="material-symbols-rounded">location_on</span>
+                    <span>{{ customer.address|default:"—" }}</span>
+                    <span class="field-lock-badge"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label">Giấy phép đăng ký kinh doanh</label>
+                  {% with docs=customer.documents.all %}
+                  {% if docs %}
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    {% for doc in docs %}
+                    <div style="display:flex; align-items:center; justify-content:space-between;
+                                padding:12px 16px; background:#f7f7f8; border:2px solid #ececec;
+                                border-radius:14px;">
+                      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                        <span class="material-symbols-rounded" style="font-size:18px;color:#c0392b;flex-shrink:0;">description</span>
+                        <div style="min-width:0;">
+                          <div style="font-size:13px;font-weight:700;color:#1a1a2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            {{ doc.name|default:"Tài liệu" }}
+                          </div>
+                          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{ doc.uploaded_at|date:"d/m/Y" }}</div>
+                        </div>
+                      </div>
+                      <div style="display:flex; gap:8px; flex-shrink:0; margin-left:12px;">
+                        <a href="{{ doc.file.url }}" target="_blank"
+                           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#fdecea;color:#c0392b;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
+                           onmouseover="this.style.background='#f5c6cb'" onmouseout="this.style.background='#fdecea'">
+                          <span class="material-symbols-rounded" style="font-size:14px;">open_in_new</span>Xem
+                        </a>
+                        <a href="{{ doc.file.url }}" download
+                           style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#f0fdf4;color:#16a34a;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none;transition:background .15s;"
+                           onmouseover="this.style.background='#dcfce7'" onmouseout="this.style.background='#f0fdf4'">
+                          <span class="material-symbols-rounded" style="font-size:14px;">download</span>Tải
+                        </a>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f7f7f8;border:2px solid #ececec;border-radius:14px;">
+                    <span class="material-symbols-rounded" style="font-size:17px;color:#ccc;">description</span>
+                    <span style="color:#bbb;font-size:14px;font-weight:500;">Chưa có tài liệu đính kèm</span>
+                    <span class="field-lock-badge" style="margin-left:auto;"><span class="material-symbols-rounded">lock</span></span>
+                  </div>
+                  {% endif %}
+                  {% endwith %}
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; margin-top: 8px;">
+                  <button type="button" class="btn-request" onclick="openRequestModal()">
+                    <span class="material-symbols-rounded">edit_note</span>
+                    Gửi yêu cầu chỉnh sửa thông tin
                   </button>
                 </div>
               </div>
 
-              <div class="field-row">
+              <!-- CARD 2: Đổi mật khẩu -->
+              <div class="card-block">
+                <h3 class="section-title">Đổi mật khẩu</h3>
+                <div class="section-bar"></div>
+
                 <div class="field-group">
-                  <label class="field-label">Mật khẩu mới</label>
+                  <label class="field-label">Mật khẩu hiện tại</label>
                   <div class="field-inner">
-                    <span class="material-symbols-rounded field-icon">lock_open</span>
-                    <input type="password" name="new_password" id="id_new_password" placeholder="Để trống nếu không đổi" />
-                    <button type="button" class="toggle-pw-btn" onclick="togglePw('id_new_password', this)" tabindex="-1">
+                    <span class="material-symbols-rounded field-icon">lock</span>
+                    <input type="password" name="current_password" id="id_current_password" placeholder="Nhập mật khẩu hiện tại" />
+                    <button type="button" class="toggle-pw-btn" onclick="togglePw('id_current_password', this)" tabindex="-1">
                       <span class="material-symbols-rounded">visibility</span>
                     </button>
                   </div>
                 </div>
-                <div class="field-group">
-                  <label class="field-label">Xác nhận mật khẩu</label>
-                  <div class="field-inner">
-                    <span class="material-symbols-rounded field-icon">lock_open</span>
-                    <input type="password" name="confirm_password" id="id_confirm_password" placeholder="Nhập lại mật khẩu mới" />
-                    <button type="button" class="toggle-pw-btn" onclick="togglePw('id_confirm_password', this)" tabindex="-1">
-                      <span class="material-symbols-rounded">visibility</span>
-                    </button>
+
+                <div class="field-row">
+                  <div class="field-group">
+                    <label class="field-label">Mật khẩu mới</label>
+                    <div class="field-inner">
+                      <span class="material-symbols-rounded field-icon">lock_open</span>
+                      <input type="password" name="new_password" id="id_new_password" placeholder="Để trống nếu không đổi" />
+                      <button type="button" class="toggle-pw-btn" onclick="togglePw('id_new_password', this)" tabindex="-1">
+                        <span class="material-symbols-rounded">visibility</span>
+                      </button>
+                    </div>
                   </div>
+                  <div class="field-group">
+                    <label class="field-label">Xác nhận mật khẩu</label>
+                    <div class="field-inner">
+                      <span class="material-symbols-rounded field-icon">lock_open</span>
+                      <input type="password" name="confirm_password" id="id_confirm_password" placeholder="Nhập lại mật khẩu mới" />
+                      <button type="button" class="toggle-pw-btn" onclick="togglePw('id_confirm_password', this)" tabindex="-1">
+                        <span class="material-symbols-rounded">visibility</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="form-divider" />
+
+                <div class="form-actions">
+                  <a href="{% url 'portal_dashboard' %}" class="btn-cancel">Hủy</a>
+                  <button type="submit" class="btn-save">
+                    <span class="material-symbols-rounded">save</span>
+                    Lưu thay đổi
+                  </button>
                 </div>
               </div>
 
-              <hr class="form-divider" />
+            </div>{# end profile-right #}
+          </div>{# end profile-grid #}
+        </form>
+      </div>{# end portal-wrap #}
 
-              <div class="form-actions">
-                <a href="{% url 'portal_dashboard' %}" class="btn-cancel">Hủy</a>
-                <button type="submit" class="btn-save">
-                  <span class="material-symbols-rounded">save</span>
-                  Lưu thay đổi
-                </button>
-              </div>
-            </div>
+      <!-- ── BANNER PHẢI ── -->
+      <div class="banner-side">
+        {% if banner_right %}
+        <a href="{{ banner_right.link }}" target="_blank" rel="noopener">
+          <img src="{{ banner_right.image.url }}" alt="Banner phải">
+        </a>
+        {% endif %}
+      </div>
 
-          </div><!-- end profile-right -->
-        </div><!-- end profile-grid -->
-      </form>
-    </div>
-  </div>
+    </div>{# end portal-layout-outer #}
+  </div>{# end portal-page #}
 
   <!-- MODAL: Gửi yêu cầu chỉnh sửa -->
   <div class="modal-overlay" id="requestModal">
@@ -807,10 +744,8 @@
         </button>
       </div>
       <div class="modal-bar"></div>
-
       <label class="modal-label">Nội dung yêu cầu</label>
       <textarea class="modal-textarea" id="requestContent" placeholder="Mô tả thông tin bạn muốn chỉnh sửa (họ tên, mã số thuế, email...) và lý do..."></textarea>
-
       <div class="modal-actions">
         <button type="button" class="btn-cancel" onclick="closeRequestModal()">Đóng</button>
         <button type="button" class="btn-save" onclick="submitRequest()">
@@ -822,7 +757,6 @@
   </div>
 
   <script>
-    /* ── Avatar preview ── */
     function previewAvatar(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -834,9 +768,6 @@
       reader.readAsDataURL(file);
     }
 
-
-
-    /* ── Toggle password visibility ── */
     function togglePw(inputId, btn) {
       const input = document.getElementById(inputId);
       const icon = btn.querySelector('.material-symbols-rounded');
@@ -849,7 +780,6 @@
       }
     }
 
-    /* ── Request modal ── */
     function openRequestModal() {
       document.getElementById('requestModal').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -881,12 +811,10 @@
       closeRequestModal();
     }
 
-    /* ── Close modal on backdrop click ── */
-    document.getElementById('requestModal').addEventListener('click', function (e) {
+    document.getElementById('requestModal').addEventListener('click', function(e) {
       if (e.target === this) closeRequestModal();
     });
 
-    /* ── Remove Bootstrap form-control ── */
     document.querySelectorAll('.field-inner input').forEach(el => el.classList.remove('form-control'));
   </script>
 {% endblock %}

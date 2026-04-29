@@ -1471,10 +1471,17 @@ def portal_contract_detail(request, contract_id):
         service = InvestmentService.objects.filter(contract=contract)
     else:
         service = OtherService.objects.filter(contract=contract)
+
+    banners = {b.position: b for b in PortalBanner.objects.filter(is_active=True)}
+
     _log_activity(customer, 'view_contract', note=contract.contract_no, request=request)
     return render(request, 'portal/contract_detail.html', {
-        'contract': contract, 'service': service,
-        'installments': installments, 'customer': customer,
+        'contract':     contract,
+        'service':      service,
+        'installments': installments,
+        'customer':     customer,
+        'banner_left':  banners.get('left'),
+        'banner_right': banners.get('right'),
     })
 
 
@@ -1545,10 +1552,13 @@ IPShield
         messages.success(request, '✅ Cập nhật hồ sơ thành công!')
         return redirect('portal_customer_profile')
 
-    return render(request, 'portal/customer_profile.html', {'customer': customer})
+    banners = {b.position: b for b in PortalBanner.objects.filter(is_active=True)}
 
-
-
+    return render(request, 'portal/customer_profile.html', {
+        'customer':     customer,
+        'banner_left':  banners.get('left'),
+        'banner_right': banners.get('right'),
+    })
 
 @login_required
 def dashboard(request):
@@ -1701,58 +1711,36 @@ def dashboard_customer_stats_api(request):
     from django.db.models import Count
     import datetime
     period = request.GET.get('period', 'month')
-    customers = Customer.objects.all()
-
     today = datetime.date.today()
 
-    # ─────────────────────────────
-    # 📅 FILTER THEO THỜI GIAN
-    # ─────────────────────────────
-    if period == 'day':
-        date_str = request.GET.get('date')
-        if date_str:
-            customers = customers.filter(register_year=date_str)
+    date_str = request.GET.get('date')
+    month    = request.GET.get('month')
+    year     = request.GET.get('year')
 
-    elif period == 'month':
-        month = request.GET.get('month')
-        year  = request.GET.get('year')
+    # ✅ TỔNG = tất cả, không filter period
+    total = Customer.objects.count()
 
-        if month and year:
-            customers = customers.filter(
-                register_year__month=int(month),
-                register_year__year=int(year)
-            )
+    # ✅ KH MỚI = filter theo period
+    new_qs = Customer.objects.all()
+    if period == 'day' and date_str:
+        new_qs = new_qs.filter(register_year=date_str)
+    elif period == 'month' and month and year:
+        new_qs = new_qs.filter(register_year__month=int(month), register_year__year=int(year))
+    elif period == 'year' and year:
+        new_qs = new_qs.filter(register_year__year=int(year))
+    new_customers = new_qs.count()
 
-    elif period == 'year':
-        year = request.GET.get('year')
-        if year:
-            customers = customers.filter(register_year__year=int(year))
-
-    # ─────────────────────────────
-    # 📊 THỐNG KÊ
-    # ─────────────────────────────
-
-    # Tổng KH
-    total = customers.count()
-
-    # KH mới (từ năm 2026)
-    new_customers = customers.filter(register_year__year=today.year).count()
-
-    # group theo status
+    # ✅ TRẠNG THÁI = tổng tất cả, không filter period
     status_stats = Customer.objects.values('status').annotate(total=Count('id'))
-    status_data = {s['status']: s['total'] for s in status_stats}
+    status_data  = {s['status']: s['total'] for s in status_stats}
 
-    # ─────────────────────────────
-    # 📦 RESPONSE
-    # ─────────────────────────────
-    data = {
-        "total": total,
-        "new": new_customers,
-        "approved": status_data.get('approved', 0),     # chờ duyệt
-        "pending": status_data.get('pending', 0),       # đang duyệt
-        "completed": status_data.get('completed', 0),   # hoàn tất
-    }
-    return JsonResponse(data)
+    return JsonResponse({
+        "total":     total,
+        "new":       new_customers,
+        "approved":  status_data.get('approved', 0),
+        "pending":   status_data.get('pending', 0),
+        "completed": status_data.get('completed', 0),
+    })
 
 @login_required
 def dashboard_trademark_stats_api(request):
@@ -1761,7 +1749,6 @@ def dashboard_trademark_stats_api(request):
     from .models import TrademarkService
 
     period = request.GET.get('period', 'month')
-
     qs = TrademarkService.objects.all()
 
     date_str = request.GET.get('date')
@@ -1771,47 +1758,29 @@ def dashboard_trademark_stats_api(request):
     def filter_by_date(queryset, field):
         if period == 'day' and date_str:
             return queryset.filter(**{field: date_str})
-
         elif period == 'month' and month and year:
-            return queryset.filter(
-                **{
-                    f"{field}__month": int(month),
-                    f"{field}__year": int(year)
-                }
-            )
-
+            return queryset.filter(**{
+                f"{field}__month": int(month),
+                f"{field}__year":  int(year),
+            })
         elif period == 'year' and year:
             return queryset.filter(**{f"{field}__year": int(year)})
-
         return queryset
 
-    # ✅ TOTAL (nên thống nhất theo filing_date)
-    total = filter_by_date(qs, 'filing_date').count()
+    # ✅ TOTAL = tổng tất cả, không filter theo period
+    total               = TrademarkService.objects.count()
+    filing_date_count   = filter_by_date(qs, 'filing_date').filter(filing_date__isnull=False).count()
+    decision_date_count = filter_by_date(qs, 'decision_date').filter(decision_date__isnull=False).count()
+    valid_date_count    = filter_by_date(qs, 'valid_date').filter(valid_date__isnull=False).count()
+    deny_document_count = filter_by_date(qs, 'deny_document').filter(deny_document__isnull=False).count()
 
-    # ✅ ĐÃ NỘP ĐƠN
-    filing_date_count = filter_by_date(qs, 'filing_date') \
-        .filter(filing_date__isnull=False).count()
-
-    # ✅ ĐÃ CẤP
-    decision_date_count = filter_by_date(qs, 'decision_date') \
-        .filter(decision_date__isnull=False).count()
-
-    # ✅ HỢP LỆ
-    valid_date_count = filter_by_date(qs, 'valid_date') \
-        .filter(valid_date__isnull=False).count()
-
-    # ✅ BỊ TỪ CHỐI (KHÔNG filter theo date)
-
-    deny_document_count = qs.filter(deny_document__isnull=False).count()
     return JsonResponse({
-        'total': total,
-        "filled": filing_date_count,
-        "decision": decision_date_count,
-        "valid": valid_date_count,
-        "deny": deny_document_count,
+        'total':    total,
+        'filled':   filing_date_count,
+        'decision': decision_date_count,
+        'valid':    valid_date_count,
+        'deny':     deny_document_count,
     })
-
-    
 # YÊU CẦU HỖ TRỢ
 @customer_login_required
 def portal_support_request(request, contract_id):
@@ -1917,9 +1886,18 @@ def trademark_filter_list(request):
     elif filter_type == 'valid':
         qs = filter_by_field(qs, 'valid_date').filter(valid_date__isnull=False)
     elif filter_type == 'deny':
-        qs = qs.filter(deny_document__isnull=False)
+        qs = filter_by_field(qs, 'deny_document').filter(deny_document__isnull=False)
+    # ✅ FIX: total filter theo contract__created_at cho khớp với stats API
     elif filter_type == 'total':
-        qs = filter_by_field(qs, 'filing_date')
+        if period == 'day' and date_str:
+            qs = qs.filter(contract__created_at__date=date_str)
+        elif period == 'month' and month and year:
+            qs = qs.filter(
+                contract__created_at__month=int(month),
+                contract__created_at__year=int(year),
+            )
+        elif period == 'year' and year:
+            qs = qs.filter(contract__created_at__year=int(year))
     else:
         qs = qs.none()
 
@@ -1943,10 +1921,9 @@ def trademark_filter_list(request):
     return JsonResponse({'results': results, 'count': len(results)})
 @login_required
 def customer_filter_list(request):
-    """Trả về danh sách khách hàng theo filter type"""
     from django.http import JsonResponse
 
-    filter_type = request.GET.get('filter_type', '')  # total, new, approved, pending, completed
+    filter_type = request.GET.get('filter_type', '')
     period      = request.GET.get('period', 'month')
     date_str    = request.GET.get('date', '')
     month       = request.GET.get('month', '')
@@ -1954,8 +1931,6 @@ def customer_filter_list(request):
 
     import datetime
     today = datetime.date.today()
-
-    qs = Customer.objects.all()
 
     def filter_by_period(queryset, field='register_year'):
         if period == 'day' and date_str:
@@ -1970,9 +1945,11 @@ def customer_filter_list(request):
         return queryset
 
     if filter_type == 'total':
-        qs = filter_by_period(qs)
+        # ✅ Tổng = tất cả, không filter period
+        qs = Customer.objects.all()
     elif filter_type == 'new':
-        qs = filter_by_period(qs).filter(register_year__year=today.year)
+        # ✅ KH mới = filter theo period
+        qs = filter_by_period(Customer.objects.all())
     elif filter_type == 'approved':
         qs = Customer.objects.filter(status='approved')
     elif filter_type == 'pending':

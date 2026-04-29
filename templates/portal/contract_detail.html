@@ -11,10 +11,41 @@
     font-family: 'Be Vietnam Pro', sans-serif;
     background: #f4f4f6;
     min-height: 80vh;
-    padding: 40px 20px 80px;
+    padding: 40px 0 80px;
   }
 
-  .portal-wrap { max-width: 960px; margin: 0 auto; }
+  /* ── LAYOUT ── */
+  .portal-layout-outer {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .portal-wrap { flex: 1; min-width: 0; }
+
+  /* ── BANNER 2 BÊN ── */
+  .banner-side {
+    width: 300px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+  }
+  .banner-side a {
+    display: block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .banner-side a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .banner-side img { width: 100%; height: auto; display: block; }
+  @media (max-width: 1100px) { .banner-side { display: none; } }
 
   /* BACK */
   .btn-back, .btn-support, .btn-print {
@@ -26,8 +57,7 @@
   }
   .btn-support { background: #BE1E2D; color: white; }
   .btn-print { background: #BE1E2D; color: white; }
-  .btn-back:hover{
-    background: #f0f0f0; background: #f0f0f0; color: #BE1E2D; }
+  .btn-back:hover{ background: #f0f0f0; color: #BE1E2D; }
   .btn-back, .btn-support .material-symbols-rounded, .btn-print .material-symbols-rounded { font-size: 16px; }
 
   /* CARD BASE */
@@ -278,7 +308,6 @@
     align-items: center;
     justify-content: center;
   }
-
   .modal-content {
     background: white;
     width: 100%;
@@ -287,7 +316,6 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     overflow: hidden;
   }
-
   .modal-header {
     padding: 20px 24px;
     border-bottom: 1px solid #f0f0f0;
@@ -295,584 +323,416 @@
     align-items: center;
     justify-content: space-between;
   }
-
-  .modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1a2e;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #888;
-  }
-
-  .modal-body {
-    padding: 24px;
-  }
-
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: #374151;
-    margin-bottom: 6px;
-  }
-
+  .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #888; }
+  .modal-body { padding: 24px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px; }
   .form-group input,
   .form-group textarea,
-  .form-group select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 14px;
-  }
-
+  .form-group select { width: 100%; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; }
   .form-group input:focus,
   .form-group textarea:focus,
-  .form-group select:focus {
-    outline: none;
-    border-color: #BE1E2D;
-  }
-
+  .form-group select:focus { outline: none; border-color: #BE1E2D; }
   .required { color: #e63946; }
-
-  .modal-footer {
-    padding: 16px 24px;
-    background: #f9fafb;
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-  }
-
-  .btn-cancel {
-    padding: 10px 22px;
-    background: #e5e7eb;
-    color: #374151;
-    border: none;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .btn-submit {
-    padding: 10px 28px;
-    background: #BE1E2D;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 3px 10px rgba(190,30,45,0.25);
-  }
-
+  .modal-footer { padding: 16px 24px; background: #f9fafb; display: flex; gap: 12px; justify-content: flex-end; }
+  .btn-cancel { padding: 10px 22px; background: #e5e7eb; color: #374151; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; }
+  .btn-submit { padding: 10px 28px; background: #BE1E2D; color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(190,30,45,0.25); }
   .btn-submit:hover { background: #a01827; }
 
   @media print {
-    /* 1. Ẩn toàn bộ thành phần thuộc về base.html */
-    .header,
-    .top-bar,
-    .carousel-section,
-    .nav-tabs,
-    .site-footer,
-    #realtime-clock,
-    .container .contract-header,
-    .info-card,
-    .card-header,
-    .card-body .mb-4,
-    .attachment-box,
-    .installment-card,
-    .payment-type-badge,
-    .payment-full-badge,
-    #installment-section,
-    h1,
-    .top-actions,
-    .registration_certificate,
-    .language-selector {
-        display: none !important;
-    }
-
-    /* 2. Cấu hình lại khung trang in */
-    body {
-        background-color: white !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .container {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-    }
-
-    /* 3. Ẩn các nút bấm và icon trang trí trong trang chi tiết */
-    .btn-back,
-    .service-actions,
-    .bottom-actions,
-    .btn-edit-contract,
-    .btn-view-detail,
-    .icon-wrapper,
-    .mt-5,
-    .table-responsive,
-    .alert,
-    form button[type="submit"] {
-        display: none !important;
-    }
-
-    /* 4. Định dạng lại các Card thông tin */
-    .info-card,
-    .service-card,
-    .service-item-card {
-        border: 1px solid #eee !important;
-        box-shadow: none !important;
-        margin-bottom: 20px !important;
-        padding: 10px !important;
-        page-break-inside: avoid;
-    }
-
-    /* 5. Chỉnh tiêu đề chính cho trang in chuyên nghiệp */
-    .contract-header {
-        display: block !important;
-        text-align: center;
-        margin-top: 20px;
-        margin-bottom: 40px;
-        border-bottom: 2px solid #333;
-        padding-bottom: 10px;
-        background: none !important;
-        box-shadow: none !important;
-    }
-
-    .contract-header h2 {
-        font-size: 22pt !important;
-        color: black !important;
-        margin: 0 !important;
-        text-transform: uppercase;
-    }
-
-    /* 6. Ẩn các badge và highlight màu sắc */
-    .service-type-badge {
-        background: transparent !important;
-        color: #000 !important;
-        border: 1px solid #000 !important;
-    }
-
-    .highlight-text {
-        background: transparent !important;
-        color: #000 !important;
-        border: 1px solid #000 !important;
-        padding: 2px 6px !important;
-    }
-
-    /* Đảm bảo chữ đen rõ nét trên giấy */
-    .info-label, .detail-label {
-        color: #555 !important;
-        font-weight: bold !important;
-    }
-
-    .info-value, .detail-value {
-        color: #000 !important;
-    }
-
-    /* Hiển thị checkbox khi in */
-    input[type="checkbox"] {
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
-    }
-
-    /* Ẩn animation khi in */
-    .service-item-card {
-        animation: none !important;
-    }
-
-
-    /* Căn chỉnh các item tài liệu theo chiều ngang */
-    .certificate-item {
-        margin-right: 15px !important;
-        margin-bottom: 10px !important;
-    }
-
-    /* Ẩn các form upload khi in */
-    form[enctype="multipart/form-data"] {
-        display: none !important;
-    }
-}
-
-
+    .banner-side { display: none !important; }
+    .header, .top-bar, .carousel-section, .nav-tabs, .site-footer,
+    #realtime-clock, .container .contract-header, .info-card, .card-header,
+    .card-body .mb-4, .attachment-box, .installment-card, .payment-type-badge,
+    .payment-full-badge, #installment-section, h1, .top-actions,
+    .registration_certificate, .language-selector { display: none !important; }
+    body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
+    .container { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+    .btn-back, .service-actions, .bottom-actions, .btn-edit-contract,
+    .btn-view-detail, .icon-wrapper, .mt-5, .table-responsive, .alert,
+    form button[type="submit"] { display: none !important; }
+    .info-card, .service-card, .service-item-card { border: 1px solid #eee !important; box-shadow: none !important; margin-bottom: 20px !important; padding: 10px !important; page-break-inside: avoid; }
+    .contract-header { display: block !important; text-align: center; margin-top: 20px; margin-bottom: 40px; border-bottom: 2px solid #333; padding-bottom: 10px; background: none !important; box-shadow: none !important; }
+    .contract-header h2 { font-size: 22pt !important; color: black !important; margin: 0 !important; text-transform: uppercase; }
+    .service-type-badge { background: transparent !important; color: #000 !important; border: 1px solid #000 !important; }
+    .highlight-text { background: transparent !important; color: #000 !important; border: 1px solid #000 !important; padding: 2px 6px !important; }
+    .info-label, .detail-label { color: #555 !important; font-weight: bold !important; }
+    .info-value, .detail-value { color: #000 !important; }
+    input[type="checkbox"] { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .service-item-card { animation: none !important; }
+    .certificate-item { margin-right: 15px !important; margin-bottom: 10px !important; }
+    form[enctype="multipart/form-data"] { display: none !important; }
+  }
 </style>
 
 <div class="portal-page">
-  <div class="portal-wrap">
+  <div class="portal-layout-outer">
 
-        <!-- NÚT QUAY LẠI + YÊU CẦU HỖ TRỢ -->
-    <div style="display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;" class="top-actions">
-      
-      <a href="{% url 'portal_dashboard' %}" class="btn-back">
-        <span class="material-symbols-rounded">arrow_back</span>
-        Quay lại danh sách
+    <!-- ── BANNER TRÁI ── -->
+    <div class="banner-side" {% if not banner_left %}style="visibility:hidden"{% endif %}>
+      {% if banner_left %}
+      <a href="{{ banner_left.link }}" target="_blank" rel="noopener">
+        <img src="{{ banner_left.image.url }}" alt="Banner trái">
       </a>
-
-      <button onclick="openSupportModal()" class="btn-support">
-        <span class="material-symbols-rounded">support_agent</span>
-        Yêu cầu hỗ trợ
-      </button> 
-
-      <button onclick="window.print()" class="btn-print">
-        <span class="material-symbols-rounded">print</span>
-        In trang thông tin
-      </button>
-
-
-    </div>
-    <!-- INFO HỢP ĐỒNG -->
-    <div class="portal-card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">Chi tiết hợp đồng</div>
-          <div class="card-bar"></div>
-        </div>
-        {% if contract.status == 'completed' %}
-          <span class="status-pill completed">✓ Hoàn thành</span>
-        {% elif contract.status == 'processing' %}
-          <span class="status-pill processing">Đang xử lý</span>
-        {% else %}
-          <span class="status-pill pending">Chờ xử lý</span>
-        {% endif %}
-      </div>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-icon"><span class="material-symbols-rounded">badge</span></div>
-          <div>
-            <span class="info-label">Số hợp đồng</span>
-            <span class="info-value">{{ contract.contract_no }}</span>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon"><span class="material-symbols-rounded">calendar_month</span></div>
-          <div>
-            <span class="info-label">Ngày tạo</span>
-            <span class="info-value">{{ contract.created_at|date:"d/m/Y" }}</span>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon"><span class="material-symbols-rounded">work</span></div>
-          <div>
-            <span class="info-label">Loại dịch vụ</span>
-            <span class="info-value">{{ contract.get_service_type_display }}</span>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon"><span class="material-symbols-rounded">payments</span></div>
-          <div>
-            <span class="info-label">Giá trị hợp đồng</span>
-            <span class="info-value">{{ contract.contract_value|intcomma }} VNĐ</span>
-          </div>
-        </div>
-      </div>
-       <!-- ẢNH CHỤP HỢP ĐỒNG -->
-<div style="margin-top: 24px; border-top: 1px solid #f0f0f0; padding-top: 24px;">
-
-  <!-- Tiêu đề -->
-  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 0 28px;">
-    <span class="material-symbols-rounded" style="font-size: 18px; color: #BE1E2D;">photo_library</span>
-    <span style="font-size: 13px; font-weight: 800; color: #1a1a2e; letter-spacing: 0.04em;">File scan hợp đồng</span>
-    <span style="margin-left: auto; background: #fdecea; color: #BE1E2D; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
-      {{ contract.contract_images.count }} ảnh
-    </span>
-  </div>
-
-
-
-  <!-- GALLERY -->
-{% if contract.contract_images.exists %}
-<div style="padding: 0 28px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
-  {% for img in contract.contract_images.all %}
-  <div style="border-radius: 12px; overflow: hidden; border: 1px solid #f0f0f0; background: white; transition: transform 0.2s, box-shadow 0.2s;"
-       onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.12)'"
-       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
-
-    <!-- Ảnh click xem full -->
-    <a href="{{ img.image.url }}" target="_blank" style="display: block;">
-      <img src="{{ img.image.url }}" alt="{{ img.name }}"
-           style="width: 100%; height: 110px; object-fit: cover; display: block;" />
-    </a>
-
-    <!-- Info + nút tải -->
-    <div style="padding: 8px 10px 10px;">
-      <div style="font-size: 11px; font-weight: 700; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">
-        {{ img.name|default:"Ảnh hợp đồng" }}
-      </div>
-      <div style="font-size: 10px; color: #9ca3af; margin-bottom: 8px;">{{ img.uploaded_at|date:"d/m/Y" }}</div>
-
-      <!-- Nút tải xuống -->
-      <a href="{{ img.image.url }}" download
-         style="display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 0; background: #fdecea; color: #BE1E2D; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none; transition: background 0.2s;"
-         onmouseover="this.style.background='#BE1E2D';this.style.color='white'"
-         onmouseout="this.style.background='#fdecea';this.style.color='#BE1E2D'">
-        <span class="material-symbols-rounded" style="font-size: 14px;">download</span>
-        Tải xuống
-      </a>
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<p>Chưa có ảnh hợp đồng nào</p>
-{% endif %}
-
-</div>
+      {% endif %}
     </div>
 
-    <!-- THANH TOÁN DỨT ĐIỂM -->
-    {% if contract.payment_type == 'full' %}
-    <div class="payment-full-badge">
-      <span class="material-symbols-rounded">verified</span>
-      Hợp đồng trả dứt điểm
-    </div>
+    <!-- ── NỘI DUNG CHÍNH ── -->
+    <div class="portal-wrap">
 
-    <!-- THANH TOÁN TRẢ GÓP -->
-    {% elif contract.payment_type == 'installment' and installments %}
-    <div class="portal-card" id="installment-section">
-      <div class="installment-head">
-        <div>
-          <div class="ins-head-title">
-            <span class="material-symbols-rounded">payments</span>
-            Lịch thanh toán trả góp
-          </div>
-          <div class="ins-head-stat">
-            Đã thanh toán: <strong>{{ installments|length }}</strong> đợt
-          </div>
-        </div>
+      <!-- NÚT QUAY LẠI + YÊU CẦU HỖ TRỢ -->
+      <div style="display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;" class="top-actions">
+        <a href="{% url 'portal_dashboard' %}" class="btn-back">
+          <span class="material-symbols-rounded">arrow_back</span>
+          Quay lại danh sách
+        </a>
+        <button onclick="openSupportModal()" class="btn-support">
+          <span class="material-symbols-rounded">support_agent</span>
+          Yêu cầu hỗ trợ
+        </button>
+        <button onclick="window.print()" class="btn-print">
+          <span class="material-symbols-rounded">print</span>
+          In trang thông tin
+        </button>
       </div>
 
-      <div class="installment-body">
-        <div class="progress-section">
-          <div class="progress-header">
-            <span class="progress-label">Tiến độ thanh toán</span>
-            <span class="progress-pct">{{ contract.payment_progress }}%</span>
+      <!-- INFO HỢP ĐỒNG -->
+      <div class="portal-card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Chi tiết hợp đồng</div>
+            <div class="card-bar"></div>
           </div>
-          <div class="custom-progress">
-            <div class="progress-fill" style="width:{{ contract.payment_progress|floatformat:0 }}%">
-              <div class="progress-shine"></div>
-            </div>
-            <div class="progress-text">
-              {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+          {% if contract.status == 'completed' %}
+            <span class="status-pill completed">✓ Hoàn thành</span>
+          {% elif contract.status == 'processing' %}
+            <span class="status-pill processing">Đang xử lý</span>
+          {% else %}
+            <span class="status-pill pending">Chờ xử lý</span>
+          {% endif %}
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon"><span class="material-symbols-rounded">badge</span></div>
+            <div>
+              <span class="info-label">Số hợp đồng</span>
+              <span class="info-value">{{ contract.contract_no }}</span>
             </div>
           </div>
-          <div class="progress-footer">
-            <span class="remaining-label">Còn lại:</span>
-            <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+          <div class="info-item">
+            <div class="info-icon"><span class="material-symbols-rounded">calendar_month</span></div>
+            <div>
+              <span class="info-label">Ngày tạo</span>
+              <span class="info-value">{{ contract.created_at|date:"d/m/Y" }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><span class="material-symbols-rounded">work</span></div>
+            <div>
+              <span class="info-label">Loại dịch vụ</span>
+              <span class="info-value">{{ contract.get_service_type_display }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><span class="material-symbols-rounded">payments</span></div>
+            <div>
+              <span class="info-label">Giá trị hợp đồng</span>
+              <span class="info-value">{{ contract.contract_value|intcomma }} VNĐ</span>
+            </div>
           </div>
         </div>
 
-        <div class="table-wrap">
-          <table class="ins-table">
-            <thead>
-              <tr>
-                <th width="5%">#</th>
-                <th>Đợt</th>
-                <th>Số tiền</th>
-                <th>Đến hạn</th>
-                <th>Trạng thái</th>
-                <th>Hóa đơn</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ins in installments %}
-              <tr class="{% if ins.is_paid %}row-paid{% elif ins.is_overdue %}row-overdue{% endif %}">
-                <td><span class="row-num">{{ forloop.counter }}</span></td>
-                <td><strong>{{ ins.notes }}</strong></td>
-                <td><span class="amount-text">{{ ins.amount|floatformat:0 }} VNĐ</span></td>
-                <td>
-                  {% if ins.due_date %}<span class="due-tag">{{ ins.due_date|date:"d/m/Y" }}</span>
-                  {% else %}—{% endif %}
-                </td>
-                <td>
-                  {% if ins.is_paid %}
-                    <span class="badge-paid"><span class="material-symbols-rounded">check_circle</span>Đã trả</span>
-                    {% if ins.paid_date %}<small class="paid-date">{{ ins.paid_date|date:"d/m/Y" }}</small>{% endif %}
-                  {% elif ins.is_overdue %}
-                    <span class="badge-overdue"><span class="material-symbols-rounded">warning</span>Quá hạn</span>
-                  {% else %}
-                    <span class="badge-unpaid"><span class="material-symbols-rounded">schedule</span>Chờ thanh toán</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if ins.is_exported_bill %}
-                    <span class="bill-badge"><span class="material-symbols-rounded">receipt_long</span>Đã xuất HĐ</span>
-                    {% if ins.bill_exported_at %}<small class="bill-date">{{ ins.bill_exported_at|date:"d/m/Y" }}</small>{% endif %}
-                  {% elif ins.is_paid %}
-                    <span style="font-size:12px;color:#bbb;font-weight:600;">Chờ xuất</span>
-                  {% else %}
-                    <span style="color:#ddd;">—</span>
-                  {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    {% endif %}
+        <!-- ẢNH CHỤP HỢP ĐỒNG -->
+        <div style="margin-top: 24px; border-top: 1px solid #f0f0f0; padding-top: 24px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 0 28px;">
+            <span class="material-symbols-rounded" style="font-size: 18px; color: #BE1E2D;">photo_library</span>
+            <span style="font-size: 13px; font-weight: 800; color: #1a1a2e; letter-spacing: 0.04em;">File scan hợp đồng</span>
+            <span style="margin-left: auto; background: #fdecea; color: #BE1E2D; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
+              {{ contract.contract_images.count }} ảnh
+            </span>
+          </div>
 
-    <!-- THÔNG TIN DỊCH VỤ -->
-    {% if service %}
-    <div class="portal-card">
-      <div class="service-head">
-        <span class="material-symbols-rounded">work</span>
-        <h5>Thông tin dịch vụ</h5>
-      </div>
-      <div class="service-body">
-
-        {% if contract.service_type == 'nhanhieu' %}
-          {% for s in service %}
-          <div class="svc-block">
-            <div class="svc-block-head">
-              <h6 class="svc-block-title">
-                <span class="material-symbols-rounded">star</span>
-                Nhãn hiệu: {{ s.trademark_name|default:"Chưa đặt tên" }}
-              </h6>
-            </div>
-            <div class="detail-grid">
-              <div class="detail-item"><label>Số đơn</label><div class="val-hi">{{ s.app_no|default:"—" }}</div></div>
-              <div class="detail-item"><label>Người nộp đơn</label><div class="val">{{ s.applicant|default:"—" }}</div></div>
-              <div class="detail-item"><label>Ngày nộp đơn</label><div class="val">{{ s.filing_date|date:"d/m/Y"|default:"—" }}</div></div>
-                <div class="detail-item">
-                <label>Ngày từ chối</label>
-                <div class="{% if s.deny_document %}val-hi{% else %}val{% endif %}"
-                     {% if s.deny_document %}style="color:#dc2626"{% endif %}>
-                    {% if s.deny_document %}❌ {{ s.deny_document|date:"d/m/Y" }}{% else %}—{% endif %}
+          {% if contract.contract_images.exists %}
+          <div style="padding: 0 28px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
+            {% for img in contract.contract_images.all %}
+            <div style="border-radius: 12px; overflow: hidden; border: 1px solid #f0f0f0; background: white; transition: transform 0.2s, box-shadow 0.2s;"
+                 onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.12)'"
+                 onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
+              <a href="{{ img.image.url }}" target="_blank" style="display: block;">
+                <img src="{{ img.image.url }}" alt="{{ img.name }}"
+                     style="width: 100%; height: 110px; object-fit: cover; display: block;" />
+              </a>
+              <div style="padding: 8px 10px 10px;">
+                <div style="font-size: 11px; font-weight: 700; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">
+                  {{ img.name|default:"Ảnh hợp đồng" }}
                 </div>
+                <div style="font-size: 10px; color: #9ca3af; margin-bottom: 8px;">{{ img.uploaded_at|date:"d/m/Y" }}</div>
+                <a href="{{ img.image.url }}" download
+                   style="display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 0; background: #fdecea; color: #BE1E2D; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none; transition: background 0.2s;"
+                   onmouseover="this.style.background='#BE1E2D';this.style.color='white'"
+                   onmouseout="this.style.background='#fdecea';this.style.color='#BE1E2D'">
+                  <span class="material-symbols-rounded" style="font-size: 14px;">download</span>
+                  Tải xuống
+                </a>
+              </div>
             </div>
-             <div class="detail-item"><label>Ngày cấp</label><div class="val">{{ s.decision_date|date:"d/m/Y"|default:"—" }}</div></div><div class="detail-item"><label>Phân loại</label><div class="val">{{ s.classification|default:"—" }}</div></div>
-              {% if s.trademark_image %}
-              <div class="detail-item"><label>Hình ảnh nhãn hiệu</label><img src="{{ s.trademark_image.url }}" class="trademark-img"/></div>
-              {% endif %}
-            </div>
-            {% with certs=s.certificates.all %}
-            <div class="attach-section">
-              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
-              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
-              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
-            </div>
-            {% endwith %}
+            {% endfor %}
           </div>
-          {% empty %}<p class="attach-empty">Chưa có nhãn hiệu nào.</p>{% endfor %}
-
-        {% elif contract.service_type == 'banquyen' %}
-          {% for s in service %}
-          <div class="svc-block">
-            <div class="svc-block-head">
-              <h6 class="svc-block-title"><span class="material-symbols-rounded">copyright</span>Bản quyền: {{ s.work_name|default:"—" }}</h6>
-            </div>
-            <div class="detail-grid">
-              <div class="detail-item"><label>Số giấy chứng nhận</label><div class="val-hi">{{ s.certificate_no|default:"—" }}</div></div>
-              <div class="detail-item"><label>Tác giả</label><div class="val">{{ s.author|default:"—" }}</div></div>
-              <div class="detail-item"><label>Chủ sở hữu</label><div class="val">{{ s.owner|default:"—" }}</div></div>
-              <div class="detail-item"><label>Loại hình</label><div class="val">{{ s.type|default:"—" }}</div></div>
-            </div>
-            {% with certs=s.certificates.all %}
-            <div class="attach-section">
-              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
-              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
-              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
-            </div>
-            {% endwith %}
-          </div>
-          {% empty %}<p class="attach-empty">Chưa có bản quyền nào.</p>{% endfor %}
-
-        {% elif contract.service_type == 'dkkd' %}
-          {% for s in service %}
-          <div class="svc-block">
-            <div class="svc-block-head">
-              <h6 class="svc-block-title"><span class="material-symbols-rounded">business</span>{{ s.company_name|default:"Đăng ký kinh doanh" }}</h6>
-            </div>
-            <div class="detail-grid">
-              <div class="detail-item"><label>Mã số thuế</label><div class="val-hi">{{ s.tax_code|default:"Chưa cập nhật" }}</div></div>
-              <div class="detail-item"><label>Người đại diện pháp luật</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
-              <div class="detail-item"><label>Loại hình kinh doanh</label><div class="val">{{ s.business_type|default:"—" }}</div></div>
-              <div class="detail-item"><label>Vốn điều lệ</label><div class="val">{{ s.charter_capital|default:"—" }}</div></div>
-              <div class="detail-item"><label>Địa chỉ</label><div class="val">{{ s.address|default:"—" }}</div></div>
-              <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
-            </div>
-            {% with certs=s.certificates.all %}
-            <div class="attach-section">
-              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
-              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
-              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
-            </div>
-            {% endwith %}
-          </div>
-          {% empty %}<p class="attach-empty">Chưa có thông tin đăng ký kinh doanh.</p>{% endfor %}
-
-        {% elif contract.service_type == 'dautu' %}
-          {% for s in service %}
-          <div class="svc-block">
-            <div class="svc-block-head">
-              <h6 class="svc-block-title"><span class="material-symbols-rounded">trending_up</span>Dự án: {{ s.project_name|default:"—" }}</h6>
-            </div>
-            <div class="detail-grid">
-              <div class="detail-item"><label>Mã dự án</label><div class="val-hi">{{ s.project_code|default:"—" }}</div></div>
-              <div class="detail-item"><label>Nhà đầu tư</label><div class="val">{{ s.investor|default:"—" }}</div></div>
-              <div class="detail-item"><label>Địa chỉ dự án</label><div class="val">{{ s.address|default:"—" }}</div></div>
-              <div class="detail-item"><label>Vốn đầu tư</label><div class="val">{{ s.total_capital|default:"—" }}</div></div>
-              <div class="detail-item full"><label>Mục tiêu dự án</label><div class="val">{{ s.objective|default:"—" }}</div></div>
-            </div>
-            {% with certs=s.certificates.all %}
-            <div class="attach-section">
-              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
-              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
-              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
-            </div>
-            {% endwith %}
-          </div>
-          {% empty %}<p class="attach-empty">Chưa có thông tin đầu tư.</p>{% endfor %}
-
-        {% else %}
-          {% for s in service %}
-          <div class="svc-block">
-            <div class="svc-block-head">
-              <h6 class="svc-block-title"><span class="material-symbols-rounded">info</span>Dịch vụ khác</h6>
-            </div>
-            <div class="detail-grid">
-              <div class="detail-item"><label>Người liên hệ</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
-              <div class="detail-item"><label>Chức vụ</label><div class="val">{{ s.position|default:"—" }}</div></div>
-              <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
-              <div class="detail-item"><label>Email</label><div class="val">{{ s.email|default:"—" }}</div></div>
-              <div class="detail-item full"><label>Mô tả dịch vụ</label><div class="val">{{ s.description|default:"—" }}</div></div>
-            </div>
-            {% with certs=s.certificates.all %}
-            <div class="attach-section">
-              <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
-              {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
-              {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
-            </div>
-            {% endwith %}
-          </div>
-          {% empty %}<p class="attach-empty">Chưa có dịch vụ nào.</p>{% endfor %}
-        {% endif %}
-
+          {% else %}
+          <p style="padding: 0 28px 24px; color: #bbb; font-size: 13px; font-weight: 600;">Chưa có ảnh hợp đồng nào</p>
+          {% endif %}
+        </div>
       </div>
+
+      <!-- THANH TOÁN DỨT ĐIỂM -->
+      {% if contract.payment_type == 'full' %}
+      <div class="payment-full-badge">
+        <span class="material-symbols-rounded">verified</span>
+        Hợp đồng trả dứt điểm
+      </div>
+
+      <!-- THANH TOÁN TRẢ GÓP -->
+      {% elif contract.payment_type == 'installment' and installments %}
+      <div class="portal-card" id="installment-section">
+        <div class="installment-head">
+          <div>
+            <div class="ins-head-title">
+              <span class="material-symbols-rounded">payments</span>
+              Lịch thanh toán trả góp
+            </div>
+            <div class="ins-head-stat">
+              Đã thanh toán: <strong>{{ installments|length }}</strong> đợt
+            </div>
+          </div>
+        </div>
+
+        <div class="installment-body">
+          <div class="progress-section">
+            <div class="progress-header">
+              <span class="progress-label">Tiến độ thanh toán</span>
+              <span class="progress-pct">{{ contract.payment_progress }}%</span>
+            </div>
+            <div class="custom-progress">
+              <div class="progress-fill" style="width:{{ contract.payment_progress|floatformat:0 }}%">
+                <div class="progress-shine"></div>
+              </div>
+              <div class="progress-text">
+                {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+              </div>
+            </div>
+            <div class="progress-footer">
+              <span class="remaining-label">Còn lại:</span>
+              <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="ins-table">
+              <thead>
+                <tr>
+                  <th width="5%">#</th>
+                  <th>Đợt</th>
+                  <th>Số tiền</th>
+                  <th>Đến hạn</th>
+                  <th>Trạng thái</th>
+                  <th>Hóa đơn</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ins in installments %}
+                <tr class="{% if ins.is_paid %}row-paid{% elif ins.is_overdue %}row-overdue{% endif %}">
+                  <td><span class="row-num">{{ forloop.counter }}</span></td>
+                  <td><strong>{{ ins.notes }}</strong></td>
+                  <td><span class="amount-text">{{ ins.amount|floatformat:0 }} VNĐ</span></td>
+                  <td>
+                    {% if ins.due_date %}<span class="due-tag">{{ ins.due_date|date:"d/m/Y" }}</span>
+                    {% else %}—{% endif %}
+                  </td>
+                  <td>
+                    {% if ins.is_paid %}
+                      <span class="badge-paid"><span class="material-symbols-rounded">check_circle</span>Đã trả</span>
+                      {% if ins.paid_date %}<small class="paid-date">{{ ins.paid_date|date:"d/m/Y" }}</small>{% endif %}
+                    {% elif ins.is_overdue %}
+                      <span class="badge-overdue"><span class="material-symbols-rounded">warning</span>Quá hạn</span>
+                    {% else %}
+                      <span class="badge-unpaid"><span class="material-symbols-rounded">schedule</span>Chờ thanh toán</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if ins.is_exported_bill %}
+                      <span class="bill-badge"><span class="material-symbols-rounded">receipt_long</span>Đã xuất HĐ</span>
+                      {% if ins.bill_exported_at %}<small class="bill-date">{{ ins.bill_exported_at|date:"d/m/Y" }}</small>{% endif %}
+                    {% elif ins.is_paid %}
+                      <span style="font-size:12px;color:#bbb;font-weight:600;">Chờ xuất</span>
+                    {% else %}
+                      <span style="color:#ddd;">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- THÔNG TIN DỊCH VỤ -->
+      {% if service %}
+      <div class="portal-card">
+        <div class="service-head">
+          <span class="material-symbols-rounded">work</span>
+          <h5>Thông tin dịch vụ</h5>
+        </div>
+        <div class="service-body">
+
+          {% if contract.service_type == 'nhanhieu' %}
+            {% for s in service %}
+            <div class="svc-block">
+              <div class="svc-block-head">
+                <h6 class="svc-block-title">
+                  <span class="material-symbols-rounded">star</span>
+                  Nhãn hiệu: {{ s.trademark_name|default:"Chưa đặt tên" }}
+                </h6>
+              </div>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Số đơn</label><div class="val-hi">{{ s.app_no|default:"—" }}</div></div>
+                <div class="detail-item"><label>Người nộp đơn</label><div class="val">{{ s.applicant|default:"—" }}</div></div>
+                <div class="detail-item"><label>Ngày nộp đơn</label><div class="val">{{ s.filing_date|date:"d/m/Y"|default:"—" }}</div></div>
+                <div class="detail-item">
+                  <label>Ngày từ chối</label>
+                  <div class="{% if s.deny_document %}val-hi{% else %}val{% endif %}"
+                       {% if s.deny_document %}style="color:#dc2626"{% endif %}>
+                    {% if s.deny_document %}❌ {{ s.deny_document|date:"d/m/Y" }}{% else %}—{% endif %}
+                  </div>
+                </div>
+                <div class="detail-item"><label>Ngày cấp</label><div class="val">{{ s.decision_date|date:"d/m/Y"|default:"—" }}</div></div>
+                <div class="detail-item"><label>Phân loại</label><div class="val">{{ s.classification|default:"—" }}</div></div>
+                {% if s.trademark_image %}
+                <div class="detail-item"><label>Hình ảnh nhãn hiệu</label><img src="{{ s.trademark_image.url }}" class="trademark-img"/></div>
+                {% endif %}
+              </div>
+              {% with certs=s.certificates.all %}
+              <div class="attach-section">
+                <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+                {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+                {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+              </div>
+              {% endwith %}
+            </div>
+            {% empty %}<p class="attach-empty">Chưa có nhãn hiệu nào.</p>{% endfor %}
+
+          {% elif contract.service_type == 'banquyen' %}
+            {% for s in service %}
+            <div class="svc-block">
+              <div class="svc-block-head">
+                <h6 class="svc-block-title"><span class="material-symbols-rounded">copyright</span>Bản quyền: {{ s.work_name|default:"—" }}</h6>
+              </div>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Số giấy chứng nhận</label><div class="val-hi">{{ s.certificate_no|default:"—" }}</div></div>
+                <div class="detail-item"><label>Tác giả</label><div class="val">{{ s.author|default:"—" }}</div></div>
+                <div class="detail-item"><label>Chủ sở hữu</label><div class="val">{{ s.owner|default:"—" }}</div></div>
+                <div class="detail-item"><label>Loại hình</label><div class="val">{{ s.type|default:"—" }}</div></div>
+              </div>
+              {% with certs=s.certificates.all %}
+              <div class="attach-section">
+                <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+                {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+                {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+              </div>
+              {% endwith %}
+            </div>
+            {% empty %}<p class="attach-empty">Chưa có bản quyền nào.</p>{% endfor %}
+
+          {% elif contract.service_type == 'dkkd' %}
+            {% for s in service %}
+            <div class="svc-block">
+              <div class="svc-block-head">
+                <h6 class="svc-block-title"><span class="material-symbols-rounded">business</span>{{ s.company_name|default:"Đăng ký kinh doanh" }}</h6>
+              </div>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Mã số thuế</label><div class="val-hi">{{ s.tax_code|default:"Chưa cập nhật" }}</div></div>
+                <div class="detail-item"><label>Người đại diện pháp luật</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
+                <div class="detail-item"><label>Loại hình kinh doanh</label><div class="val">{{ s.business_type|default:"—" }}</div></div>
+                <div class="detail-item"><label>Vốn điều lệ</label><div class="val">{{ s.charter_capital|default:"—" }}</div></div>
+                <div class="detail-item"><label>Địa chỉ</label><div class="val">{{ s.address|default:"—" }}</div></div>
+                <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
+              </div>
+              {% with certs=s.certificates.all %}
+              <div class="attach-section">
+                <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+                {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+                {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+              </div>
+              {% endwith %}
+            </div>
+            {% empty %}<p class="attach-empty">Chưa có thông tin đăng ký kinh doanh.</p>{% endfor %}
+
+          {% elif contract.service_type == 'dautu' %}
+            {% for s in service %}
+            <div class="svc-block">
+              <div class="svc-block-head">
+                <h6 class="svc-block-title"><span class="material-symbols-rounded">trending_up</span>Dự án: {{ s.project_name|default:"—" }}</h6>
+              </div>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Mã dự án</label><div class="val-hi">{{ s.project_code|default:"—" }}</div></div>
+                <div class="detail-item"><label>Nhà đầu tư</label><div class="val">{{ s.investor|default:"—" }}</div></div>
+                <div class="detail-item"><label>Địa chỉ dự án</label><div class="val">{{ s.address|default:"—" }}</div></div>
+                <div class="detail-item"><label>Vốn đầu tư</label><div class="val">{{ s.total_capital|default:"—" }}</div></div>
+                <div class="detail-item full"><label>Mục tiêu dự án</label><div class="val">{{ s.objective|default:"—" }}</div></div>
+              </div>
+              {% with certs=s.certificates.all %}
+              <div class="attach-section">
+                <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+                {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+                {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+              </div>
+              {% endwith %}
+            </div>
+            {% empty %}<p class="attach-empty">Chưa có thông tin đầu tư.</p>{% endfor %}
+
+          {% else %}
+            {% for s in service %}
+            <div class="svc-block">
+              <div class="svc-block-head">
+                <h6 class="svc-block-title"><span class="material-symbols-rounded">info</span>Dịch vụ khác</h6>
+              </div>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Người liên hệ</label><div class="val">{{ s.legal_representative|default:"—" }}</div></div>
+                <div class="detail-item"><label>Chức vụ</label><div class="val">{{ s.position|default:"—" }}</div></div>
+                <div class="detail-item"><label>Số điện thoại</label><div class="val">{{ s.phone|default:"—" }}</div></div>
+                <div class="detail-item"><label>Email</label><div class="val">{{ s.email|default:"—" }}</div></div>
+                <div class="detail-item full"><label>Mô tả dịch vụ</label><div class="val">{{ s.description|default:"—" }}</div></div>
+              </div>
+              {% with certs=s.certificates.all %}
+              <div class="attach-section">
+                <div class="attach-title">📎 Tài liệu đính kèm ({{ certs.count }})</div>
+                {% if certs %}<div class="attach-list">{% for cert in certs %}<a href="{{ cert.file.url }}" target="_blank" class="attach-btn"><span class="material-symbols-rounded">attach_file</span>{{ cert.name|default:"Tài liệu" }}</a>{% endfor %}</div>
+                {% else %}<p class="attach-empty">Chưa có tài liệu đính kèm.</p>{% endif %}
+              </div>
+              {% endwith %}
+            </div>
+            {% empty %}<p class="attach-empty">Chưa có dịch vụ nào.</p>{% endfor %}
+          {% endif %}
+
+        </div>
+      </div>
+      {% endif %}
+
+    </div>{# end portal-wrap #}
+
+    <!-- ── BANNER PHẢI ── -->
+    <div class="banner-side">
+      {% if banner_right %}
+      <a href="{{ banner_right.link }}" target="_blank" rel="noopener">
+        <img src="{{ banner_right.image.url }}" alt="Banner phải">
+      </a>
+      {% endif %}
     </div>
-    {% endif %}
 
-  </div>
-</div>
-
-
-
-
+  </div>{# end portal-layout-outer #}
+</div>{# end portal-page #}
 
 <!-- SUPPORT MODAL -->
 <div id="supportModal" class="modal-overlay">
@@ -883,21 +743,17 @@
         <span class="material-symbols-rounded">close</span>
       </button>
     </div>
-    
     <div class="modal-body">
       <form id="supportForm">
         <input type="hidden" name="contract_id" value="{{ contract.id }}">
-
         <div class="form-group">
           <label>Tiêu đề <span class="required">*</span></label>
           <input type="text" id="subject" placeholder="Ví dụ: Hỏi về tiến độ nhãn hiệu" required>
         </div>
-
         <div class="form-group">
           <label>Nội dung yêu cầu <span class="required">*</span></label>
           <textarea id="message" rows="6" placeholder="Mô tả chi tiết vấn đề bạn cần hỗ trợ..." required></textarea>
         </div>
-
         <div class="form-group">
           <label>Phương thức liên hệ ưu tiên</label>
           <select id="contact_method">
@@ -908,54 +764,34 @@
         </div>
       </form>
     </div>
-
     <div class="modal-footer">
       <button onclick="closeSupportModal()" class="btn-cancel">Hủy</button>
       <button onclick="submitSupportRequest()" class="btn-submit">Gửi yêu cầu</button>
     </div>
   </div>
 </div>
-<script>
-function updateFileLabel(input) {
-  const label = document.getElementById('fileLabel');
-  if (input.files && input.files.length > 0) {
-    label.textContent = input.files.length === 1
-      ? input.files[0].name
-      : input.files.length + ' file đã chọn';
-    label.style.color = '#BE1E2D';
-  } else {
-    label.textContent = 'Chưa chọn file';
-    label.style.color = '#9ca3af';
-  }
-}
-</script>
+
 <script>
 function openSupportModal() {
   document.getElementById('supportModal').style.display = 'flex';
 }
-
 function closeSupportModal() {
   document.getElementById('supportModal').style.display = 'none';
 }
-
 document.getElementById('supportModal').addEventListener('click', function(e) {
   if (e.target === this) closeSupportModal();
 });
-
 function submitSupportRequest() {
   const subject        = document.getElementById('subject').value.trim();
   const message        = document.getElementById('message').value.trim();
   const contact_method = document.getElementById('contact_method').value;
-
   if (!subject || !message) {
     alert("Vui lòng nhập đầy đủ tiêu đề và nội dung!");
     return;
   }
-
   const btn = document.querySelector('.btn-submit');
   btn.disabled = true;
   btn.textContent = 'Đang gửi...';
-
   fetch("{% url 'portal_support_request' contract.id %}", {
     method: 'POST',
     headers: {
