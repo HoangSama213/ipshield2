@@ -5,8 +5,52 @@
 
   <style>
     * { box-sizing: border-box; }
-    .portal-page { min-height: 80vh; background: #f4f4f6; font-family: 'Be Vietnam Pro', sans-serif; padding: 40px 20px 80px; }
-    .portal-wrap { max-width: 960px; margin: 0 auto; }
+    .portal-page {
+  min-height: 80vh;
+  background: #f4f4f6;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  padding: 40px 0 80px;
+}
+
+   /* ── LAYOUT ── */
+.portal-layout-outer {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.portal-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── BANNER 2 BÊN ── */
+.banner-side {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+}
+
+.banner-side a {
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.banner-side a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.banner-side img { width: 100%; height: auto; display: block; }
+
+@media (max-width: 1100px) { .banner-side { display: none; } }
+
+    /* ── NỘI DUNG ── */
     .portal-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .portal-greeting h4 { font-size: 22px; font-weight: 800; color: #1a1a2e; margin: 0 0 2px; }
     .portal-greeting small { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #aaa; }
@@ -18,7 +62,8 @@
     .btn-topbar.logout:hover { background: #c0392b; color: #fff; }
     .btn-topbar .material-symbols-rounded { font-size: 16px; }
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-    .stat-card { background: #fff; border-radius: 20px; padding: 24px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; position: relative; overflow: hidden; }
+    .stat-card { background: #fff; border-radius: 20px; padding: 24px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; position: relative; overflow: hidden; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); }
     .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 20px 20px 0 0; }
     .stat-card.total::before   { background: linear-gradient(90deg, #1a1a2e, #3a3a5e); }
     .stat-card.done::before    { background: linear-gradient(90deg, #27ae60, #2ecc71); }
@@ -66,159 +111,182 @@
   </style>
 
   <div class="portal-page">
-    <div class="portal-wrap">
+    <div class="portal-layout-outer">
 
-      <!-- Topbar -->
-      <div class="portal-topbar">
-        <div class="portal-greeting">
-          <h4>Xin chào, {{ customer.name }} 👋</h4>
-          <small>MÃ KH: {{ customer.customer_code }}</small>
-        </div>
-        <div class="topbar-actions">
-          <a href="{% url 'portal_customer_profile' %}" class="btn-topbar profile">
-            <span class="material-symbols-rounded">person</span>
-            Hồ sơ
-          </a>
-          <a href="{% url 'customer_logout' %}" class="btn-topbar logout">
-            <span class="material-symbols-rounded">logout</span>
-            Đăng xuất
-          </a>
-        </div>
+      <!-- ── BANNER TRÁI ── -->
+      <div class="banner-side left-banner" {% if not banner_left %}style="visibility:hidden"{% endif %}>
+        {% if banner_left %}
+        <a href="{{ banner_left.link }}" target="_blank" rel="noopener">
+          <img src="{{ banner_left.image.url }}" alt="Banner trái">
+        </a>
+        {% endif %}
       </div>
 
-      <!-- Stat Cards -->
-      <div class="stat-grid">
-        <div class="stat-card total">
-          <div class="stat-number">{{ total }}</div>
-          <div class="stat-label">Tổng Hợp Đồng</div>
-        </div>
-        <div class="stat-card done">
-          <div class="stat-number">{{ completed }}</div>
-          <div class="stat-label">Hoàn thành</div>
-        </div>
-        <div class="stat-card pending">
-          <div class="stat-number">{{ pending }}</div>
-          <div class="stat-label">Đang xử lý</div>
-        </div>
-      </div>
+      <!-- ── NỘI DUNG CHÍNH ── -->
+      <div class="portal-wrap">
 
-      <!-- Contract Tabs -->
-      <div class="portal-card">
-        <div class="portal-card-header">
-          <div class="title">Danh sách hợp đồng</div>
-          <div class="bar"></div>
-        </div>
-
-        <!-- TAB BAR — dùng grouped từ view, không cần filter -->
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('all', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">folder</span>
-            Tất cả
-            <span class="tab-count">{{ contracts|length }}</span>
-          </button>
-          {% if grouped.nhanhieu %}
-          <button class="tab-btn" onclick="switchTab('nhanhieu', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">star</span>
-            Nhãn hiệu
-            <span class="tab-count">{{ grouped.nhanhieu|length }}</span>
-          </button>
-          {% endif %}
-          {% if grouped.banquyen %}
-          <button class="tab-btn" onclick="switchTab('banquyen', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">copyright</span>
-            Bản quyền
-            <span class="tab-count">{{ grouped.banquyen|length }}</span>
-          </button>
-          {% endif %}
-          {% if grouped.dkkd %}
-          <button class="tab-btn" onclick="switchTab('dkkd', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">business</span>
-            ĐKKD
-            <span class="tab-count">{{ grouped.dkkd|length }}</span>
-          </button>
-          {% endif %}
-          {% if grouped.dautu %}
-          <button class="tab-btn" onclick="switchTab('dautu', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">trending_up</span>
-            Đầu tư
-            <span class="tab-count">{{ grouped.dautu|length }}</span>
-          </button>
-          {% endif %}
-          {% if grouped.khac %}
-          <button class="tab-btn" onclick="switchTab('khac', this)">
-            <span class="material-symbols-rounded" style="font-size:15px">more_horiz</span>
-            Khác
-            <span class="tab-count">{{ grouped.khac|length }}</span>
-          </button>
-          {% endif %}
-        </div>
-
-        <!-- TAB PANES -->
-        {% for tab_id, rows in grouped_tabs %}
-        <div class="tab-pane {% if forloop.first %}active{% endif %}" id="tab-{{ tab_id }}">
-          {% if rows %}
-          <div style="overflow-x:auto">
-            <table class="portal-table">
-              <thead>
-                <tr>
-                  <th>Số HĐ</th>
-                  <th>Dịch vụ</th>
-                  <th>Giá trị</th>
-                  <th>Thanh toán</th>
-                  <th>Trạng thái</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for contract in rows %}
-                <tr>
-                  <td><span class="contract-no">{{ contract.contract_no }}</span></td>
-                  <td>{{ contract.get_service_type_display }}</td>
-                  <td>{{ contract.contract_value|floatformat:0 }} VNĐ</td>
-                  <td>
-                    {% if contract.payment_type == 'installment' %}
-                      <div class="mini-progress">
-                        <div class="mini-progress-bar" style="width:{{ contract.payment_progress }}%"></div>
-                      </div>
-                      <span class="progress-pct">{{ contract.payment_progress }}%</span>
-                    {% else %}
-                      <span class="portal-badge full-pay">Dứt điểm</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if contract.status == 'completed' %}
-                      <span class="portal-badge completed">Hoàn thành</span>
-                    {% elif contract.status == 'processing' %}
-                      <span class="portal-badge processing">Đang xử lý</span>
-                    {% elif contract.status == 'pending' %}
-                      <span class="portal-badge pending">Chờ xử lý</span>
-                    {% else %}
-                      <span class="portal-badge other">{{ contract.get_status_display }}</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="{% url 'portal_contract_detail' contract.id %}" class="btn-detail">
-                      <span class="material-symbols-rounded">arrow_forward</span>
-                      Chi tiết
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        <!-- Topbar -->
+        <div class="portal-topbar">
+          <div class="portal-greeting">
+            <h4>Xin chào, {{ customer.name }} 👋</h4>
+            <small>MÃ KH: {{ customer.customer_code }}</small>
           </div>
-          {% else %}
-          <div class="empty-state">
-            <span class="material-symbols-rounded">folder_open</span>
-            <p>Không có hợp đồng nào.</p>
+          <div class="topbar-actions">
+            <a href="{% url 'portal_customer_profile' %}" class="btn-topbar profile">
+              <span class="material-symbols-rounded">person</span>
+              Hồ sơ
+            </a>
+            <a href="{% url 'customer_logout' %}" class="btn-topbar logout">
+              <span class="material-symbols-rounded">logout</span>
+              Đăng xuất
+            </a>
           </div>
-          {% endif %}
         </div>
-        {% endfor %}
 
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card total" onclick="filterByStatus('all')" style="cursor:pointer">
+            <div class="stat-number">{{ total }}</div>
+            <div class="stat-label">Tổng Hợp Đồng</div>
+          </div>
+          <div class="stat-card done" onclick="filterByStatus('completed')" style="cursor:pointer">
+            <div class="stat-number">{{ completed }}</div>
+            <div class="stat-label">Hoàn thành</div>
+          </div>
+          <div class="stat-card pending" onclick="filterByStatus('processing')" style="cursor:pointer">
+            <div class="stat-number">{{ pending }}</div>
+            <div class="stat-label">Đang xử lý</div>
+          </div>
+        </div>
+
+        <!-- Contract Tabs -->
+        <div class="portal-card">
+          <div class="portal-card-header">
+            <div class="title">Danh sách hợp đồng</div>
+            <div class="bar"></div>
+          </div>
+
+          <!-- TAB BAR -->
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('all', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">folder</span>
+              Tất cả
+              <span class="tab-count">{{ total }}</span>
+            </button>
+            {% if grouped.nhanhieu %}
+            <button class="tab-btn" onclick="switchTab('nhanhieu', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">star</span>
+              Nhãn hiệu
+              <span class="tab-count">{{ grouped.nhanhieu|length }}</span>
+            </button>
+            {% endif %}
+            {% if grouped.banquyen %}
+            <button class="tab-btn" onclick="switchTab('banquyen', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">copyright</span>
+              Bản quyền
+              <span class="tab-count">{{ grouped.banquyen|length }}</span>
+            </button>
+            {% endif %}
+            {% if grouped.dkkd %}
+            <button class="tab-btn" onclick="switchTab('dkkd', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">business</span>
+              ĐKKD
+              <span class="tab-count">{{ grouped.dkkd|length }}</span>
+            </button>
+            {% endif %}
+            {% if grouped.dautu %}
+            <button class="tab-btn" onclick="switchTab('dautu', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">trending_up</span>
+              Đầu tư
+              <span class="tab-count">{{ grouped.dautu|length }}</span>
+            </button>
+            {% endif %}
+            {% if grouped.khac %}
+            <button class="tab-btn" onclick="switchTab('khac', this)">
+              <span class="material-symbols-rounded" style="font-size:15px">more_horiz</span>
+              Khác
+              <span class="tab-count">{{ grouped.khac|length }}</span>
+            </button>
+            {% endif %}
+          </div>
+
+          <!-- TAB PANES -->
+          {% for tab_id, rows in grouped_tabs %}
+          <div class="tab-pane {% if forloop.first %}active{% endif %}" id="tab-{{ tab_id }}">
+            {% if rows %}
+            <div style="overflow-x:auto">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Số HĐ</th>
+                    <th>Dịch vụ</th>
+                    <th>Giá trị</th>
+                    <th>Thanh toán</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contract in rows %}
+                  <tr data-status="{{ contract.status }}">
+                    <td><span class="contract-no">{{ contract.contract_no }}</span></td>
+                    <td>{{ contract.get_service_type_display }}</td>
+                    <td>{{ contract.contract_value|floatformat:0 }} VNĐ</td>
+                    <td>
+                      {% if contract.payment_type == 'installment' %}
+                        <div class="mini-progress">
+                          <div class="mini-progress-bar" style="width:{{ contract.payment_progress }}%"></div>
+                        </div>
+                        <span class="progress-pct">{{ contract.payment_progress }}%</span>
+                      {% else %}
+                        <span class="portal-badge full-pay">Dứt điểm</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if contract.status == 'completed' %}
+                        <span class="portal-badge completed">Hoàn thành</span>
+                      {% elif contract.status == 'processing' %}
+                        <span class="portal-badge processing">Đang xử lý</span>
+                      {% elif contract.status == 'pending' %}
+                        <span class="portal-badge pending">Chờ xử lý</span>
+                      {% else %}
+                        <span class="portal-badge other">{{ contract.get_status_display }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{% url 'portal_contract_detail' contract.id %}" class="btn-detail">
+                        <span class="material-symbols-rounded">arrow_forward</span>
+                        Chi tiết
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+              <span class="material-symbols-rounded">folder_open</span>
+              <p>Không có hợp đồng nào.</p>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+        </div>{# end portal-card #}
+      </div>{# end portal-wrap #}
+
+      <!-- ── BANNER PHẢI ── -->
+      <div class="banner-side right-banner">
+        {% if banner_right %}
+        <a href="{{ banner_right.link }}" target="_blank" rel="noopener">
+          <img src="{{ banner_right.image.url }}" alt="Banner phải">
+        </a>
+        {% endif %}
       </div>
-    </div>
-  </div>
+
+    </div>{# end portal-layout-outer #}
+  </div>{# end portal-page #}
 
   <script>
   function switchTab(name, btn) {
@@ -226,6 +294,46 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     btn.classList.add('active');
+    // Reset filter
+    document.querySelectorAll('#tab-all tr[data-status]').forEach(r => r.style.display = '');
+    document.querySelectorAll('.stat-card').forEach(c => c.style.outline = 'none');
+  }
+
+  function filterByStatus(status) {
+    // Highlight card
+    document.querySelectorAll('.stat-card').forEach(c => c.style.outline = 'none');
+    if (status === 'all') {
+      document.querySelector('.stat-card.total').style.outline = '3px solid #1a1a2e';
+    } else if (status === 'completed') {
+      document.querySelector('.stat-card.done').style.outline = '3px solid #27ae60';
+    } else if (status === 'processing') {
+      document.querySelector('.stat-card.pending').style.outline = '3px solid #c0392b';
+    }
+
+    // Chuyển về tab "Tất cả"
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-all').classList.add('active');
+    document.querySelector('.tab-btn').classList.add('active');
+
+    // Filter theo data-status
+    const rows = document.querySelectorAll('#tab-all tr[data-status]');
+
+    rows.forEach(row => {
+      const s = row.dataset.status;
+      if (status === 'all') {
+        row.style.display = '';
+      } else if (status === 'completed') {
+        row.style.display = (s === 'completed') ? '' : 'none';
+      } else if (status === 'processing') {
+        row.style.display = (s === 'processing' || s === 'pending' || s === 'paused') ? '' : 'none';
+      }
+    });
+
+    // Cập nhật tab count
+    const visible = [...rows].filter(r => r.style.display !== 'none').length;
+    document.querySelector('.tab-btn .tab-count').textContent =
+      status === 'all' ? rows.length : visible;
   }
   </script>
 

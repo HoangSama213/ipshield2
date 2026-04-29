@@ -156,34 +156,88 @@
         </div>
       </div>
 
-      <!-- STAT CARDS -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng nhãn hiệu</p>
-          <p class="text-2xl font-bold text-gray-800">{{ contracts.count|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã nộp đơn</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-filled">{{ stats.filled|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã cấp bằng</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-decision">{{ stats.decision|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hợp lệ hình thức</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-valid">{{ stats.valid|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Bị từ chối</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-deny">{{ stats.deny|default:"0" }}</p>
-        </div>
-      </div>
-    </div>
+     <!-- STAT CARDS — clickable -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
+
+  <div onclick="filterByType('total')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-gray-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng nhãn hiệu</p>
+    <p class="text-2xl font-bold text-gray-800" id="stat-total">0</p>
+  </div>
+
+  <div onclick="filterByType('filled')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-blue-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã nộp đơn</p>
+    <p class="text-2xl font-bold text-blue-600" id="stat-filled">0</p>
+  </div>
+
+  <div onclick="filterByType('decision')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-green-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã cấp bằng</p>
+    <p class="text-2xl font-bold text-green-600" id="stat-decision">0</p>
+  </div>
+
+  <div onclick="filterByType('valid')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-yellow-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hợp lệ hình thức</p>
+    <p class="text-2xl font-bold text-yellow-600" id="stat-valid">0</p>
+  </div>
+
+  <div onclick="filterByType('deny')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-red-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Bị từ chối</p>
+    <p class="text-2xl font-bold text-red-600" id="stat-deny">0</p>
+  </div>
+
+</div>
+
+<!-- ── BẢNG KẾT QUẢ FILTER (ẩn mặc định) ── -->
+<div id="filter-result-section" class="hidden mt-8 mb-6">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-bold text-gray-700" id="filter-result-title">Kết quả</h3>
+    <button onclick="closeFilterResult()"
+            class="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg px-3 py-1">
+      ✕ Đóng
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div id="filter-loading" class="hidden text-center py-8 text-gray-400 text-sm">
+    <svg class="animate-spin h-5 w-5 mx-auto mb-2 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+    Đang tải...
+  </div>
+
+  <!-- Table -->
+  <div id="filter-table-wrap" class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+        <tr>
+          <th class="px-3 py-3 text-left">STT</th>
+          <th class="px-3 py-3 text-left">Số đơn</th>
+          <th class="px-3 py-3 text-left">Tên nhãn hiệu</th>
+          <th class="px-3 py-3 text-left">Người nộp</th>
+          <th class="px-3 py-3 text-left">Ngày nộp</th>
+          <th class="px-3 py-3 text-left">Ngày cấp</th>
+          <th class="px-3 py-3 text-left">Ngày hợp lệ</th>
+          <th class="px-3 py-3 text-left">Số HĐ</th>
+          <th class="px-3 py-3 text-left">Khách hàng</th>
+          <th class="px-3 py-3 text-left">Logo</th>
+          <th class="px-3 py-3 text-left">Xem</th>
+        </tr>
+      </thead>
+      <tbody id="filter-table-body" class="divide-y divide-gray-100 text-gray-700">
+      </tbody>
+    </table>
+    <p id="filter-empty" class="hidden text-center text-gray-400 py-8 text-sm">Không có dữ liệu.</p>
+  </div>
+</div>
 
     <!-- Filters -->
     <form method="get">
-    <div class="search-section">
+    <div class="search-section" style="margin-top: 2rem;">
         <h3>🔍 Tìm kiếm hợp đồng nhãn hiệu</h3>
 
         <div class="row g-2 mt-2">
@@ -209,7 +263,7 @@
 
 <!-- 🔥 HIỂN THỊ DANH SÁCH NHÃN HIỆU (NẾU TÌM THEO SỐ ĐƠN) -->
 {% if trademarks %}
-<div class="contracts-card mt-3">
+<div class="contracts-card mt-5">
 
 
     <div class="table-responsive">
@@ -264,7 +318,7 @@
 
 <!-- HIỂN THỊ DANH SÁCH HỢP ĐỒNG (NẾU TÌM THEO THÔNG TIN KHÁC) -->
 {% elif contracts %}
-<div class="contracts-card">
+<div class="contracts-card mt-5">
     <div class="table-responsive">
         <table class="contracts-table table table-bordered table-hover">
             <thead>
@@ -343,191 +397,182 @@
 <script>
 // ── Period switcher ──
 let currentPeriod = 'month';
+let currentFilterType = '';
 
 function setPeriod(p) {
   currentPeriod = p;
-
   document.querySelectorAll('.period-picker').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'));
-
   document.getElementById('picker-' + p).classList.remove('hidden');
   document.getElementById('btn-' + p).classList.add('active');
-
   fetchStats();
+  // Nếu đang mở bảng filter thì reload lại
+  if (currentFilterType) filterByType(currentFilterType);
 }
 
-// ── Lấy params ──
 function getParams() {
   if (currentPeriod === 'day') {
-    return {
-      period: 'day',
-      date: document.getElementById('stat-date').value
-    };
-  } 
-  else if (currentPeriod === 'month') {
+    return { period: 'day', date: document.getElementById('stat-date').value };
+  } else if (currentPeriod === 'month') {
     return {
       period: 'month',
       month: document.getElementById('stat-month').value,
-      year: document.getElementById('stat-month-year').value
+      year:  document.getElementById('stat-month-year').value
     };
-  } 
-  else {
-    return {
-      period: 'year',
-      year: document.getElementById('stat-year').value
-    };
+  } else {
+    return { period: 'year', year: document.getElementById('stat-year').value };
   }
 }
 
 // ── FETCH STATS ──
 function fetchStats() {
   const params = new URLSearchParams(getParams());
-
   fetch(`{% url 'dashboard_trademark_stats_api' %}?${params.toString()}`)
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
-      // map đúng key backend trả về
-      const map = {
-        total: 'total',
-        filled: 'filled',
-        decision: 'decision',
-        valid: 'valid',
-        deny: 'deny'
-      };
-
-      Object.keys(map).forEach(key => {
+      ['total','filled','decision','valid','deny'].forEach(key => {
         const el = document.getElementById('stat-' + key);
-        if (el) el.textContent = data[map[key]] || 0;
+        if (el) el.textContent = data[key] || 0;
       });
     })
     .catch(err => console.error('Stats error:', err));
 }
 
-// ── AUTO LOAD ──
 ['stat-date','stat-month','stat-month-year','stat-year'].forEach(id => {
   const el = document.getElementById(id);
-  if (el) {
-    el.addEventListener('change', fetchStats);
-  }
+  if (el) el.addEventListener('change', () => {
+    fetchStats();
+    if (currentFilterType) filterByType(currentFilterType);
+  });
 });
 
 fetchStats();
 
+// ────────────────────────────────────
+// 🔥 FILTER BY TYPE — click stat card
+// ────────────────────────────────────
+const FILTER_LABELS = {
+  total:    'Tổng nhãn hiệu',
+  filled:   'Đã nộp đơn',
+  decision: 'Đã cấp bằng',
+  valid:    'Hợp lệ hình thức',
+  deny:     'Bị từ chối',
+};
 
-// ─────────────────────────────
-// 🔍 FILTER (SEARCH KHÔNG RELOAD)
-// ─────────────────────────────
-function doFilter() {
-  const keyword = document.querySelector('input[name="q"]').value;
-
-  // nếu rỗng thì reload lại danh sách ban đầu
-  if (!keyword) {
-    window.location.href = window.location.pathname;
+function filterByType(type) {
+  // Toggle: click lại cùng loại thì đóng
+  if (currentFilterType === type) {
+    closeFilterResult();
     return;
   }
 
-  window.location.href = `?q=${encodeURIComponent(keyword)}`;
+  currentFilterType = type;
+
+  // Highlight card đang chọn
+  document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('ring-2','ring-red-400'));
+  const cards = document.querySelectorAll('.stat-card');
+  const order = ['total','filled','decision','valid','deny'];
+  const idx   = order.indexOf(type);
+  if (idx >= 0 && cards[idx]) cards[idx].classList.add('ring-2','ring-red-400');
+
+  // Hiển thị section
+  const section = document.getElementById('filter-result-section');
+  section.classList.remove('hidden');
+  document.getElementById('filter-result-title').textContent =
+    `${FILTER_LABELS[type] || type} — đang tải...`;
+  document.getElementById('filter-loading').classList.remove('hidden');
+  document.getElementById('filter-table-wrap').classList.add('hidden');
+  document.getElementById('filter-empty').classList.add('hidden');
+
+  // Scroll xuống
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const params = new URLSearchParams({ ...getParams(), filter_type: type });
+
+  fetch(`{% url 'trademark_filter_list' %}?${params.toString()}`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('filter-loading').classList.add('hidden');
+      document.getElementById('filter-result-title').textContent =
+        `${FILTER_LABELS[type]} — ${data.count} kết quả`;
+
+      const tbody = document.getElementById('filter-table-body');
+      tbody.innerHTML = '';
+
+      if (!data.results || data.results.length === 0) {
+        document.getElementById('filter-empty').classList.remove('hidden');
+        document.getElementById('filter-table-wrap').classList.remove('hidden');
+        return;
+      }
+
+      data.results.forEach((t, i) => {
+        const imgHtml = t.trademark_image_url
+          ? `<img src="${t.trademark_image_url}" class="w-12 h-12 object-contain rounded border" />`
+          : `<span class="text-gray-300 text-xs">—</span>`;
+
+        const contractLink = t.contract_id
+          ? `<a href="/contracts/${t.contract_id}/" class="text-blue-600 hover:underline text-xs">${t.contract_no}</a>`
+          : `<span>${t.contract_no}</span>`;
+
+        const detailLink = `<a href="/trademark/${t.trademark_id}/"
+            class="text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded px-2 py-1 hover:bg-blue-100">
+            Xem
+          </a>`;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="px-3 py-2 text-gray-400">${i + 1}</td>
+            <td class="px-3 py-2 font-semibold">${t.app_no}</td>
+            <td class="px-3 py-2">${t.trademark_name}</td>
+            <td class="px-3 py-2 text-gray-500">${t.applicant}</td>
+            <td class="px-3 py-2">${t.filing_date}</td>
+            <td class="px-3 py-2">${t.decision_date}</td>
+            <td class="px-3 py-2">${t.valid_date}</td>
+            <td class="px-3 py-2">${contractLink}</td>
+            <td class="px-3 py-2">${t.customer_name}</td>
+            <td class="px-3 py-2">${imgHtml}</td>
+            <td class="px-3 py-2">${detailLink}</td>
+          </tr>`;
+      });
+
+      document.getElementById('filter-table-wrap').classList.remove('hidden');
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('filter-loading').classList.add('hidden');
+      document.getElementById('filter-result-title').textContent = 'Lỗi tải dữ liệu';
+      document.getElementById('filter-table-wrap').classList.remove('hidden');
+    });
 }
 
-// Enter để search
-document.querySelector('input[name="q"]').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    doFilter();
-  }
-});
-
-
-// ─────────────────────────────
-// 📤 EXPORT
-// ─────────────────────────────
-
-// Xuất theo ngày
-function doExportByDate() {
-  const date = document.getElementById('export-date-val').value;
-
-  if (!date) {
-    alert('Vui lòng chọn ngày');
-    return;
-  }
-
-  window.location.href = `?export=excel_by_date&export_date=${date}`;
-
-  document.getElementById('modal-export-date').classList.add('hidden');
+function closeFilterResult() {
+  currentFilterType = '';
+  document.getElementById('filter-result-section').classList.add('hidden');
+  document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('ring-2','ring-red-400'));
 }
 
-// Xuất theo khách hàng
-function doExportByCustomer() {
-  const customerId = document.getElementById('export-customer-id').value;
-  const date = document.getElementById('export-customer-date').value;
-  const err = document.getElementById('export-customer-err');
-
-  if (!customerId) {
-    err.classList.remove('hidden');
-    return;
-  }
-
-  err.classList.add('hidden');
-
-  window.location.href = `?export=excel_by_customer&export_customer_id=${customerId}&export_date=${date}`;
-
-  document.getElementById('modal-export-customer').classList.add('hidden');
-}
-
-
-// ─────────────────────────────
-// 📂 MODAL CLOSE
-// ─────────────────────────────
-['modal-export-date', 'modal-export-customer'].forEach(id => {
-  const modal = document.getElementById(id);
-  if (!modal) return;
-
-  modal.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.add('hidden');
-    }
-  });
-});
-
-
-// ─────────────────────────────
-// 📂 TOGGLE LOG
-// ─────────────────────────────
-function toggleLogs(id, row) {
-  const section = document.getElementById(id);
-  const chevron = document.getElementById('chevron-' + id.replace('logs-', ''));
-  const isOpen  = section.classList.contains('open');
-
-  document.querySelectorAll('.log-section.open').forEach(el => el.classList.remove('open'));
-  document.querySelectorAll('.chevron.open').forEach(el => el.classList.remove('open'));
-  document.querySelectorAll('.customer-row.active').forEach(el => el.classList.remove('active'));
-
-  if (!isOpen) {
-    section.classList.add('open');
-    chevron.classList.add('open');
-    row.classList.add('active');
-  }
-}
-
-// ── Export helpers ──
+// ── Export ──
 function doExportByDate() {
   const month = document.getElementById("export-month-val").value;
   const year  = document.getElementById("export-year-val").value;
-
   window.location.href = `?export=excel_by_month&month=${month}&year=${year}`;
+  document.getElementById('modal-export-date').classList.add('hidden');
 }
 
 function doExportByCustomer() {
   const customerId = document.getElementById("export-customer-id").value;
   const err = document.getElementById("export-customer-err");
-
-  if (!customerId) {
-    err.classList.remove("hidden");
-    return;
-  }
-
+  if (!customerId) { err.classList.remove("hidden"); return; }
   err.classList.add("hidden");
   window.location.href = `?export=excel_by_customer&customer_id=${customerId}`;
+  document.getElementById('modal-export-customer').classList.add('hidden');
 }
+
+['modal-export-date','modal-export-customer'].forEach(id => {
+  const modal = document.getElementById(id);
+  if (modal) modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+});
 </script>
 {% endblock %}

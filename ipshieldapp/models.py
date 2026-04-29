@@ -1205,3 +1205,23 @@ class CustomerDocument(models.Model):
 
     def __str__(self):
         return f"{self.customer.customer_code} - {self.name or self.file.name}"
+class PortalBanner(models.Model):
+    POSITION_CHOICES = (
+        ('left', 'Bên trái'),
+        ('right', 'Bên phải'),
+    )
+    LINK_CHOICES = (
+        ('https://ipsystem.vn/', 'IPSystem'),
+        ('https://ipleader.vn/', 'IPLeader'),
+    )
+    position = models.CharField(max_length=10, choices=POSITION_CHOICES, unique=True, verbose_name='Vị trí')
+    image = models.ImageField(upload_to='banners/', verbose_name='Ảnh banner')
+    link = models.CharField(max_length=100, choices=LINK_CHOICES, verbose_name='Link')
+    is_active = models.BooleanField(default=True, verbose_name='Hiển thị')
+
+    class Meta:
+        verbose_name = 'Banner Portal'
+        verbose_name_plural = 'Banner Portal'
+
+    def __str__(self):
+        return f"Banner {self.get_position_display()}"

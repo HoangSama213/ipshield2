@@ -1422,7 +1422,7 @@ def customer_logout(request):
 @customer_login_required
 def portal_dashboard(request):
     customer = request.customer
-    contracts = Contract.objects.filter(customer=customer).order_by('-created_at')
+    contracts = list(Contract.objects.filter(customer=customer).order_by('-created_at'))
 
     from collections import defaultdict
     grouped = defaultdict(list)
@@ -1430,21 +1430,27 @@ def portal_dashboard(request):
     for c in contracts:
         grouped[c.service_type].append(c)
 
-    # ✅ thêm grouped_tabs cho template
     grouped_tabs = [('all', contracts)]
 
     for key in ['nhanhieu', 'banquyen', 'dkkd', 'dautu', 'khac']:
         if grouped.get(key):
             grouped_tabs.append((key, grouped[key]))
 
+    completed = [c for c in contracts if c.status == 'completed']
+    pending   = [c for c in contracts if c.status != 'completed']
+    banners = {b.position: b for b in PortalBanner.objects.filter(is_active=True)}
+    banner_left = banners.get('left')
+    banner_right = banners.get('right')
     return render(request, 'portal/dashboard.html', {
-        'customer': customer,
-        'contracts': contracts,
-        'grouped': grouped,
-        'grouped_tabs': grouped_tabs,   # ✅ QUAN TRỌNG
-        'total': contracts.count(),
-        'completed': contracts.filter(status='completed').count(),
-        'pending': contracts.exclude(status='completed').count(),
+        'customer':     customer,
+        'contracts':    contracts,
+        'grouped':      grouped,
+        'grouped_tabs': grouped_tabs,
+        'total':        len(contracts),
+        'completed':    len(completed),
+        'pending':      len(pending),
+        'banner_left': banner_left,  # 🆕
+        'banner_right': banner_right,  # 🆕
     })
 
 
@@ -1875,3 +1881,120 @@ def delete_customer_document(request, pk):
     doc.delete()
     messages.success(request, '✅ Đã xóa tài liệu')
     return redirect('customer_detail', id=customer_id)
+
+
+@login_required
+def trademark_filter_list(request):
+    """Trả về danh sách hợp đồng nhãn hiệu theo filter (filed/decision/valid/deny)"""
+    from django.http import JsonResponse
+
+    filter_type = request.GET.get('filter_type', '')  # filled, decision, valid, deny
+    period = request.GET.get('period', 'month')
+    date_str = request.GET.get('date', '')
+    month = request.GET.get('month', '')
+    year = request.GET.get('year', '')
+
+    qs = TrademarkService.objects.select_related(
+        'contract', 'contract__customer'
+    )
+
+    def filter_by_field(queryset, field):
+        if period == 'day' and date_str:
+            return queryset.filter(**{field: date_str})
+        elif period == 'month' and month and year:
+            return queryset.filter(**{
+                f"{field}__month": int(month),
+                f"{field}__year": int(year),
+            })
+        elif period == 'year' and year:
+            return queryset.filter(**{f"{field}__year": int(year)})
+        return queryset
+
+    if filter_type == 'filled':
+        qs = filter_by_field(qs, 'filing_date').filter(filing_date__isnull=False)
+    elif filter_type == 'decision':
+        qs = filter_by_field(qs, 'decision_date').filter(decision_date__isnull=False)
+    elif filter_type == 'valid':
+        qs = filter_by_field(qs, 'valid_date').filter(valid_date__isnull=False)
+    elif filter_type == 'deny':
+        qs = qs.filter(deny_document__isnull=False)
+    elif filter_type == 'total':
+        qs = filter_by_field(qs, 'filing_date')
+    else:
+        qs = qs.none()
+
+    results = []
+    for t in qs.order_by('-contract__created_at'):
+        results.append({
+            'trademark_id': t.id,
+            'app_no': t.app_no or '—',
+            'trademark_name': t.trademark_name or '—',
+            'applicant': t.applicant or '—',
+            'filing_date': t.filing_date.strftime('%d/%m/%Y') if t.filing_date else '—',
+            'decision_date': t.decision_date.strftime('%d/%m/%Y') if t.decision_date else '—',
+            'valid_date': t.valid_date.strftime('%d/%m/%Y') if t.valid_date else '—',
+            'deny_date': t.deny_document.strftime('%d/%m/%Y') if t.deny_document else '—',
+            'contract_no': t.contract.contract_no if t.contract else '—',
+            'contract_id': t.contract.id if t.contract else None,
+            'customer_name': t.contract.customer.name if t.contract and t.contract.customer else '—',
+            'trademark_image_url': t.trademark_image.url if t.trademark_image else '',
+        })
+
+    return JsonResponse({'results': results, 'count': len(results)})
+@login_required
+def customer_filter_list(request):
+    """Trả về danh sách khách hàng theo filter type"""
+    from django.http import JsonResponse
+
+    filter_type = request.GET.get('filter_type', '')  # total, new, approved, pending, completed
+    period      = request.GET.get('period', 'month')
+    date_str    = request.GET.get('date', '')
+    month       = request.GET.get('month', '')
+    year        = request.GET.get('year', '')
+
+    import datetime
+    today = datetime.date.today()
+
+    qs = Customer.objects.all()
+
+    def filter_by_period(queryset, field='register_year'):
+        if period == 'day' and date_str:
+            return queryset.filter(**{field: date_str})
+        elif period == 'month' and month and year:
+            return queryset.filter(**{
+                f"{field}__month": int(month),
+                f"{field}__year":  int(year),
+            })
+        elif period == 'year' and year:
+            return queryset.filter(**{f"{field}__year": int(year)})
+        return queryset
+
+    if filter_type == 'total':
+        qs = filter_by_period(qs)
+    elif filter_type == 'new':
+        qs = filter_by_period(qs).filter(register_year__year=today.year)
+    elif filter_type == 'approved':
+        qs = Customer.objects.filter(status='approved')
+    elif filter_type == 'pending':
+        qs = Customer.objects.filter(status='pending')
+    elif filter_type == 'completed':
+        qs = Customer.objects.filter(status='completed')
+    else:
+        qs = Customer.objects.none()
+
+    results = []
+    for c in qs.order_by('-created_at'):
+        results.append({
+            'id':            c.id,
+            'customer_code': c.customer_code,
+            'name':          c.name,
+            'email':         c.email or '—',
+            'phone':         c.phone or '—',
+            'address':       c.address or '—',
+            'status':        c.get_status_display(),
+            'status_raw':    c.status,
+            'note':          (c.note or '—')[:40],
+            'created_at':    c.created_at.strftime('%d/%m/%Y %H:%M'),
+        })
+
+    return JsonResponse({'results': results, 'count': len(results)})

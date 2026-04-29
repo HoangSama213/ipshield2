@@ -140,3 +140,8 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 admin.site.register(CustomerActivityLog)
+from .models import PortalBanner
+
+@admin.register(PortalBanner)
+class PortalBannerAdmin(admin.ModelAdmin):
+    list_display = ['position', 'link', 'is_active']

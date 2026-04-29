@@ -77,10 +77,10 @@ path('contract/<int:contract_id>/edit-installments/', views.edit_installment_amo
     path('dashboard/stats/', views.dashboard_stats_api, name='dashboard_stats_api'),
     path('dashboard-customer-stats/', views.dashboard_customer_stats_api, name='dashboard_customer_stats_api'),
     path('dashboard-trademark-stats/', views.dashboard_trademark_stats_api, name='dashboard_trademark_stats_api'),
-    
-
+    path('dashboard/trademark-filter-list/', views.trademark_filter_list, name='trademark_filter_list'),
+    path('api/customer-filter-list/', views.customer_filter_list, name='customer_filter_list'),
 # 🆕 PORTAL KHÁCH HÀNG
-path('portal/profile/', views.portal_customer_profile, name='portal_customer_profile'),
+    path('portal/profile/', views.portal_customer_profile, name='portal_customer_profile'),
 
     path('khach-hang/dang-xuat/',  views.customer_logout,          name='customer_logout'),
     path('portal/', views.portal_dashboard, name='portal_dashboard'),

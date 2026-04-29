@@ -77,7 +77,7 @@
 </div>
 
     <!-- STAT PERIOD SELECTOR -->
-<div class="bg-white rounded-xl border border-gray-200 p-4">
+<div class="bg-white rounded-xl border border-gray-200 p-4 pb-6">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
     <p class="text-sm font-semibold text-gray-600">Thống kê theo:</p>
     <div class="flex gap-2">
@@ -145,32 +145,86 @@
     </div>
   </div>
 
-      <!-- STAT CARDS -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng số khách hàng</p>
-          <p class="text-2xl font-bold text-gray-800" >{{ customers.count|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Khách hàng mới</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-new">{{ new|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đang chờ duyệt</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-approved">{{ stats.approved|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đang xử lý</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-pending">{{ stats.pending|default:"0" }}</p>
-        </div>
-        <div class="bg-gray-50 rounded-xl border border-gray-100 px-4 py-4">
-          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hoàn tất</p>
-          <p class="text-2xl font-bold text-gray-800" id="stat-completed">{{ stats.completed|default:"0" }}</p>
-        </div>
-      </div>
-    </div>
+      <!-- STAT CARDS — clickable -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+
+  <div onclick="filterByType('total')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-gray-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng số khách hàng</p>
+    <p class="text-2xl font-bold text-gray-800" id="stat-total">0</p>
+  </div>
+
+  <div onclick="filterByType('new')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-blue-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Khách hàng mới</p>
+    <p class="text-2xl font-bold text-blue-600" id="stat-new">0</p>
+  </div>
+
+  <div onclick="filterByType('approved')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-green-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đang chờ duyệt</p>
+    <p class="text-2xl font-bold text-green-600" id="stat-approved">0</p>
+  </div>
+
+  <div onclick="filterByType('pending')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-yellow-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đang xử lý</p>
+    <p class="text-2xl font-bold text-yellow-600" id="stat-pending">0</p>
+  </div>
+
+  <div onclick="filterByType('completed')"
+       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-purple-400 hover:shadow transition-all">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hoàn tất</p>
+    <p class="text-2xl font-bold text-purple-600" id="stat-completed">0</p>
+  </div>
+
+</div>
+
+<!-- ── BẢNG KẾT QUẢ FILTER ── -->
+<div id="filter-result-section" class="hidden mt-8 mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-bold text-gray-700" id="filter-result-title">Kết quả</h3>
+    <button onclick="closeFilterResult()"
+            class="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg px-3 py-1">
+      ✕ Đóng
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div id="filter-loading" class="hidden text-center py-8 text-gray-400 text-sm">
+    <svg class="animate-spin h-5 w-5 mx-auto mb-2 text-red-400"
+         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10"
+              stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+    Đang tải...
+  </div>
+
+  <div id="filter-table-wrap"
+       class="overflow-x-auto rounded-xl border border-gray-200 bg-white hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+        <tr>
+          <th class="px-3 py-3 text-left">STT</th>
+          <th class="px-3 py-3 text-left">Mã KH</th>
+          <th class="px-3 py-3 text-left">Tên</th>
+          <th class="px-3 py-3 text-left">Email</th>
+          <th class="px-3 py-3 text-left">SĐT</th>
+          <th class="px-3 py-3 text-left">Địa chỉ</th>
+          <th class="px-3 py-3 text-left">Trạng thái</th>
+          <th class="px-3 py-3 text-left">Ngày tạo</th>
+          <th class="px-3 py-3 text-left">Xem</th>
+        </tr>
+      </thead>
+      <tbody id="filter-table-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+    </table>
+    <p id="filter-empty"
+       class="hidden text-center text-gray-400 py-8 text-sm">Không có dữ liệu.</p>
+  </div>
+</div>
   <!-- Search & Filter -->
-  <form method="get" class="bg-white rounded-xl border border-gray-200 p-4 flex flex-wrap gap-3 items-end">
+<form method="get" class="bg-white rounded-xl border border-gray-200 p-4 flex flex-wrap gap-3 items-end mt-2">
     <div class="flex-1 min-w-[220px]">
       <label class="block text-xs font-semibold text-gray-500 mb-1">Tìm kiếm khách hàng</label>
       <input type="text" name="q" value="{{ request.GET.q }}"
@@ -512,114 +566,180 @@ function toggleColumnPanel() {
 }
 </script>
 <script>
+function toggleColumnPanel() {
+  document.getElementById('columnToggle').classList.toggle('hidden');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  let currentPeriod     = 'month';
+  let currentFilterType = '';
 
-  let currentPeriod = 'month';
-
-  // ─────────────────────────────
-  // 🔁 SWITCH PERIOD
-  // ─────────────────────────────
+  // ── Period switcher ──
   window.setPeriod = function (p) {
     currentPeriod = p;
-
-    document.querySelectorAll('.period-picker').forEach(el => {
-      el.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.period-btn').forEach(el => {
-      el.classList.remove('active');
-    });
-
+    document.querySelectorAll('.period-picker').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'));
     const picker = document.getElementById('picker-' + p);
     if (picker) picker.classList.remove('hidden');
-
     const btn = document.getElementById('btn-' + p);
     if (btn) btn.classList.add('active');
-
     fetchStats();
+    if (currentFilterType) filterByType(currentFilterType);
   };
 
-  // ─────────────────────────────
-  // 📦 PARAMS
-  // ─────────────────────────────
   function getParams() {
     if (currentPeriod === 'day') {
-      return {
-        period: 'day',
-        date: document.getElementById('stat-date')?.value
-      };
+      return { period: 'day', date: document.getElementById('stat-date')?.value };
     }
-
     if (currentPeriod === 'month') {
       return {
         period: 'month',
         month: document.getElementById('stat-month')?.value,
-        year: document.getElementById('stat-month-year')?.value
+        year:  document.getElementById('stat-month-year')?.value
       };
     }
-
-    return {
-      period: 'year',
-      year: document.getElementById('stat-year')?.value
-    };
+    return { period: 'year', year: document.getElementById('stat-year')?.value };
   }
 
-  // ─────────────────────────────
-  // 🔥 FETCH STATS (THIẾU CHÍNH LÀ CÁI NÀY)
-  // ─────────────────────────────
+  // ── Fetch stats ──
   function fetchStats() {
     const params = new URLSearchParams(getParams());
-
     fetch(`{% url 'dashboard_customer_stats_api' %}?${params.toString()}`)
-      .then(res => res.json())
+      .then(r => r.json())
       .then(data => {
-
-        // ⚠️ map đúng với HTML hiện tại của bạn
-        const map = {
-          total: 'total',
-          new: 'new',
-          pending: 'pending',
-          approved: 'approved',
-          completed: 'completed'
-        };
-
-        Object.keys(map).forEach(key => {
+        ['total','new','approved','pending','completed'].forEach(key => {
           const el = document.getElementById('stat-' + key);
-          if (el) {
-            el.textContent = data[map[key]] || 0;
-          }
+          if (el) el.textContent = data[key] || 0;
         });
-
       })
-      .catch(err => console.error('Fetch error:', err));
+      .catch(err => console.error('Stats error:', err));
   }
 
-  // ─────────────────────────────
-  // 🎯 EVENT CHANGE
-  // ─────────────────────────────
-  ['stat-date', 'stat-month', 'stat-month-year', 'stat-year'].forEach(id => {
+  ['stat-date','stat-month','stat-month-year','stat-year'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', fetchStats);
+    if (el) el.addEventListener('change', () => {
+      fetchStats();
+      if (currentFilterType) filterByType(currentFilterType);
+    });
   });
 
-  // ─────────────────────────────
-  // 🚀 LOAD LẦN ĐẦU
-  // ─────────────────────────────
   fetchStats();
 
+  // ── Filter labels ──
+  const FILTER_LABELS = {
+    total:     'Tổng số khách hàng',
+    new:       'Khách hàng mới',
+    approved:  'Đang chờ duyệt',
+    pending:   'Đang xử lý',
+    completed: 'Hoàn tất',
+  };
+
+  const STATUS_BADGE = {
+    approved:  'bg-green-100 text-green-700',
+    pending:   'bg-yellow-100 text-yellow-700',
+    completed: 'bg-blue-100 text-blue-700',
+  };
+
+  // ── Filter by type ──
+  window.filterByType = function (type) {
+    if (currentFilterType === type) {
+      closeFilterResult();
+      return;
+    }
+    currentFilterType = type;
+
+    // Highlight card
+    document.querySelectorAll('.stat-card').forEach(el =>
+      el.classList.remove('ring-2','ring-red-400'));
+    const order = ['total','new','approved','pending','completed'];
+    const idx   = order.indexOf(type);
+    const cards = document.querySelectorAll('.stat-card');
+    if (idx >= 0 && cards[idx]) cards[idx].classList.add('ring-2','ring-red-400');
+
+    const section = document.getElementById('filter-result-section');
+    section.classList.remove('hidden');
+    document.getElementById('filter-result-title').textContent =
+      `${FILTER_LABELS[type] || type} — đang tải...`;
+    document.getElementById('filter-loading').classList.remove('hidden');
+    document.getElementById('filter-table-wrap').classList.add('hidden');
+    document.getElementById('filter-empty').classList.add('hidden');
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const params = new URLSearchParams({ ...getParams(), filter_type: type });
+
+    fetch(`{% url 'customer_filter_list' %}?${params.toString()}`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('filter-loading').classList.add('hidden');
+        document.getElementById('filter-result-title').textContent =
+          `${FILTER_LABELS[type]} — ${data.count} kết quả`;
+
+        const tbody = document.getElementById('filter-table-body');
+        tbody.innerHTML = '';
+
+        if (!data.results || data.results.length === 0) {
+          document.getElementById('filter-empty').classList.remove('hidden');
+          document.getElementById('filter-table-wrap').classList.remove('hidden');
+          return;
+        }
+
+        data.results.forEach((c, i) => {
+          const badgeClass = STATUS_BADGE[c.status_raw] || 'bg-gray-100 text-gray-600';
+          tbody.innerHTML += `
+            <tr class="hover:bg-gray-50">
+              <td class="px-3 py-2 text-gray-400">${i + 1}</td>
+              <td class="px-3 py-2 font-semibold">${c.customer_code}</td>
+              <td class="px-3 py-2">${c.name}</td>
+              <td class="px-3 py-2 text-gray-500">${c.email}</td>
+              <td class="px-3 py-2 text-gray-500">${c.phone}</td>
+              <td class="px-3 py-2 text-gray-500">${c.address}</td>
+              <td class="px-3 py-2">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                  ${c.status}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-xs text-gray-400">${c.created_at}</td>
+              <td class="px-3 py-2">
+                <a href="/customer/${c.id}/"
+                   class="text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded px-2 py-1 hover:bg-blue-100">
+                  Xem
+                </a>
+              </td>
+            </tr>`;
+        });
+
+        document.getElementById('filter-table-wrap').classList.remove('hidden');
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('filter-loading').classList.add('hidden');
+        document.getElementById('filter-result-title').textContent = 'Lỗi tải dữ liệu';
+        document.getElementById('filter-table-wrap').classList.remove('hidden');
+      });
+  };
+
+  window.closeFilterResult = function () {
+    currentFilterType = '';
+    document.getElementById('filter-result-section').classList.add('hidden');
+    document.querySelectorAll('.stat-card').forEach(el =>
+      el.classList.remove('ring-2','ring-red-400'));
+  };
+
+  // ── Export ──
+  window.doExportByMonth = function () {
+    const month = document.getElementById('export-month-val').value;
+    const year  = document.getElementById('export-month-year-val').value;
+    window.location.href = `?export=excel_by_month&export_month=${month}&export_year=${year}`;
+    document.getElementById('modal-export-month').classList.add('hidden');
+  };
+
+  const exportModal = document.getElementById('modal-export-month');
+  if (exportModal) {
+    exportModal.addEventListener('click', function (e) {
+      if (e.target === this) this.classList.add('hidden');
+    });
+  }
 });
-
-function doExportByMonth() {
-  const month = document.getElementById('export-month-val').value;
-  const year  = document.getElementById('export-month-year-val').value;
-  window.location.href = `?export=excel_by_month&export_month=${month}&export_year=${year}`;
-  document.getElementById('modal-export-month').classList.add('hidden');
-}
-
-document.getElementById('modal-export-month').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.add('hidden');
-});
-
-
 </script>
 {% endblock %}
