@@ -1767,8 +1767,8 @@ def dashboard_trademark_stats_api(request):
             return queryset.filter(**{f"{field}__year": int(year)})
         return queryset
 
-    # ✅ TOTAL = tổng tất cả, không filter theo period
-    total               = TrademarkService.objects.count()
+    # ✅ total cũng filter theo contract__created_at, giống trademark_filter_list
+    total = TrademarkService.objects.count()
     filing_date_count   = filter_by_date(qs, 'filing_date').filter(filing_date__isnull=False).count()
     decision_date_count = filter_by_date(qs, 'decision_date').filter(decision_date__isnull=False).count()
     valid_date_count    = filter_by_date(qs, 'valid_date').filter(valid_date__isnull=False).count()
@@ -1889,15 +1889,7 @@ def trademark_filter_list(request):
         qs = filter_by_field(qs, 'deny_document').filter(deny_document__isnull=False)
     # ✅ FIX: total filter theo contract__created_at cho khớp với stats API
     elif filter_type == 'total':
-        if period == 'day' and date_str:
-            qs = qs.filter(contract__created_at__date=date_str)
-        elif period == 'month' and month and year:
-            qs = qs.filter(
-                contract__created_at__month=int(month),
-                contract__created_at__year=int(year),
-            )
-        elif period == 'year' and year:
-            qs = qs.filter(contract__created_at__year=int(year))
+        pass
     else:
         qs = qs.none()
 

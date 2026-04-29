@@ -20,7 +20,6 @@
 
       <!-- XUẤT FILE -->
       <div class="flex gap-2 flex-wrap items-center">
-        <!-- Nút mở modal xuất theo ngày -->
         <button onclick="document.getElementById('modal-export-date').classList.remove('hidden')"
                 class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -29,7 +28,6 @@
           Xuất theo tháng
         </button>
 
-        <!-- Nút mở modal xuất theo KH -->
         <button onclick="document.getElementById('modal-export-customer').classList.remove('hidden')"
                 class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -46,32 +44,25 @@
         <h2 class="text-base font-bold text-gray-800">Xuất nhãn hiệu theo tháng</h2>
         <p class="text-xs text-gray-400">Xuất toàn bộ nhãn hiệu của <strong>tất cả khách hàng</strong> trong tháng được chọn.</p>
         <div class="grid grid-cols-2 gap-3">
-        <!-- Tháng -->
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Tháng</label>
-          <select id="export-month-val"
-                  class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
-            {% for i in month_range %}
-            <option value="{{ i }}" {% if i == current_month %}selected{% endif %}>
-              Tháng {{ i }}
-            </option>
-            {% endfor %}
-          </select>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Tháng</label>
+            <select id="export-month-val"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
+              {% for i in month_range %}
+              <option value="{{ i }}" {% if i == current_month %}selected{% endif %}>Tháng {{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Năm</label>
+            <select id="export-year-val"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
+              {% for y in year_range %}
+              <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-
-        <!-- Năm -->
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Năm</label>
-          <select id="export-year-val"
-                  class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300">
-            {% for y in year_range %}
-            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>
-              {{ y }}
-            </option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
         <div class="flex gap-3 justify-end pt-1">
           <button onclick="document.getElementById('modal-export-date').classList.add('hidden')"
                   class="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
@@ -117,12 +108,11 @@
         </div>
       </div>
 
-      <!-- Chọn ngày/tháng/năm -->
+      <!-- Pickers -->
       <div id="picker-day" class="period-picker hidden flex gap-3 flex-wrap">
         <div>
           <label class="block text-xs font-semibold text-gray-400 mb-1">Chọn ngày</label>
-          <input type="date" id="stat-date" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                 value="{{ today }}"/>
+          <input type="date" id="stat-date" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" value="{{ today }}"/>
         </div>
       </div>
 
@@ -156,240 +146,164 @@
         </div>
       </div>
 
-     <!-- STAT CARDS — clickable -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4" id="stat-cards">
+        <div onclick="filterByType('total')"
+             class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-gray-400 hover:shadow transition-all">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng nhãn hiệu</p>
+          <p class="text-2xl font-bold text-gray-800" id="stat-total">0</p>
+        </div>
+        <div onclick="filterByType('filled')"
+             class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-blue-400 hover:shadow transition-all">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã nộp đơn</p>
+          <p class="text-2xl font-bold text-blue-600" id="stat-filled">0</p>
+        </div>
+        <div onclick="filterByType('decision')"
+             class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-green-400 hover:shadow transition-all">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã cấp bằng</p>
+          <p class="text-2xl font-bold text-green-600" id="stat-decision">0</p>
+        </div>
+        <div onclick="filterByType('valid')"
+             class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-yellow-400 hover:shadow transition-all">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hợp lệ hình thức</p>
+          <p class="text-2xl font-bold text-yellow-600" id="stat-valid">0</p>
+        </div>
+        <div onclick="filterByType('deny')"
+             class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-red-400 hover:shadow transition-all">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Bị từ chối</p>
+          <p class="text-2xl font-bold text-red-600" id="stat-deny">0</p>
+        </div>
+      </div>
+    </div>
 
-  <div onclick="filterByType('total')"
-       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-gray-400 hover:shadow transition-all">
-    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tổng nhãn hiệu</p>
-    <p class="text-2xl font-bold text-gray-800" id="stat-total">0</p>
-  </div>
-
-  <div onclick="filterByType('filled')"
-       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-blue-400 hover:shadow transition-all">
-    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã nộp đơn</p>
-    <p class="text-2xl font-bold text-blue-600" id="stat-filled">0</p>
-  </div>
-
-  <div onclick="filterByType('decision')"
-       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-green-400 hover:shadow transition-all">
-    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Đã cấp bằng</p>
-    <p class="text-2xl font-bold text-green-600" id="stat-decision">0</p>
-  </div>
-
-  <div onclick="filterByType('valid')"
-       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-yellow-400 hover:shadow transition-all">
-    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hợp lệ hình thức</p>
-    <p class="text-2xl font-bold text-yellow-600" id="stat-valid">0</p>
-  </div>
-
-  <div onclick="filterByType('deny')"
-       class="stat-card bg-gray-50 rounded-xl border border-gray-100 px-4 py-4 cursor-pointer hover:border-red-400 hover:shadow transition-all">
-    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Bị từ chối</p>
-    <p class="text-2xl font-bold text-red-600" id="stat-deny">0</p>
-  </div>
-
-</div>
-
-<!-- ── BẢNG KẾT QUẢ FILTER (ẩn mặc định) ── -->
-<div id="filter-result-section" class="hidden mt-8 mb-6">
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-bold text-gray-700" id="filter-result-title">Kết quả</h3>
-    <button onclick="closeFilterResult()"
-            class="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg px-3 py-1">
-      ✕ Đóng
-    </button>
-  </div>
-
-  <!-- Loading -->
-  <div id="filter-loading" class="hidden text-center py-8 text-gray-400 text-sm">
-    <svg class="animate-spin h-5 w-5 mx-auto mb-2 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-    </svg>
-    Đang tải...
-  </div>
-
-  <!-- Table -->
-  <div id="filter-table-wrap" class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-        <tr>
-          <th class="px-3 py-3 text-left">STT</th>
-          <th class="px-3 py-3 text-left">Số đơn</th>
-          <th class="px-3 py-3 text-left">Tên nhãn hiệu</th>
-          <th class="px-3 py-3 text-left">Người nộp</th>
-          <th class="px-3 py-3 text-left">Ngày nộp</th>
-          <th class="px-3 py-3 text-left">Ngày cấp</th>
-          <th class="px-3 py-3 text-left">Ngày hợp lệ</th>
-          <th class="px-3 py-3 text-left">Số HĐ</th>
-          <th class="px-3 py-3 text-left">Khách hàng</th>
-          <th class="px-3 py-3 text-left">Logo</th>
-          <th class="px-3 py-3 text-left">Xem</th>
-        </tr>
-      </thead>
-      <tbody id="filter-table-body" class="divide-y divide-gray-100 text-gray-700">
-      </tbody>
-    </table>
-    <p id="filter-empty" class="hidden text-center text-gray-400 py-8 text-sm">Không có dữ liệu.</p>
-  </div>
-</div>
-
-    <!-- Filters -->
+    <!-- Filters / Search -->
     <form method="get">
-    <div class="search-section" style="margin-top: 2rem;">
+      <div class="search-section" style="margin-top: 2rem;">
         <h3>🔍 Tìm kiếm hợp đồng nhãn hiệu</h3>
-
         <div class="row g-2 mt-2">
-            <div class="col-12 col-md-6 col-lg-8">
-                <input type="text"
-                       name="q"
-                       value="{{ q }}"
-                       class="form-control"
-                       placeholder="Số đơn nhãn hiệu, mã hợp đồng, mã KH, tên KH...">
-            </div>
-
-            <div class="col-6 col-md-3 col-lg-2">
-                <button type="submit" class="btn btn-primary w-100">🔍 Tìm kiếm</button>
-            </div>
-
-            <div class="col-6 col-md-3 col-lg-2">
-                <a href="{% url 'contract_search' %}" class="btn btn-secondary w-100">✖ Xóa</a>
-            </div>
+          <div class="col-12 col-md-6 col-lg-8">
+            <input type="text" name="q" value="{{ q }}" class="form-control"
+                   placeholder="Số đơn nhãn hiệu, mã hợp đồng, mã KH, tên KH...">
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <button type="submit" class="btn btn-primary w-100">🔍 Tìm kiếm</button>
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <a href="{% url 'contract_search' %}" class="btn btn-secondary w-100">✖ Xóa</a>
+          </div>
         </div>
-    </div>
-</form>
+      </div>
+    </form>
 
-
-<!-- 🔥 HIỂN THỊ DANH SÁCH NHÃN HIỆU (NẾU TÌM THEO SỐ ĐƠN) -->
-{% if trademarks %}
-<div class="contracts-card mt-5">
-
-
-    <div class="table-responsive">
+    <!-- ============================================================
+         KẾT QUẢ TÌM KIẾM THEO SỐ ĐƠN (trademarks)
+         Chỉ hiện khi có kết quả tìm kiếm theo app_no
+    ============================================================ -->
+    {% if trademarks %}
+    <div class="contracts-card mt-5">
+      <div class="table-responsive">
         <table class="contracts-table table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Số đơn</th>
-
-                    <th>Tên nhãn hiệu</th>
-                    <th>Người nộp đơn</th>
-                    <th>Ngày nộp</th>
-                    <th>Số hợp đồng</th>
-                    <th>Khách hàng</th>
-                     <th>Hình ảnh</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for trademark in trademarks %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td class="contract-code"><strong>{{ trademark.app_no }}</strong></td>
-
-                    <td>{{ trademark.trademark_name }}</td>
-                    <td>{{ trademark.applicant }}</td>
-                    <td>{{ trademark.filing_date|date:"d/m/Y" }}</td>
-                    <td>{{ trademark.contract.contract_no }}</td>
-                    <td>{{ trademark.contract.customer.name }}</td>
-                    <td>
-                        {% if trademark.trademark_image %}
-                            <img src="{{ trademark.trademark_image.url }}"
-                                 alt="{{ trademark.trademark_name }}"
-                                 class="img-thumbnail trademark-image-thumb"
-                                 style="max-width: 80px; max-height: 80px; object-fit: contain; cursor: pointer;"
-                                 onclick="showImageModal('{{ trademark.trademark_image.url }}', '{{ trademark.trademark_name|escapejs }}')">
-                        {% else %}
-                            <span class="text-muted">Không có ảnh</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'trademark_detail' trademark.id %}" class="btn btn-sm btn-info">
-                            Xem
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Số đơn</th>
+              <th>Tên nhãn hiệu</th>
+              <th>Người nộp đơn</th>
+              <th>Ngày nộp</th>
+              <th>Số hợp đồng</th>
+              <th>Khách hàng</th>
+              <th>Hình ảnh</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for trademark in trademarks %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="contract-code"><strong>{{ trademark.app_no }}</strong></td>
+              <td>{{ trademark.trademark_name }}</td>
+              <td>{{ trademark.applicant }}</td>
+              <td>{{ trademark.filing_date|date:"d/m/Y" }}</td>
+              <td>{{ trademark.contract.contract_no }}</td>
+              <td>{{ trademark.contract.customer.name }}</td>
+              <td>
+                {% if trademark.trademark_image %}
+                  <img src="{{ trademark.trademark_image.url }}"
+                       alt="{{ trademark.trademark_name }}"
+                       class="img-thumbnail trademark-image-thumb"
+                       style="max-width: 80px; max-height: 80px; object-fit: contain; cursor: pointer;"
+                       onclick="showImageModal('{{ trademark.trademark_image.url }}', '{{ trademark.trademark_name|escapejs }}')">
+                {% else %}
+                  <span class="text-muted">Không có ảnh</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'trademark_detail' trademark.id %}" class="btn btn-sm btn-info">Xem</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
 
-<!-- HIỂN THỊ DANH SÁCH HỢP ĐỒNG (NẾU TÌM THEO THÔNG TIN KHÁC) -->
-{% elif contracts %}
-<div class="contracts-card mt-5">
-    <div class="table-responsive">
-        <table class="contracts-table table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Mã hợp đồng</th>
-                    <th>Loại Dịch vụ</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày tạo</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for contract in contracts %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-
-                    <td class="contract-code">
-                        {{ contract.contract_no }}
-                    </td>
-
-                    <td>
-                        {{ contract.get_service_type_display }}
-                    </td>
-
-                    <td>
-                        {% if contract.status == 'completed' %}
-                            <span class="badge bg-success">
-                                {{ contract.get_status_display }}
-                            </span>
-                        {% elif contract.status == 'processing' %}
-                            <span class="badge bg-warning text-dark">
-                                {{ contract.get_status_display }}
-                            </span>
-                        {% else %}
-                            <span class="badge bg-secondary">
-                                {{ contract.get_status_display }}
-                            </span>
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {{ contract.created_at|date:"d/m/Y H:i" }}
-                    </td>
-
-                    <td>
-                        <a href="{% url 'contract_detail' id=contract.id %}" class="btn btn-sm btn-info">
-                            Xem
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- KHÔNG TÌM THẤY KẾT QUẢ -->
-{% else %}
-<div class="empty-state text-center mt-4">
-    {% if q %}
-        <p>⚠️ Không tìm thấy kết quả nào cho "{{ q }}"</p>
     {% else %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            <strong>Hướng dẫn:</strong> Nhập số đơn nhãn hiệu (VD: 123) hoặc mã hợp đồng để tìm kiếm
-        </div>
+    <!-- ============================================================
+         BẢNG CHÍNH — luôn hiển thị (hợp đồng hoặc trống)
+         id được gắn để JS có thể inject dữ liệu filter vào đây
+    ============================================================ -->
+    <div class="contracts-card mt-5">
+      <div class="table-responsive">
+        <table id="main-contracts-table" class="contracts-table table table-bordered table-hover">
+          <thead id="main-table-thead">
+            <tr>
+              <th>STT</th>
+              <th>Mã hợp đồng</th>
+              <th>Loại Dịch vụ</th>
+              <th>Trạng thái</th>
+              <th>Ngày tạo</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="main-table-tbody">
+            {% for contract in contracts %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="contract-code">{{ contract.contract_no }}</td>
+              <td>{{ contract.get_service_type_display }}</td>
+              <td>
+                {% if contract.status == 'completed' %}
+                  <span class="badge bg-success">{{ contract.get_status_display }}</span>
+                {% elif contract.status == 'processing' %}
+                  <span class="badge bg-warning text-dark">{{ contract.get_status_display }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ contract.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td>{{ contract.created_at|date:"d/m/Y H:i" }}</td>
+              <td>
+                <a href="{% url 'contract_detail' id=contract.id %}" class="btn btn-sm btn-info">Xem</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">
+                {% if q %}
+                  ⚠️ Không tìm thấy kết quả nào cho "{{ q }}"
+                {% else %}
+                  <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Hướng dẫn:</strong> Nhập số đơn nhãn hiệu (VD: 123) hoặc mã hợp đồng để tìm kiếm
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
     {% endif %}
-</div>
-{% endif %}
-
 
   </div>
 </main>
@@ -399,6 +313,31 @@
 let currentPeriod = 'month';
 let currentFilterType = '';
 
+// Header mặc định của bảng hợp đồng (dùng khi reset)
+const DEFAULT_THEAD = `<tr>
+  <th>STT</th>
+  <th>Mã hợp đồng</th>
+  <th>Loại Dịch vụ</th>
+  <th>Trạng thái</th>
+  <th>Ngày tạo</th>
+  <th>Thao tác</th>
+</tr>`;
+
+// Header khi hiển thị nhãn hiệu từ filter
+const TRADEMARK_THEAD = `<tr>
+  <th>STT</th>
+  <th>Số đơn</th>
+  <th>Tên nhãn hiệu</th>
+  <th>Người nộp</th>
+  <th>Ngày nộp</th>
+  <th>Ngày cấp</th>
+  <th>Ngày hợp lệ</th>
+  <th>Số HĐ</th>
+  <th>Khách hàng</th>
+  <th>Logo</th>
+  <th>Xem</th>
+</tr>`;
+
 function setPeriod(p) {
   currentPeriod = p;
   document.querySelectorAll('.period-picker').forEach(el => el.classList.add('hidden'));
@@ -406,7 +345,6 @@ function setPeriod(p) {
   document.getElementById('picker-' + p).classList.remove('hidden');
   document.getElementById('btn-' + p).classList.add('active');
   fetchStats();
-  // Nếu đang mở bảng filter thì reload lại
   if (currentFilterType) filterByType(currentFilterType);
 }
 
@@ -448,19 +386,11 @@ function fetchStats() {
 
 fetchStats();
 
-// ────────────────────────────────────
-// 🔥 FILTER BY TYPE — click stat card
-// ────────────────────────────────────
-const FILTER_LABELS = {
-  total:    'Tổng nhãn hiệu',
-  filled:   'Đã nộp đơn',
-  decision: 'Đã cấp bằng',
-  valid:    'Hợp lệ hình thức',
-  deny:     'Bị từ chối',
-};
-
+// ──────────────────────────────────────────
+// 🔥 FILTER BY TYPE — inject vào bảng chính
+// ──────────────────────────────────────────
 function filterByType(type) {
-  // Toggle: click lại cùng loại thì đóng
+  // Click lại card đang active → reset
   if (currentFilterType === type) {
     closeFilterResult();
     return;
@@ -468,87 +398,83 @@ function filterByType(type) {
 
   currentFilterType = type;
 
-  // Highlight card đang chọn
+  // Highlight card
   document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('ring-2','ring-red-400'));
-  const cards = document.querySelectorAll('.stat-card');
   const order = ['total','filled','decision','valid','deny'];
-  const idx   = order.indexOf(type);
+  const idx = order.indexOf(type);
+  const cards = document.querySelectorAll('.stat-card');
   if (idx >= 0 && cards[idx]) cards[idx].classList.add('ring-2','ring-red-400');
 
-  // Hiển thị section
-  const section = document.getElementById('filter-result-section');
-  section.classList.remove('hidden');
-  document.getElementById('filter-result-title').textContent =
-    `${FILTER_LABELS[type] || type} — đang tải...`;
-  document.getElementById('filter-loading').classList.remove('hidden');
-  document.getElementById('filter-table-wrap').classList.add('hidden');
-  document.getElementById('filter-empty').classList.add('hidden');
+  const thead = document.getElementById('main-table-thead');
+  const tbody = document.getElementById('main-table-tbody');
 
-  // Scroll xuống
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Nếu đang ở trang tìm kiếm theo app_no (bảng trademark), không có main-table → bỏ qua
+  if (!tbody) return;
+
+  // Loading
+  thead.innerHTML = TRADEMARK_THEAD;
+  tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">
+    <span class="spinner-border spinner-border-sm me-2"></span>Đang tải...
+  </td></tr>`;
 
   const params = new URLSearchParams({ ...getParams(), filter_type: type });
 
   fetch(`{% url 'trademark_filter_list' %}?${params.toString()}`)
     .then(r => r.json())
     .then(data => {
-      document.getElementById('filter-loading').classList.add('hidden');
-      document.getElementById('filter-result-title').textContent =
-        `${FILTER_LABELS[type]} — ${data.count} kết quả`;
-
-      const tbody = document.getElementById('filter-table-body');
       tbody.innerHTML = '';
 
       if (!data.results || data.results.length === 0) {
-        document.getElementById('filter-empty').classList.remove('hidden');
-        document.getElementById('filter-table-wrap').classList.remove('hidden');
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted py-4">
+          Không có dữ liệu cho bộ lọc này.
+        </td></tr>`;
         return;
       }
 
       data.results.forEach((t, i) => {
-        const imgHtml = t.trademark_image_url
-          ? `<img src="${t.trademark_image_url}" class="w-12 h-12 object-contain rounded border" />`
-          : `<span class="text-gray-300 text-xs">—</span>`;
+        const logoCell = t.trademark_image_url
+          ? `<img src="${t.trademark_image_url}" style="max-width:60px;max-height:60px;object-fit:contain;" class="img-thumbnail">`
+          : `<span class="text-muted">—</span>`;
 
-        const contractLink = t.contract_id
-          ? `<a href="/contracts/${t.contract_id}/" class="text-blue-600 hover:underline text-xs">${t.contract_no}</a>`
-          : `<span>${t.contract_no}</span>`;
-
-        const detailLink = `<a href="/trademark/${t.trademark_id}/"
-            class="text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded px-2 py-1 hover:bg-blue-100">
-            Xem
-          </a>`;
-
-        tbody.innerHTML += `
-          <tr class="hover:bg-gray-50">
-            <td class="px-3 py-2 text-gray-400">${i + 1}</td>
-            <td class="px-3 py-2 font-semibold">${t.app_no}</td>
-            <td class="px-3 py-2">${t.trademark_name}</td>
-            <td class="px-3 py-2 text-gray-500">${t.applicant}</td>
-            <td class="px-3 py-2">${t.filing_date}</td>
-            <td class="px-3 py-2">${t.decision_date}</td>
-            <td class="px-3 py-2">${t.valid_date}</td>
-            <td class="px-3 py-2">${contractLink}</td>
-            <td class="px-3 py-2">${t.customer_name}</td>
-            <td class="px-3 py-2">${imgHtml}</td>
-            <td class="px-3 py-2">${detailLink}</td>
-          </tr>`;
+        tbody.innerHTML += `<tr>
+          <td>${i + 1}</td>
+          <td><strong>${t.app_no}</strong></td>
+          <td>${t.trademark_name}</td>
+          <td>${t.applicant}</td>
+          <td>${t.filing_date}</td>
+          <td>${t.decision_date}</td>
+          <td>${t.valid_date}</td>
+          <td>${t.contract_no}</td>
+          <td>${t.customer_name}</td>
+          <td>${logoCell}</td>
+          <td><a href="/trademark/${t.trademark_id}/" class="btn btn-sm btn-info">Xem</a></td>
+        </tr>`;
       });
 
-      document.getElementById('filter-table-wrap').classList.remove('hidden');
+      // Scroll xuống bảng
+      document.getElementById('main-contracts-table')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     })
     .catch(err => {
       console.error(err);
-      document.getElementById('filter-loading').classList.add('hidden');
-      document.getElementById('filter-result-title').textContent = 'Lỗi tải dữ liệu';
-      document.getElementById('filter-table-wrap').classList.remove('hidden');
+      tbody.innerHTML = `<tr><td colspan="11" class="text-center text-danger py-4">
+        Có lỗi khi tải dữ liệu.
+      </td></tr>`;
     });
 }
 
+// ── ĐÓNG FILTER: khôi phục bảng gốc ──
 function closeFilterResult() {
   currentFilterType = '';
-  document.getElementById('filter-result-section').classList.add('hidden');
-  document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('ring-2','ring-red-400'));
+  document.querySelectorAll('.stat-card').forEach(el =>
+    el.classList.remove('ring-2','ring-red-400'));
+
+  const thead = document.getElementById('main-table-thead');
+  const tbody = document.getElementById('main-table-tbody');
+  if (!thead || !tbody) return;
+
+  // Reload trang để trả về danh sách hợp đồng gốc
+  window.location.href = window.location.pathname;
 }
 
 // ── Export ──
