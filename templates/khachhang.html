@@ -271,8 +271,6 @@
           <th class="px-5 py-4">Email</th>
           <th class="px-5 py-4">SĐT</th>
           <th class="px-5 py-4">Địa chỉ</th>
-          <th class="px-5 py-4">Trạng thái</th>
-          <th class="px-5 py-4">Ghi chú</th>
           <th class="px-5 py-4">Ngày tạo</th>
           <th class="px-5 py-4">Hành động</th>
         </tr>
@@ -288,19 +286,7 @@
           <td class="px-5 py-3 text-gray-600">{{ c.email }}</td>
           <td class="px-5 py-3 text-gray-600">{{ c.phone }}</td>
           <td class="px-5 py-3 text-gray-600">{{ c.address }}</td>
-          <td class="px-5 py-3">
-            {% if c.status == 'approved' %}
-              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">{{ c.get_status_display }}</span>
-            {% elif c.status == 'pending' %}
-              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">{{ c.get_status_display }}</span>
-            {% elif c.status == 'completed' %}
-              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">{{ c.get_status_display }}</span>
-            {% else %}
-              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">{{ c.get_status_display }}</span>
-            {% endif %}
-          </td>
-          <td class="px-5 py-3 text-gray-500">{{ c.note|default:"—"|truncatechars:30 }}</td>
-          <td class="px-5 py-3 text-gray-500 text-xs">{{ c.created_at|date:"d/m/Y H:i" }}</td>
+          <td class="px-5 py-3 text-gray-500 text-xs">{{ c.register_year|date:"d/m/Y " }}</td>
           <td class="px-5 py-3">
             <a href="{% url 'customer_detail' c.id %}"
                class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 px-2.5 py-1 rounded-lg transition-colors">
@@ -688,9 +674,6 @@ document.getElementById('modal-export-month').addEventListener('click', function
 const LABEL_MAP = {
   'all':       'Tất cả khách hàng',
   'new':       'Khách hàng mới',
-  'approved':  'Đang chờ duyệt',
-  'pending':   'Đang xử lý',
-  'completed': 'Hoàn tất',
 };
 
 let currentFilter = 'all';
@@ -737,7 +720,7 @@ function filterTable(type) {
   document.querySelectorAll('#stat-cards > div').forEach(c =>
     c.classList.remove('ring-2','ring-offset-1','ring-gray-400')
   );
-  const idx_map = { all:0, new:1, approved:2, pending:3, completed:4 };
+  const idx_map = { all:0, new:1 };
   const cards   = document.querySelectorAll('#stat-cards > div');
   if (cards[idx_map[type]]) {
     cards[idx_map[type]].classList.add('ring-2','ring-offset-1','ring-gray-400');

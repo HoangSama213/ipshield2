@@ -610,5 +610,91 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const amountInputs = document.querySelectorAll(
+        'input[name$="-amount"]'
+    );
+
+    amountInputs.forEach(function(input) {
+
+        // format khi load
+        if (input.value) {
+            let rawValue = parseFloat(input.value);
+
+            if (!isNaN(rawValue)) {
+                input.value = rawValue.toLocaleString('vi-VN');
+            }
+        }
+
+        // format khi nhập
+        input.addEventListener("input", function () {
+
+            let rawValue = this.value.replace(/\./g, '');
+
+            rawValue = parseFloat(rawValue);
+
+            if (isNaN(rawValue)) {
+                this.value = '';
+                return;
+            }
+
+            this.value = rawValue.toLocaleString('vi-VN');
+
+            calculateTotal();
+        });
+
+        // bỏ format trước submit
+        input.form.addEventListener("submit", function () {
+            input.value = input.value.replace(/\./g, '');
+        });
+
+    });
+
+    function calculateTotal() {
+
+        let total = 0;
+
+        amountInputs.forEach(input => {
+            const raw = input.value.replace(/\./g, '');
+            total += parseFloat(raw) || 0;
+        });
+
+        const totalElement = document.getElementById('totalAmount');
+        const currentTotalElement = document.getElementById('currentTotal');
+
+        totalElement.textContent =
+            total.toLocaleString('vi-VN') + ' VNĐ';
+
+        currentTotalElement.textContent =
+            total.toLocaleString('vi-VN') + ' VNĐ';
+
+        const contractValue = {{ contract.contract_value }};
+
+        const totalWrapper = totalElement.parentElement;
+        const currentWrapper = currentTotalElement.parentElement;
+
+        if (total === contractValue) {
+
+            totalWrapper.classList.remove('error');
+            totalWrapper.classList.add('success');
+
+            currentWrapper.classList.remove('error');
+            currentWrapper.classList.add('success');
+
+        } else {
+
+            totalWrapper.classList.remove('success');
+            totalWrapper.classList.add('error');
+
+            currentWrapper.classList.remove('success');
+            currentWrapper.classList.add('error');
+        }
+    }
+
+    calculateTotal();
+
+});
+</script>
 {% endblock %}

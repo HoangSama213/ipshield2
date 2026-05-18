@@ -29,11 +29,6 @@ class Customer(models.Model):
         ('company', 'Doanh nghiệp'),
     )
 
-    CUSTOMER_STATUS_CHOICES = (
-        ('approved', 'Chờ duyệt'),
-        ('pending', 'Đang xử lý'),
-        ('completed', 'Hoàn tất'),
-    )
 
     customer_type = models.CharField(
         max_length=20,
@@ -42,12 +37,6 @@ class Customer(models.Model):
         verbose_name='Loại khách hàng'
     )
 
-    status = models.CharField(
-        max_length=20,
-        choices=CUSTOMER_STATUS_CHOICES,
-        default='approved',
-        verbose_name='Trạng thái'
-    )
 
     customer_code = models.CharField(
         max_length=50,
@@ -190,17 +179,17 @@ class ContractImage(models.Model):
 
     def __str__(self):
         return f"Ảnh HĐ {self.contract.contract_no} - {self.name or self.id}"
+    
+class ServiceType(models.Model):
+    code = models.CharField(unique=True)
+    name = models.CharField()
+    
+    def __str__(self):
+        return self.name
 # ============================
 # HỢP ĐỒNG (Contract Model - CẬP NHẬT ĐẦY ĐỦ)
 # ============================
 class Contract(models.Model):
-    SERVICE_TYPE_CHOICES = (
-        ('nhanhieu', 'Đăng ký nhãn hiệu'),
-        ('banquyen', 'Bản quyền tác giả'),
-        ('dkkd', 'Đăng ký kinh doanh'),
-        ('dautu', 'Đăng ký đầu tư'),
-        ('khac', 'Dịch vụ khác'),
-    )
 
     CONTRACT_STATUS_CHOICES = (
         ('pending', 'Đang chờ xử lý'),
@@ -220,9 +209,9 @@ class Contract(models.Model):
         related_name='contracts'
     )
 
-    service_type = models.CharField(
-        max_length=50,
-        choices=SERVICE_TYPE_CHOICES
+    services = models.ManyToManyField(
+        ServiceType,
+        related_name='contracts'
     )
 
     contract_no = models.CharField(max_length=50, unique=True)

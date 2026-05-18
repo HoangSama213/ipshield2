@@ -65,8 +65,8 @@ class OtherServiceInline(admin.StackedInline):
 # ============================
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ("contract_no", "customer", "service_type", "created_at")
-    list_filter = ("service_type", "created_at")
+    list_display = ("contract_no", "customer", "created_at")
+    list_filter = ("services", "created_at")
     search_fields = ("contract_no", "customer__name")
     ordering = ("-created_at",)
 
@@ -81,7 +81,7 @@ class ContractAdmin(admin.ModelAdmin):
     # Hiển thị label tiếng Việt
     fieldsets = (
         ("Thông tin hợp đồng", {
-            "fields": ("customer", "service_type", "contract_no","prepaid_amount","contract_value",)
+            "fields": ("customer", "services", "contract_no","prepaid_amount","contract_value",)
         }),
     )
 
@@ -145,3 +145,5 @@ from .models import PortalBanner
 @admin.register(PortalBanner)
 class PortalBannerAdmin(admin.ModelAdmin):
     list_display = ['position', 'link', 'is_active']
+    
+admin.site.register(ServiceType)

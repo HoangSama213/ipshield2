@@ -81,7 +81,7 @@ def home(request):
         ).order_by('register_year')
 
         total     = Customer.objects.count()
-        new_count = customers_in_month.count()
+        new = customers_in_month.count()
         approved  = Customer.objects.filter(status='approved').count()
         pending   = Customer.objects.filter(status='pending').count()
         completed = Customer.objects.filter(status='completed').count()
@@ -93,7 +93,7 @@ def home(request):
         ws1.title = f"Tổng quan T{export_month}-{export_year}"
         ws1.append(['Chỉ số', 'Số lượng'])
         ws1.append(['Tổng khách hàng',        total])
-        ws1.append([f'KH mới T{export_month}/{export_year}', new_count])
+        ws1.append([f'KH mới T{export_month}/{export_year}', new])
         ws1.append(['Chờ duyệt (approved)',   approved])
         ws1.append(['Đang xử lý (pending)',   pending])
         ws1.append(['Hoàn tất (completed)',   completed])
@@ -464,17 +464,6 @@ def customer_detail(request, id):
     return render(request, 'customer_detail.html', {'customer': customer, 'contracts': contracts})
 
 
-def customer_change_status(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        form = CustomerStatusForm(request.POST, instance=customer)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "✅ Cập nhật trạng thái thành công!")
-            return redirect('customer_detail', id=customer.id)
-    else:
-        form = CustomerStatusForm(instance=customer)
-    return render(request, 'customer_change_status.html', {'customer': customer, 'form': form})
 
 
 def customer_edit(request, id):
@@ -987,7 +976,7 @@ def protect_views(*views):
 
 
 protect_views(
-    home, add_contract, customer_detail, customer_change_status,
+    home, add_contract, customer_detail,
     customer_edit, customer_delete, contract_list, contract_detail,
     contract_edit, download_certificate, add_customer, search_customer,
 )
@@ -1730,16 +1719,9 @@ def dashboard_customer_stats_api(request):
         new_qs = new_qs.filter(register_year__year=int(year))
     new_customers = new_qs.count()
 
-    # ✅ TRẠNG THÁI = tổng tất cả, không filter period
-    status_stats = Customer.objects.values('status').annotate(total=Count('id'))
-    status_data  = {s['status']: s['total'] for s in status_stats}
-
     return JsonResponse({
         "total":     total,
         "new":       new_customers,
-        "approved":  status_data.get('approved', 0),
-        "pending":   status_data.get('pending', 0),
-        "completed": status_data.get('completed', 0),
     })
 
 @login_required

@@ -882,7 +882,7 @@
                             <span class="installment-notes">{{ ins.notes }}</span>
                         </td>
                         <td class="text-end">
-                            <span class="amount">{{ ins.amount|floatformat:0 }} VNĐ</span>
+                            <span class="amount">{{ ins.amount|floatformat:0|intcomma }} VNĐ</span>
                         </td>
                         <td class="text-center">
                             {% if ins.due_date %}

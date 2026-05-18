@@ -31,7 +31,7 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = [
             'customer_type',
-            'status',
+            'register_year',
             'customer_code',
             'name',
             'address',
@@ -47,7 +47,7 @@ class CustomerForm(forms.ModelForm):
 
         labels = {
             'customer_type': 'Loại khách hàng',
-            'status': 'Trạng thái khách hàng',
+            'register_year': 'Năm đăng ký',
             'customer_code': 'Mã khách hàng',
             'name': 'Tên khách hàng',
             'address': 'Địa chỉ',
@@ -63,7 +63,7 @@ class CustomerForm(forms.ModelForm):
 
         widgets = {
             'customer_type': forms.Select(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
+            'register_year': forms.DateInput(attrs={'class': 'form-control', 'type' : 'date'}),
             'customer_code': forms.TextInput(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
@@ -99,21 +99,6 @@ class CustomerForm(forms.ModelForm):
         return cleaned_data
 
 
-# ======================================================
-# CUSTOMER STATUS FORM (CHỈ ĐỔI TRẠNG THÁI)
-# ======================================================
-class CustomerStatusForm(forms.ModelForm):
-    class Meta:
-        model = Customer
-        fields = ['status']
-
-        labels = {
-            'status': 'Trạng thái khách hàng',
-        }
-
-        widgets = {
-            'status': forms.Select(attrs={'class': 'form-control'}),
-        }
 
 # ======================================================
 # CONTRACT FORM  (⚠️ CÓ STATUS – QUAN TRỌNG)
@@ -121,8 +106,6 @@ class CustomerStatusForm(forms.ModelForm):
 from django import forms
 from .models import Contract
 
-from django import forms
-from .models import Contract
 
 
 class ContractForm(forms.ModelForm):
@@ -130,7 +113,7 @@ class ContractForm(forms.ModelForm):
         model = Contract
         fields = [
             'customer',
-            'service_type',
+            'services',
             'contract_no',
             'contract_value',
             'payment_type',
@@ -142,7 +125,7 @@ class ContractForm(forms.ModelForm):
 
         labels = {
             'customer': 'Khách hàng',
-            'service_type': 'Loại dịch vụ',
+            'services': 'Loại dịch vụ',
             'contract_no': 'Số hợp đồng',
             'contract_value': 'Giá trị hợp đồng',
             'payment_type': 'Hình thức thanh toán',
@@ -153,14 +136,14 @@ class ContractForm(forms.ModelForm):
             'customer': forms.Select(attrs={
                 'class': 'form-control select2'
             }),
-            'service_type': forms.Select(attrs={
+            'services': forms.Select(attrs={
                 'class': 'form-control'
             }),
             'contract_no': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'VD: HD-001'
             }),
-            'contract_value': forms.NumberInput(attrs={
+            'contract_value': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nhập giá trị hợp đồng',
                 'min': 0
@@ -169,7 +152,7 @@ class ContractForm(forms.ModelForm):
                 'class': 'form-control',
                 'id': 'id_payment_type'
             }),
-            'prepaid_amount': forms.NumberInput(attrs={
+            'prepaid_amount': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nhập số tiền trả trước',
                 'min': 0
@@ -196,7 +179,7 @@ class ContractForm(forms.ModelForm):
 
         # Required fields
         self.fields['customer'].required = True
-        self.fields['service_type'].required = True
+        self.fields['services'].required = True
         self.fields['contract_no'].required = True
         self.fields['contract_value'].required = True
         self.fields['payment_type'].required = True
@@ -451,7 +434,7 @@ class InstallmentAmountForm(forms.ModelForm):
         }
 
         widgets = {
-            'amount': forms.NumberInput(attrs={
+            'amount': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nhập số tiền',
                 'min': 0,

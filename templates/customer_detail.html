@@ -50,48 +50,6 @@
                         <span class="info-value">{{ customer.get_customer_type_display }}</span>
                     </div>
 
-                    <div class="info-item full-width">
-                        <span class="info-label">Trạng thái khách hàng</span>
-                        <div class="status-wrapper">
-                            {% if customer.status == 'approved' %}
-                                <span class="status-badge status-success">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
-                                    {{ customer.get_status_display }}
-                                </span>
-                            {% elif customer.status == 'pending' %}
-                                <span class="status-badge status-warning">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                    </svg>
-                                    {{ customer.get_status_display }}
-                                </span>
-                            {% elif customer.status == 'completed' %}
-                                <span class="status-badge status-primary">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                    </svg>
-                                    {{ customer.get_status_display }}
-                                </span>
-                            {% else %}
-                                <span class="status-badge status-secondary">
-                                    {{ customer.get_status_display }}
-                                </span>
-                            {% endif %}
-
-                            <a href="{% url 'customer_change_status' customer.id %}" class="btn-edit-status">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                </svg>
-                                Sửa
-                            </a>
-                        </div>
-                    </div>
-
                     <div class="info-item">
                         <span class="info-label">Tên khách hàng</span>
                         <span class="info-value">{{ customer.name }}</span>
@@ -352,5 +310,49 @@
 </div>
 
 
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const moneyFields = [
+        "id_contract_value",
+        "id_prepaid_amount"
+    ];
+
+    moneyFields.forEach(function(fieldId) {
+
+        const input = document.getElementById(fieldId);
+
+        if (!input) return;
+
+        // format khi gõ
+        input.addEventListener("input", function () {
+
+            let rawValue = this.value.replace(/\D/g, "");
+
+            if (!rawValue) {
+                this.value = "";
+                return;
+            }
+
+            this.value = Number(rawValue).toLocaleString("vi-VN");
+        });
+
+        // format khi load edit form
+        if (input.value) {
+            let rawValue = input.value.replace(/\D/g, "");
+
+            if (rawValue) {
+                input.value = Number(rawValue).toLocaleString("vi-VN");
+            }
+        }
+
+        // bỏ dấu chấm trước submit
+        input.form.addEventListener("submit", function () {
+            input.value = input.value.replace(/\./g, "");
+        });
+
+    });
+
+});
+</script>
 {% endblock %}

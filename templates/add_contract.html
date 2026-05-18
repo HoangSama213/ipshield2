@@ -420,6 +420,8 @@ document.addEventListener('DOMContentLoaded', function() {
     })
   </script>
 
+  
+
   <style>
     /* Payment date field styling */
     #payment_date_field {
@@ -631,5 +633,51 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   </style>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const moneyFields = [
+        "id_contract_value",
+        "id_prepaid_amount"
+    ];
+
+    moneyFields.forEach(function(fieldId) {
+
+        const input = document.getElementById(fieldId);
+
+        if (!input) return;
+
+        // format khi gõ
+        input.addEventListener("input", function () {
+
+            let rawValue = this.value.replace(/\D/g, "");
+
+            if (!rawValue) {
+                this.value = "";
+                return;
+            }
+
+            this.value = Number(rawValue).toLocaleString("vi-VN");
+        });
+
+        // format khi load edit form
+        if (input.value) {
+            let rawValue = input.value.replace(/\D/g, "");
+
+            if (rawValue) {
+                input.value = Number(rawValue).toLocaleString("vi-VN");
+            }
+        }
+
+        // bỏ dấu chấm trước submit
+        input.form.addEventListener("submit", function () {
+            input.value = input.value.replace(/\./g, "");
+        });
+
+    });
+
+});
+</script>
 {% endblock %}
 

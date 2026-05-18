@@ -39,7 +39,6 @@ path('contracts/images/delete/<int:pk>/', views.delete_contract_image, name='del
     path('contracts/delete/<int:pk>/', views.contract_delete, name='contract_delete'),
     path("contracts/", views.contract_list, name="contract_list"),
     path("contracts/<int:id>/", views.contract_detail, name="contract_detail"),
-    path('<int:pk>/change-status/', views.customer_change_status, name='customer_change_status'),
     path("contracts/edit/<int:id>", views.contract_edit, name="contract_edit"),
     path('api/search-customer/', views.search_customer, name='search_customer'),
 # Thêm vào urls.py
