@@ -671,7 +671,7 @@
                 </svg>
                 <div class="info-content">
                     <span class="info-label">Loại dịch vụ</span>
-                    <span class="service-badge">{{ contract.get_service_type_display }}</span>
+                    <span class="service-badge">{{ contract.get_services_display }}</span>
                 </div>
             </div>
             <div class="info-item">
@@ -1082,11 +1082,11 @@
         </div>
 
         <div class="service-content">
-{% if contract.service_type == 'nhanhieu' %}
+{% if trademarks.exists %}
 <!-- ============================================ -->
 <!-- NHÃN HIỆU -->
 <!-- ============================================ -->
-{% for s in service %}
+{% for s in trademarks %}
 <div class="service-item-card">
     <div class="service-item-header">
         <h6 class="service-item-title">
@@ -1209,7 +1209,7 @@
                       style="margin-bottom: 15px;">
                     {% csrf_token %}
 
-                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="services" value="{{ contract.services }}"/>
                     <input type="hidden" name="service_id" value="{{ s.id }}"/>
                     <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
 
@@ -1255,14 +1255,13 @@
         </div>
     </div>
 </div>
-{% empty %}
-<p>❌ Chưa có nhãn hiệu nào</p>
 {% endfor %}
-            {% elif contract.service_type == 'banquyen' %}
+{% endif %}
+            {% if copyrights.exists %}
             <!-- ============================================ -->
             <!-- BẢN QUYỀN -->
             <!-- ============================================ -->
-            {% for s in service %}
+            {% for s in copyrights %}
             <div class="service-item-card">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1326,7 +1325,7 @@
                       style="margin-bottom: 15px;">
                     {% csrf_token %}
 
-                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="services" value="{{ contract.services }}"/>
                     <input type="hidden" name="service_id" value="{{ s.id }}"/>
                     <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
 
@@ -1368,17 +1367,14 @@
                 </div>
                 {% endif %}
             </div>
-            <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
-            </div>
-            {% empty %}
-            <p>❌ Chưa có bản quyền nào</p>
-            {% endfor %}
-            {% elif contract.service_type == 'dkkd' %}
+        </div>
+{% endfor %}
+{% endif %}
+            {% if business %}
             <!-- ============================================ -->
             <!-- ĐĂNG KÝ KINH DOANH -->
             <!-- ============================================ -->
-            {% if service.first %}
-            {% with s=service.first %}
+            {% with s=business %}
             <div class="service-item-card">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1386,7 +1382,7 @@
                              stroke-width="2">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         </svg>
-                        {{ s.company_name }}
+                        ĐĂNG KÝ KINH DOANH: {{ s.company_name }}
                     </h6>
                     <a href="{% url 'business_detail' s.id %}" class="btn-view-detail">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1458,7 +1454,7 @@
                       style="margin-bottom: 15px;">
                     {% csrf_token %}
 
-                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="services" value="{{ contract.services }}"/>
                     <input type="hidden" name="service_id" value="{{ s.id }}"/>
                     <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
 
@@ -1501,16 +1497,12 @@
                 {% endif %}
             </div>
             <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
-            {% endwith %}
-            {% else %}
-            <p>❌ Chưa có thông tin đăng ký kinh doanh</p>
-            {% endif %}
-            {% elif contract.service_type == 'dautu' %}
+{% endwith %}
+{% endif %}
+            {% if investment %}
             <!-- ============================================ -->
             <!-- ĐĂNG KÝ ĐẦU TƯ -->
-            <!-- ============================================ -->
-            {% if service.first %}
-            {% with s=service.first %}
+            {% with s=investment %}
             <div class="service-item-card">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1572,7 +1564,7 @@
                       style="margin-bottom: 15px;">
                     {% csrf_token %}
 
-                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="services" value="{{ contract.services }}"/>
                     <input type="hidden" name="service_id" value="{{ s.id }}"/>
                     <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
 
@@ -1617,14 +1609,13 @@
             <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
             </div>
             {% endwith %}
-            {% else %}
-            <p>❌ Chưa có thông tin đầu tư</p>
-            {% endif %}
-            {% elif contract.service_type == 'khac' %}
+{% endif %}
+        </div>
+            {% if other_service %}
             <!-- ============================================ -->
             <!-- DỊCH VỤ KHÁC -->
             <!-- ============================================ -->
-            {% for s in service %}
+            {% with s=other_service %}
             <div class="service-item-card">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1674,7 +1665,7 @@
                       style="margin-bottom: 15px;">
                     {% csrf_token %}
 
-                    <input type="hidden" name="service_type" value="{{ contract.service_type }}"/>
+                    <input type="hidden" name="services" value="{{ contract.services }}"/>
                     <input type="hidden" name="service_id" value="{{ s.id }}"/>
                     <input type="hidden" name="contract_id" value="{{ contract.id }}"/>
 
@@ -1718,10 +1709,8 @@
             </div>
             <!-- ✅ ĐÃ ĐÓNG attachment-box Ở ĐÂY -->
             </div>
-            {% empty %}
-            <p>❌ Chưa có dịch vụ khác</p>
-            {% endfor %}
-            {% endif %}
+            {% endwith %}
+{% endif %}
         </div>
     </div>
 

@@ -209,168 +209,63 @@ def add_contract(request):
             contract_images = request.FILES.getlist('contract_images')
             for f in contract_images:
                 ContractImage.objects.create(contract=contract, image=f, name=f.name)
-            service_type = contract.service_type
-            print(f"\n📦 Processing service type: {service_type}")
+            services = contract.services
+            print(f"\n📦 Processing service type: {services}")
 
-            if service_type == 'nhanhieu':
-                print("\n🏷️ Processing TRADEMARK formset...")
-                trademark_formset = TrademarkFormSet(request.POST, request.FILES, prefix='trademark')
+            # Thay toàn bộ khối if/elif services == ... bằng đoạn này:
 
-                if not trademark_formset.is_valid():
-                    contract.delete()
-                    for idx, form_errors in enumerate(trademark_formset.errors):
-                        if form_errors:
-                            for field, errors in form_errors.items():
-                                for error in errors:
-                                    messages.error(request, f"Nhãn hiệu #{idx + 1} - {field}: {error}")
-                    for error in trademark_formset.non_form_errors():
-                        messages.error(request, f"Lỗi formset: {error}")
-                    return render(request, "add_contract.html", {
-                        'contract_form': contract_form,
-                        'trademark_formset': trademark_formset,
-                        'copyright_formset': CopyrightFormSet(prefix='copyright', queryset=CopyrightService.objects.none()),
-                        'business_form': BusinessRegistrationForm(),
-                        'investment_form': InvestmentForm(),
-                        'other_form': OtherServiceForm(),
-                    })
-
+            # ── Trademark ──
+            trademark_formset = TrademarkFormSet(request.POST, request.FILES, prefix='trademark')
+            if trademark_formset.is_valid():
                 valid_forms = [
-                    form for form in trademark_formset
-                    if form.cleaned_data and not form.cleaned_data.get('DELETE', False)
+                    f for f in trademark_formset
+                    if f.cleaned_data and not f.cleaned_data.get('DELETE', False)
                 ]
+                for idx, form in enumerate(valid_forms):
+                    instance = form.save(commit=False)
+                    instance.contract = contract
+                    instance.save()
+                    for f in request.FILES.getlist(f'trademark_files_{idx}'):
+                        Certificate.objects.create(content_object=instance, file=f, name=f.name)
 
-                if len(valid_forms) == 0:
-                    messages.warning(request, "⚠️ Hợp đồng đã lưu nhưng chưa có thông tin nhãn hiệu")
-                else:
-                    saved_count = 0
-                    for idx, form in enumerate(valid_forms):
-                        instance = form.save(commit=False)
-                        instance.contract = contract
-                        instance.save()
-                        saved_count += 1
-                        files = request.FILES.getlist(f'trademark_files_{idx}')
-                        for f in files:
-                            Certificate.objects.create(content_object=instance, file=f, name=f.name)
-                    print(f"✅ Saved {saved_count} trademarks")
-
-            elif service_type == 'banquyen':
-                print("\n©️ Processing COPYRIGHT formset...")
-                copyright_formset = CopyrightFormSet(request.POST, request.FILES, prefix='copyright')
-
-                if not copyright_formset.is_valid():
-                    contract.delete()
-                    for idx, form_errors in enumerate(copyright_formset.errors):
-                        if form_errors:
-                            for field, errors in form_errors.items():
-                                for error in errors:
-                                    messages.error(request, f"Bản quyền #{idx + 1} - {field}: {error}")
-                    for error in copyright_formset.non_form_errors():
-                        messages.error(request, f"Lỗi formset: {error}")
-                    return render(request, "add_contract.html", {
-                        'contract_form': contract_form,
-                        'trademark_formset': TrademarkFormSet(prefix='trademark', queryset=TrademarkService.objects.none()),
-                        'copyright_formset': copyright_formset,
-                        'business_form': BusinessRegistrationForm(),
-                        'investment_form': InvestmentForm(),
-                        'other_form': OtherServiceForm(),
-                    })
-
+            # ── Copyright ──
+            copyright_formset = CopyrightFormSet(request.POST, request.FILES, prefix='copyright')
+            if copyright_formset.is_valid():
                 valid_forms = [
-                    form for form in copyright_formset
-                    if form.cleaned_data and not form.cleaned_data.get('DELETE', False)
+                    f for f in copyright_formset
+                    if f.cleaned_data and not f.cleaned_data.get('DELETE', False)
                 ]
+                for idx, form in enumerate(valid_forms):
+                    instance = form.save(commit=False)
+                    instance.contract = contract
+                    instance.save()
+                    for f in request.FILES.getlist(f'copyright_files_{idx}'):
+                        Certificate.objects.create(content_object=instance, file=f, name=f.name)
 
-                if len(valid_forms) == 0:
-                    messages.warning(request, "⚠️ Hợp đồng đã lưu nhưng chưa có thông tin bản quyền")
-                else:
-                    saved_count = 0
-                    for idx, form in enumerate(valid_forms):
-                        instance = form.save(commit=False)
-                        instance.contract = contract
-                        instance.save()
-                        saved_count += 1
-                        files = request.FILES.getlist(f'copyright_files_{idx}')
-                        for f in files:
-                            Certificate.objects.create(content_object=instance, file=f, name=f.name)
-                    print(f"✅ Saved {saved_count} copyrights")
+            # ── Business ──
+            business_form = BusinessRegistrationForm(request.POST, request.FILES)
+            if business_form.is_valid() and any(business_form.cleaned_data.values()):
+                obj = business_form.save(commit=False)
+                obj.contract = contract
+                obj.save()
+                for f in request.FILES.getlist('business_files'):
+                    Certificate.objects.create(content_object=obj, file=f, name=f.name)
 
-            elif service_type == 'dkkd':
-                form = BusinessRegistrationForm(request.POST, request.FILES)
-                if not form.is_valid():
-                    contract.delete()
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            field_label = form.fields.get(field).label if field in form.fields else field
-                            messages.error(request, f"ĐKKD - {field_label}: {error}")
-                    return render(request, "add_contract.html", {
-                        'contract_form': contract_form,
-                        'trademark_formset': TrademarkFormSet(prefix='trademark', queryset=TrademarkService.objects.none()),
-                        'copyright_formset': CopyrightFormSet(prefix='copyright', queryset=CopyrightService.objects.none()),
-                        'business_form': form,
-                        'investment_form': InvestmentForm(),
-                        'other_form': OtherServiceForm(),
-                    })
-                if any(form.cleaned_data.values()):
-                    obj = form.save(commit=False)
-                    obj.contract = contract
-                    obj.save()
-                    files = request.FILES.getlist('business_files')
-                    for f in files:
-                        Certificate.objects.create(content_object=obj, file=f, name=f.name)
-                else:
-                    messages.warning(request, "⚠️ Hợp đồng đã lưu nhưng chưa có thông tin ĐKKD")
+            # ── Investment ──
+            investment_form = InvestmentForm(request.POST, request.FILES)
+            if investment_form.is_valid() and any(investment_form.cleaned_data.values()):
+                obj = investment_form.save(commit=False)
+                obj.contract = contract
+                obj.save()
+                for f in request.FILES.getlist('investment_files'):
+                    Certificate.objects.create(content_object=obj, file=f, name=f.name)
 
-            elif service_type == 'dautu':
-                form = InvestmentForm(request.POST, request.FILES)
-                if not form.is_valid():
-                    contract.delete()
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            field_label = form.fields.get(field).label if field in form.fields else field
-                            messages.error(request, f"Đầu tư - {field_label}: {error}")
-                    return render(request, "add_contract.html", {
-                        'contract_form': contract_form,
-                        'trademark_formset': TrademarkFormSet(prefix='trademark', queryset=TrademarkService.objects.none()),
-                        'copyright_formset': CopyrightFormSet(prefix='copyright', queryset=CopyrightService.objects.none()),
-                        'business_form': BusinessRegistrationForm(),
-                        'investment_form': form,
-                        'other_form': OtherServiceForm(),
-                    })
-                if any(form.cleaned_data.values()):
-                    obj = form.save(commit=False)
-                    obj.contract = contract
-                    obj.save()
-                    files = request.FILES.getlist('investment_files')
-                    for f in files:
-                        Certificate.objects.create(content_object=obj, file=f, name=f.name)
-                else:
-                    messages.warning(request, "⚠️ Hợp đồng đã lưu nhưng chưa có thông tin đầu tư")
-
-            else:  # khac
-                form = OtherServiceForm(request.POST, request.FILES)
-                if not form.is_valid():
-                    contract.delete()
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            field_label = form.fields.get(field).label if field in form.fields else field
-                            messages.error(request, f"Dịch vụ khác - {field_label}: {error}")
-                    return render(request, "add_contract.html", {
-                        'contract_form': contract_form,
-                        'trademark_formset': TrademarkFormSet(prefix='trademark', queryset=TrademarkService.objects.none()),
-                        'copyright_formset': CopyrightFormSet(prefix='copyright', queryset=CopyrightService.objects.none()),
-                        'business_form': BusinessRegistrationForm(),
-                        'investment_form': InvestmentForm(),
-                        'other_form': form,
-                    })
-                if any(form.cleaned_data.values()):
-                    obj = form.save(commit=False)
-                    obj.contract = contract
-                    obj.save()
-                    files = request.FILES.getlist('other_files')
-                    for f in files:
-                        Certificate.objects.create(content_object=obj, file=f, name=f.name)
-                else:
-                    messages.warning(request, "⚠️ Hợp đồng đã lưu nhưng chưa có thông tin dịch vụ")
+            # ── Other ──
+            other_form = OtherServiceForm(request.POST, request.FILES)
+            if other_form.is_valid() and any(other_form.cleaned_data.values()):
+                obj = other_form.save(commit=False)
+                obj.contract = contract
+                obj.save()
 
             if contract.payment_type == 'installment':
                 contract.create_installments()
@@ -393,7 +288,7 @@ def add_contract(request):
 Hợp đồng của bạn đã được tạo thành công:
 
   • Số hợp đồng : {contract.contract_no}
-  • Dịch vụ     : {contract.get_service_type_display()}
+  • Dịch vụ     : {contract.services}
   • Giá trị     : {contract.contract_value:,.0f} VNĐ
   • Hình thức TT: {contract.get_payment_type_display()}
 
@@ -523,13 +418,13 @@ def contract_detail(request, id):
     paid_count = installments.filter(is_paid=True).count()
 
     service = None
-    if contract.service_type == "nhanhieu":
+    if contract.services == "nhanhieu":
         service = contract.trademarks.all()
-    elif contract.service_type == "banquyen":
+    elif contract.services == "banquyen":
         service = contract.copyrights.all()
-    elif contract.service_type == "dkkd":
+    elif contract.services == "dkkd":
         service = BusinessRegistrationService.objects.filter(contract=contract)
-    elif contract.service_type == "dautu":
+    elif contract.services == "dautu":
         service = InvestmentService.objects.filter(contract=contract)
     else:
         service = OtherService.objects.filter(contract=contract)
@@ -677,7 +572,12 @@ IPShield
 
     return render(request, "contract_detail.html", {
         "contract": contract,
-        "service": service,
+         # ✅ Truyền từng loại service riêng
+        "trademarks": contract.trademarks.all(),
+        "copyrights": contract.copyrights.all(),
+        "business": getattr(contract, 'business', None),
+        "investment": getattr(contract, 'investment', None),
+        "other_service": getattr(contract, 'other_service', None),
         "installments": installments,
         "paid_count": paid_count,
     })
@@ -742,99 +642,99 @@ def edit_installment_amounts(request, contract_id):
 def contract_edit(request, id):
     contract = get_object_or_404(Contract, id=id)
 
-    contract_form = None
-    service_form = None
-    service_formset = None
-    FormSetClass = None
-    ServiceForm = None
-    queryset = None
-    prefix = None
-    service = None
+    # ✅ Khởi tạo tất cả formset/form
+    trademark_formset  = None
+    copyright_formset  = None
+    business_form      = None
+    investment_form    = None
+    other_form         = None
 
-    if contract.service_type == "nhanhieu":
-        FormSetClass = TrademarkFormSet
-        queryset = TrademarkService.objects.filter(contract=contract)
-        prefix = "trademark"
-    elif contract.service_type == "banquyen":
-        FormSetClass = CopyrightFormSet
-        queryset = CopyrightService.objects.filter(contract=contract)
-        prefix = "copyright"
-    elif contract.service_type == "dkkd":
-        ServiceForm = BusinessRegistrationForm
-        service = BusinessRegistrationService.objects.filter(contract=contract).first()
-    elif contract.service_type == "dautu":
-        ServiceForm = InvestmentForm
-        service = InvestmentService.objects.filter(contract=contract).first()
-    else:
-        ServiceForm = OtherServiceForm
-        service = OtherService.objects.filter(contract=contract).first()
+    trademark_qs  = TrademarkService.objects.filter(contract=contract)
+    copyright_qs  = CopyrightService.objects.filter(contract=contract)
+    business_obj  = getattr(contract, 'business', None)
+    investment_obj = getattr(contract, 'investment', None)
+    other_obj     = getattr(contract, 'other_service', None)
 
     if request.method == "POST":
-        contract_form = ContractForm(request.POST, instance=contract)
+        contract_form     = ContractForm(request.POST, instance=contract)
+        trademark_formset = TrademarkFormSet(request.POST, request.FILES, queryset=trademark_qs, prefix="trademark")
+        copyright_formset = CopyrightFormSet(request.POST, request.FILES, queryset=copyright_qs, prefix="copyright")
+        business_form     = BusinessRegistrationForm(request.POST, request.FILES, instance=business_obj)
+        investment_form   = InvestmentForm(request.POST, request.FILES, instance=investment_obj)
+        other_form        = OtherServiceForm(request.POST, request.FILES, instance=other_obj)
+
         lock_contract_fields(contract_form)
 
-        # 🔔 DÙNG CHUNG CHO CẢ 2 NHÁNH
-        def send_service_updated_email():
-            _send_email(
-                to_email=contract.customer.email,
-                subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
-                message=f"""Kính gửi {contract.customer.name},
+        if contract_form.is_valid():
+            contract_form.save()
 
-Thông tin hợp đồng {contract.contract_no} vừa được chỉnh sửa.
-
-Vui lòng đăng nhập portal để xem chi tiết.
-
-Trân trọng,
-IPShield
-""",
-            )
-
-        # ===== FORMSET (NHÃN HIỆU / BẢN QUYỀN) =====
-        if FormSetClass:
-            service_formset = FormSetClass(
-                request.POST, request.FILES, queryset=queryset, prefix=prefix
-            )
-            if contract_form.is_valid() and service_formset.is_valid():
-                contract_form.save()
-                instances = service_formset.save(commit=False)
+            # Trademark
+            if trademark_qs.exists() and trademark_formset.is_valid():
+                instances = trademark_formset.save(commit=False)
                 for obj in instances:
                     obj.contract = contract
                     obj.save()
-                for obj in service_formset.deleted_objects:
+                for obj in trademark_formset.deleted_objects:
                     obj.delete()
 
-                send_service_updated_email()  # 🔔
+            # Copyright
+            if copyright_qs.exists() and copyright_formset.is_valid():
+                instances = copyright_formset.save(commit=False)
+                for obj in instances:
+                    obj.contract = contract
+                    obj.save()
+                for obj in copyright_formset.deleted_objects:
+                    obj.delete()
 
-                messages.success(request, "✅ Cập nhật hợp đồng thành công!")
-                return redirect("contract_detail", id=contract.id)
-
-        # ===== SERVICE ĐƠN (DKKD / ĐẦU TƯ / KHÁC) =====
-        else:
-            service_form = ServiceForm(request.POST, request.FILES, instance=service)
-            if contract_form.is_valid() and service_form.is_valid():
-                contract_form.save()
-                obj = service_form.save(commit=False)
+            # Business
+            if business_obj and business_form.is_valid():
+                obj = business_form.save(commit=False)
                 obj.contract = contract
                 obj.save()
 
-                send_service_updated_email()  # 🔔
+            # Investment
+            if investment_obj and investment_form.is_valid():
+                obj = investment_form.save(commit=False)
+                obj.contract = contract
+                obj.save()
 
-                messages.success(request, "✅ Cập nhật hợp đồng thành công!")
-                return redirect("contract_detail", id=contract.id)
+            # Other
+            if other_obj and other_form.is_valid():
+                obj = other_form.save(commit=False)
+                obj.contract = contract
+                obj.save()
+
+            _send_email(
+                to_email=contract.customer.email,
+                subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
+                message=f"Kính gửi {contract.customer.name},\n\nHợp đồng {contract.contract_no} vừa được chỉnh sửa.\n\nTrân trọng,\nIPShield",
+            )
+            messages.success(request, "✅ Cập nhật hợp đồng thành công!")
+            return redirect("contract_detail", id=contract.id)
 
     else:
-        contract_form = ContractForm(instance=contract)
+        contract_form     = ContractForm(instance=contract)
         lock_contract_fields(contract_form)
-        if FormSetClass:
-            service_formset = FormSetClass(queryset=queryset, prefix=prefix)
-        else:
-            service_form = ServiceForm(instance=service)
+        trademark_formset = TrademarkFormSet(queryset=trademark_qs, prefix="trademark")
+        copyright_formset = CopyrightFormSet(queryset=copyright_qs, prefix="copyright")
+        business_form     = BusinessRegistrationForm(instance=business_obj)
+        investment_form   = InvestmentForm(instance=investment_obj)
+        other_form        = OtherServiceForm(instance=other_obj)
 
     return render(request, "contract_edit.html", {
-        "contract": contract,
-        "contract_form": contract_form,
-        "service_formset": service_formset,
-        "service_form": service_form,
+        "contract":           contract,
+        "contract_form":      contract_form,
+        "trademark_formset":  trademark_formset,
+        "copyright_formset":  copyright_formset,
+        "business_form":      business_form,
+        "investment_form":    investment_form,
+        "other_form":         other_form,
+        # flags để template biết cái nào đang có dữ liệu
+        "has_trademarks":     trademark_qs.exists(),
+        "has_copyrights":     copyright_qs.exists(),
+        "has_business":       business_obj is not None,
+        "has_investment":     investment_obj is not None,
+        "has_other":          other_obj is not None,
     })
 
 
@@ -843,15 +743,15 @@ IPShield
 # ===============================================
 def download_certificate(request, id):
     contract = get_object_or_404(Contract, id=id)
-    if contract.service_type == "nhanhieu":
+    if contract.services == "nhanhieu":
         service = contract.trademarks.first()
         if not service or not service.certificate_file:
             raise Http404("Không có giấy chứng nhận")
-    elif contract.service_type == "banquyen":
+    elif contract.services == "banquyen":
         service = CopyrightService.objects.get(contract=contract)
-    elif contract.service_type == "dkkd":
+    elif contract.services == "dkkd":
         service = BusinessRegistrationService.objects.get(contract=contract)
-    elif contract.service_type == "dautu":
+    elif contract.services == "dautu":
         service = InvestmentService.objects.get(contract=contract)
     else:
         service = OtherService.objects.get(contract=contract)
@@ -993,7 +893,7 @@ def contract_search(request):
     import datetime
     q = request.GET.get('q', '').strip()
     customers = Customer.objects.all().order_by('created_at')
-    contracts = Contract.objects.filter(service_type='nhanhieu').order_by('-created_at')
+    contracts = Contract.objects.filter(services__code='nhanhieu').order_by('-created_at')
     filled_count = contracts.filter(trademarks__filing_date__isnull=False).distinct().count()
     decision_count = contracts.filter(trademarks__decision_date__isnull=False).distinct().count()
     valid_count = contracts.filter(trademarks__valid_date__isnull=False).distinct().count()
@@ -1087,7 +987,7 @@ def contract_search(request):
 
         # 🔥 LẤY CONTRACT TRƯỚC (QUAN TRỌNG)
         contracts = Contract.objects.filter(
-            service_type='nhanhieu',
+            services='nhanhieu',
             customer_id=customer_id
         ).select_related('customer').prefetch_related('trademarks').order_by('-contract_no')
 
@@ -1163,7 +1063,7 @@ def contract_search(request):
 
 def contract_copyright_search(request):
     q = request.GET.get('q', '').strip()
-    contracts = Contract.objects.filter(service_type='banquyen').order_by('-created_at')
+    contracts = Contract.objects.filter(services__code='banquyen').order_by('-created_at')
     copyrights = []
 
     if q:
@@ -1185,7 +1085,7 @@ def contract_copyright_search(request):
 
 def contract_business_search(request):
     q = request.GET.get('q', '').strip()
-    contracts = Contract.objects.filter(service_type='dkkd')
+    contracts = Contract.objects.filter(services__code='dkkd')
     if q:
         business = BusinessRegistrationService.objects.filter(tax_code__icontains=q).first()
         if business:
@@ -1200,7 +1100,7 @@ def contract_business_search(request):
 
 def contract_investment_search(request):
     q = request.GET.get('q', '').strip()
-    contracts = Contract.objects.filter(service_type='dautu')
+    contracts = Contract.objects.filter(services__code='dautu')
     if q:
         investment = InvestmentService.objects.filter(project_code__icontains=q).first()
         if investment:
@@ -1215,7 +1115,7 @@ def contract_investment_search(request):
 
 def contract_other_service_search(request):
     q = request.GET.get('q', '').strip()
-    contracts = Contract.objects.filter(service_type='khac')
+    contracts = Contract.objects.filter(services__code='khac')
     if q:
         contracts = contracts.filter(
             Q(contract_no__icontains=q) |
@@ -1299,7 +1199,7 @@ def delete_certificate(request, pk):
 
 def upload_certificate(request):
     if request.method == 'POST':
-        service_type = request.POST.get('service_type')
+        services = request.POST.get('services')
         service_id   = request.POST.get('service_id')
         file         = request.FILES.get('file')
         name         = request.POST.get('name')
@@ -1316,7 +1216,7 @@ def upload_certificate(request):
             'khac':     OtherService,
         }
 
-        model   = MODEL_MAP.get(service_type)
+        model   = MODEL_MAP.get(services)
         service = get_object_or_404(model, id=service_id)
 
         Certificate.objects.create(content_object=service, name=name, file=file)
@@ -1417,7 +1317,7 @@ def portal_dashboard(request):
     grouped = defaultdict(list)
 
     for c in contracts:
-        grouped[c.service_type].append(c)
+        grouped[c.services].append(c)
 
     grouped_tabs = [('all', contracts)]
 
@@ -1450,13 +1350,13 @@ def portal_contract_detail(request, contract_id):
     installments = contract.installments.all()
 
     service = None
-    if contract.service_type == 'nhanhieu':
+    if contract.services == 'nhanhieu':
         service = contract.trademarks.all()
-    elif contract.service_type == 'banquyen':
+    elif contract.services == 'banquyen':
         service = contract.copyrights.all()
-    elif contract.service_type == 'dkkd':
+    elif contract.services == 'dkkd':
         service = BusinessRegistrationService.objects.filter(contract=contract)
-    elif contract.service_type == 'dautu':
+    elif contract.services == 'dautu':
         service = InvestmentService.objects.filter(contract=contract)
     else:
         service = OtherService.objects.filter(contract=contract)

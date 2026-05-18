@@ -113,7 +113,6 @@ class ContractForm(forms.ModelForm):
         model = Contract
         fields = [
             'customer',
-            'services',
             'contract_no',
             'contract_value',
             'payment_type',
@@ -125,7 +124,6 @@ class ContractForm(forms.ModelForm):
 
         labels = {
             'customer': 'Khách hàng',
-            'services': 'Loại dịch vụ',
             'contract_no': 'Số hợp đồng',
             'contract_value': 'Giá trị hợp đồng',
             'payment_type': 'Hình thức thanh toán',
@@ -135,9 +133,6 @@ class ContractForm(forms.ModelForm):
         widgets = {
             'customer': forms.Select(attrs={
                 'class': 'form-control select2'
-            }),
-            'services': forms.Select(attrs={
-                'class': 'form-control'
             }),
             'contract_no': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -179,7 +174,6 @@ class ContractForm(forms.ModelForm):
 
         # Required fields
         self.fields['customer'].required = True
-        self.fields['services'].required = True
         self.fields['contract_no'].required = True
         self.fields['contract_value'].required = True
         self.fields['payment_type'].required = True

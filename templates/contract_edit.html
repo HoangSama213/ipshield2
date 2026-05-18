@@ -62,55 +62,86 @@
                         </svg>
                         <h5>Thông tin dịch vụ</h5>
                     </div>
-                   <div class="form-content">
+<div class="form-content">
 
-    {% if contract.service_type == "nhanhieu" or contract.service_type == "banquyen" %}
-
-{{ service_formset.management_form }}
-
-<div id="service-formset">
-    {% for form in service_formset %}
-    <div class="service-box formset-item">
-        <h6>
-            {% if contract.service_type == "nhanhieu" %}
-                🔖 Nhãn hiệu {{ forloop.counter }}
-            {% else %}
-                📄 Bản quyền {{ forloop.counter }}
-            {% endif %}
-        </h6>
-
+  {% if has_trademarks %}
+  <div style="margin-bottom:24px;">
+    <h6>🔖 Nhãn hiệu</h6>
+    {{ trademark_formset.management_form }}
+    <div id="trademark-formset">
+      {% for form in trademark_formset %}
+      <div class="service-box formset-item">
+        <h6>Nhãn hiệu {{ forloop.counter }}</h6>
         {{ form.as_p }}
-        <button type="button" class="btn-remove">
-            ❌ Xóa
-        </button>
+        <button type="button" class="btn-remove">❌ Xóa</button>
         <hr>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
+    <template id="trademark-empty-template">
+      <div class="service-box formset-item">
+        {{ trademark_formset.empty_form.as_p }}
+        {{ trademark_formset.empty_form.DELETE }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+    </template>
+    <button type="button" class="btn-add" data-prefix="trademark">➕ Thêm nhãn hiệu</button>
+  </div>
+  {% endif %}
+
+  {% if has_copyrights %}
+  <div style="margin-bottom:24px;">
+    <h6>©️ Bản quyền</h6>
+    {{ copyright_formset.management_form }}
+    <div id="copyright-formset">
+      {% for form in copyright_formset %}
+      <div class="service-box formset-item">
+        <h6>Bản quyền {{ forloop.counter }}</h6>
+        {{ form.as_p }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="copyright-empty-template">
+      <div class="service-box formset-item">
+        {{ copyright_formset.empty_form.as_p }}
+        {{ copyright_formset.empty_form.DELETE }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+    </template>
+    <button type="button" class="btn-add" data-prefix="copyright">➕ Thêm bản quyền</button>
+  </div>
+  {% endif %}
+
+  {% if has_business %}
+  <div style="margin-bottom:24px;">
+    <h6>🏢 Đăng ký kinh doanh</h6>
+    {{ business_form.as_p }}
+  </div>
+  {% endif %}
+
+  {% if has_investment %}
+  <div style="margin-bottom:24px;">
+    <h6>💰 Đầu tư</h6>
+    {{ investment_form.as_p }}
+  </div>
+  {% endif %}
+
+  {% if has_other %}
+  <div style="margin-bottom:24px;">
+    <h6>📋 Dịch vụ khác</h6>
+    {{ other_form.as_p }}
+  </div>
+  {% endif %}
+
+  {% if not has_trademarks and not has_copyrights and not has_business and not has_investment and not has_other %}
+  <p style="color:#9ca3af;font-style:italic;">Chưa có thông tin dịch vụ.</p>
+  {% endif %}
+
 </div>
-
-<!-- EMPTY FORM TEMPLATE -->
-<template id="empty-form-template">
-    <div class="service-box formset-item">
-        {{ service_formset.empty_form.as_p }}
-        {{ service_formset.empty_form.DELETE }}
-
-        <button type="button" class="btn-remove">
-            ❌ Xóa
-        </button>
-        <hr>
-    </div>
-</template>
-
-<button type="button"
-        class="btn-add"
-        data-prefix="{{ service_formset.prefix }}">
-    ➕ Thêm
-</button>
-
-{% else %}
-
-{{ service_form.as_p }}
-{% endif %}
 
 
             <!-- Action Buttons -->

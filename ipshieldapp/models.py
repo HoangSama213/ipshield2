@@ -357,7 +357,7 @@ class Contract(models.Model):
         self._original_status = self.status
 
     def __str__(self):
-        return f"{self.contract_no} - {self.get_service_type_display()}"
+        return f"{self.contract_no} - {self.services}"
 
 
 # ============================

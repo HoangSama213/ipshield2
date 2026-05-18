@@ -259,7 +259,6 @@
             <tr>
               <th>STT</th>
               <th>Mã hợp đồng</th>
-              <th>Loại Dịch vụ</th>
               <th>Trạng thái</th>
               <th>Ngày tạo</th>
               <th>Thao tác</th>
@@ -270,7 +269,6 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td class="contract-code">{{ contract.contract_no }}</td>
-              <td>{{ contract.get_service_type_display }}</td>
               <td>
                 {% if contract.status == 'completed' %}
                   <span class="badge bg-success">{{ contract.get_status_display }}</span>
