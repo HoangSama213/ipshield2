@@ -16,6 +16,8 @@ from .models import CustomerActivityLog
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .decorators import customer_login_required
+from django.db import connection
+import unicodedata
 
 from .models import *
 from .forms import *
@@ -134,9 +136,24 @@ def home(request):
 
     customers_all = Customer.objects.all()
     if q:
-        customers_all = customers_all.filter(
-            Q(customer_code__icontains=q) | Q(name__icontains=q) |
-            Q(email__icontains=q) | Q(phone__icontains=q)
+        # Thêm normalize cho SQLite
+        connection.ensure_connection()
+        connection.connection.create_function('normalize', 1, normalize)
+        q_normalized = normalize(q)
+        
+        customers_all = Customer.objects.extra(
+            where=["""
+                normalize(name) LIKE %s OR 
+                normalize(customer_code) LIKE %s OR
+                LOWER(email) LIKE %s OR
+                LOWER(phone) LIKE %s
+            """],
+            params=[
+                f'%{q_normalized}%',
+                f'%{q_normalized}%',
+                f'%{q.lower()}%',
+                f'%{q.lower()}%',
+            ]
         )
 
     # Danh sách KH cho modal export (chỉ KH có activity log)
@@ -280,24 +297,24 @@ def add_contract(request):
             messages.success(request, "✅ Tạo hợp đồng thành công!")
 
             # 🔔 GỬI MAIL HỢP ĐỒNG MỚI
-            _send_email(
-                to_email=contract.customer.email,
-                subject=f"[IPSHIELD] Hợp đồng mới – {contract.contract_no}",
-                message=f"""Kính gửi {contract.customer.name},
+#             _send_email(
+#                 to_email=contract.customer.email,
+#                 subject=f"[IPSHIELD] Hợp đồng mới – {contract.contract_no}",
+#                 message=f"""Kính gửi {contract.customer.name},
 
-Hợp đồng của bạn đã được tạo thành công:
+# Hợp đồng của bạn đã được tạo thành công:
 
-  • Số hợp đồng : {contract.contract_no}
-  • Dịch vụ     : {contract.services}
-  • Giá trị     : {contract.contract_value:,.0f} VNĐ
-  • Hình thức TT: {contract.get_payment_type_display()}
+#   • Số hợp đồng : {contract.contract_no}
+#   • Dịch vụ     : {contract.services}
+#   • Giá trị     : {contract.contract_value:,.0f} VNĐ
+#   • Hình thức TT: {contract.get_payment_type_display()}
 
-Vui lòng đăng nhập portal để xem chi tiết.
+# Vui lòng đăng nhập portal để xem chi tiết.
 
-Trân trọng,
-IPShield
-""",
-            )
+# Trân trọng,
+# IPShield
+# """,
+#             )
 
             return redirect('contract_detail', id=contract.id)
 
@@ -476,20 +493,20 @@ def contract_detail(request, id):
                 messages.success(request, f"✅ Đã thanh toán đợt {ins.notes} - Số tiền: {remaining:,.0f} VNĐ")
 
                 # 🔔 GỬI MAIL THANH TOÁN ĐỢT
-                _send_email(
-                    to_email=contract.customer.email,
-                    subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
-                    message=f"""Kính gửi {contract.customer.name},
+#                 _send_email(
+#                     to_email=contract.customer.email,
+#                     subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
+#                     message=f"""Kính gửi {contract.customer.name},
 
-Đợt thanh toán "{ins.notes}" của hợp đồng {contract.contract_no} đã được ghi nhận.
+# Đợt thanh toán "{ins.notes}" của hợp đồng {contract.contract_no} đã được ghi nhận.
 
-  • Số tiền : {remaining:,.0f} VNĐ
-  • Còn lại : {contract.remaining_amount:,.0f} VNĐ
+#   • Số tiền : {remaining:,.0f} VNĐ
+#   • Còn lại : {contract.remaining_amount:,.0f} VNĐ
 
-Trân trọng,
-IPShield
-""",
-                )
+# Trân trọng,
+# IPShield
+# """,
+#                 )
 
                 return redirect("contract_detail", id=contract.id)
 
@@ -533,20 +550,20 @@ IPShield
                 messages.success(request, f"✅ Đã ghi nhận thanh toán: {paid_amount:,.0f} VNĐ")
 
                 # 🔔 GỬI MAIL THANH TOÁN TỪNG PHẦN
-                _send_email(
-                    to_email=contract.customer.email,
-                    subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
-                    message=f"""Kính gửi {contract.customer.name},
+#                 _send_email(
+#                     to_email=contract.customer.email,
+#                     subject=f"[IPSHIELD] Xác nhận thanh toán – {contract.contract_no}",
+#                     message=f"""Kính gửi {contract.customer.name},
 
-Thanh toán của hợp đồng {contract.contract_no} đã được ghi nhận.
+# Thanh toán của hợp đồng {contract.contract_no} đã được ghi nhận.
 
-  • Số tiền : {paid_amount:,.0f} VNĐ
-  • Còn lại : {contract.remaining_amount:,.0f} VNĐ
+#   • Số tiền : {paid_amount:,.0f} VNĐ
+#   • Còn lại : {contract.remaining_amount:,.0f} VNĐ
 
-Trân trọng,
-IPShield
-""",
-                )
+# Trân trọng,
+# IPShield
+# """,
+#                 )
 
                 return redirect("contract_detail", id=contract.id)
 
@@ -704,11 +721,11 @@ def contract_edit(request, id):
                 obj.contract = contract
                 obj.save()
 
-            _send_email(
-                to_email=contract.customer.email,
-                subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
-                message=f"Kính gửi {contract.customer.name},\n\nHợp đồng {contract.contract_no} vừa được chỉnh sửa.\n\nTrân trọng,\nIPShield",
-            )
+            # _send_email(
+            #     to_email=contract.customer.email,
+            #     subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
+            #     message=f"Kính gửi {contract.customer.name},\n\nHợp đồng {contract.contract_no} vừa được chỉnh sửa.\n\nTrân trọng,\nIPShield",
+            # )
             messages.success(request, "✅ Cập nhật hợp đồng thành công!")
             return redirect("contract_detail", id=contract.id)
 
@@ -807,14 +824,30 @@ def add_customer(request):
 from django.http import JsonResponse
 
 
+def normalize(text):
+    if text is None:
+        return ''
+    text = text.lower()
+    text = unicodedata.normalize('NFD', text)
+    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
+    return text
+
 def search_customer(request):
     query = request.GET.get('q', '').strip()
     if len(query) < 1:
         return JsonResponse([], safe=False)
     try:
-        customers = Customer.objects.filter(
-            Q(customer_code__icontains=query) | Q(name__icontains=query)
+        # Đảm bảo connection đã được khởi tạo trước khi tạo function
+        connection.ensure_connection()
+        connection.connection.create_function('normalize', 1, normalize)
+
+        query_normalized = normalize(query)
+
+        customers = Customer.objects.extra(
+            where=["normalize(name) LIKE %s OR normalize(customer_code) LIKE %s"],
+            params=[f'%{query_normalized}%', f'%{query_normalized}%']
         )[:10]
+
         results = [{
             'id': c.id,
             'code': c.customer_code,
@@ -822,6 +855,7 @@ def search_customer(request):
             'phone': str(c.phone) if c.phone else '',
             'email': c.email if c.email else ''
         } for c in customers]
+
         return JsonResponse(results, safe=False)
     except Exception as e:
         import traceback
@@ -1224,19 +1258,19 @@ def upload_certificate(request):
         messages.success(request, 'Đã thêm tài liệu')
 
         # 🔔 GỬI MAIL UPLOAD FILE
-        _send_email(
-            to_email=service.contract.customer.email,
-            subject=f"[IPSHIELD] Tài liệu mới – {service.contract.contract_no}",
-            message=f"""Kính gửi {service.contract.customer.name},
+#         _send_email(
+#             to_email=service.contract.customer.email,
+#             subject=f"[IPSHIELD] Tài liệu mới – {service.contract.contract_no}",
+#             message=f"""Kính gửi {service.contract.customer.name},
 
-Một tài liệu mới vừa được thêm vào hợp đồng {service.contract.contract_no}.
+# Một tài liệu mới vừa được thêm vào hợp đồng {service.contract.contract_no}.
 
-Vui lòng đăng nhập portal để xem.
+# Vui lòng đăng nhập portal để xem.
 
-Trân trọng,
-IPShield
-""",
-        )
+# Trân trọng,
+# IPShield
+# """,
+#         )
 
         return redirect(request.META.get('HTTP_REFERER'))
 
