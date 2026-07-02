@@ -406,6 +406,26 @@ CopyrightFormSet = modelformset_factory(
     extra=0,
     can_delete=True
 )
+BusinessFormSet = modelformset_factory(
+    BusinessRegistrationService,
+    form=BusinessRegistrationForm,
+    extra=0,
+    can_delete=True
+)
+
+InvestmentFormSet = modelformset_factory(
+    InvestmentService,
+    form=InvestmentForm,
+    extra=0,
+    can_delete=True
+)
+
+OtherServiceFormSet = modelformset_factory(
+    OtherService,
+    form=OtherServiceForm,
+    extra=0,
+    can_delete=True
+)
 
 # Thêm vào cuối file forms.py
 

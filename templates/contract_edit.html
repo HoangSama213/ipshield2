@@ -64,8 +64,7 @@
                     </div>
 <div class="form-content">
 
-  {% if has_trademarks %}
-  <div style="margin-bottom:24px;">
+  <div class="service-block" data-service="trademark" style="margin-bottom:24px;{% if not has_trademarks %} display:none;{% endif %}">
     <h6>🔖 Nhãn hiệu</h6>
     {{ trademark_formset.management_form }}
     <div id="trademark-formset">
@@ -86,12 +85,10 @@
         <hr>
       </div>
     </template>
-    <button type="button" class="btn-add" data-prefix="trademark">➕ Thêm nhãn hiệu</button>
+     <button type="button" class="btn-add" data-prefix="trademark">➕ Thêm nhãn hiệu</button>
   </div>
-  {% endif %}
 
-  {% if has_copyrights %}
-  <div style="margin-bottom:24px;">
+  <div class="service-block" data-service="copyright" style="margin-bottom:24px;{% if not has_copyrights %} display:none;{% endif %}">
     <h6>©️ Bản quyền</h6>
     {{ copyright_formset.management_form }}
     <div id="copyright-formset">
@@ -114,28 +111,92 @@
     </template>
     <button type="button" class="btn-add" data-prefix="copyright">➕ Thêm bản quyền</button>
   </div>
-  {% endif %}
 
-  {% if has_business %}
-  <div style="margin-bottom:24px;">
+  <div class="service-block" data-service="business" style="margin-bottom:24px;{% if not has_business %} display:none;{% endif %}">
     <h6>🏢 Đăng ký kinh doanh</h6>
-    {{ business_form.as_p }}
+    {{ business_formset.management_form }}
+    <div id="business-formset">
+      {% for form in business_formset %}
+      <div class="service-box formset-item">
+        <h6>ĐKKD {{ forloop.counter }}</h6>
+        {{ form.as_p }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="business-empty-template">
+      <div class="service-box formset-item">
+        {{ business_formset.empty_form.as_p }}
+        {{ business_formset.empty_form.DELETE }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+    </template>
+    <button type="button" class="btn-add" data-prefix="business">➕ Thêm ĐKKD</button>
   </div>
-  {% endif %}
 
-  {% if has_investment %}
-  <div style="margin-bottom:24px;">
+  <div class="service-block" data-service="investment" style="margin-bottom:24px;{% if not has_investment %} display:none;{% endif %}">
     <h6>💰 Đầu tư</h6>
-    {{ investment_form.as_p }}
+    {{ investment_formset.management_form }}
+    <div id="investment-formset">
+      {% for form in investment_formset %}
+      <div class="service-box formset-item">
+        <h6>Đầu tư {{ forloop.counter }}</h6>
+        {{ form.as_p }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="investment-empty-template">
+      <div class="service-box formset-item">
+        {{ investment_formset.empty_form.as_p }}
+        {{ investment_formset.empty_form.DELETE }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+    </template>
+    <button type="button" class="btn-add" data-prefix="investment">➕ Thêm dự án đầu tư</button>
   </div>
-  {% endif %}
 
-  {% if has_other %}
-  <div style="margin-bottom:24px;">
+  <div class="service-block" data-service="other" style="margin-bottom:24px;{% if not has_other %} display:none;{% endif %}">
     <h6>📋 Dịch vụ khác</h6>
-    {{ other_form.as_p }}
+    {{ other_formset.management_form }}
+    <div id="other-formset">
+      {% for form in other_formset %}
+      <div class="service-box formset-item">
+        <h6>Dịch vụ khác {{ forloop.counter }}</h6>
+        {{ form.as_p }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="other-empty-template">
+      <div class="service-box formset-item">
+        {{ other_formset.empty_form.as_p }}
+        {{ other_formset.empty_form.DELETE }}
+        <button type="button" class="btn-remove">❌ Xóa</button>
+        <hr>
+      </div>
+    </template>
+    <button type="button" class="btn-add" data-prefix="other">➕ Thêm dịch vụ khác</button>
   </div>
-  {% endif %}
+
+  <!-- ➕ Thêm dịch vụ -->
+  <div style="position:relative; margin-bottom:24px;">
+    <button type="button" id="add-service-btn" class="btn-add">➕ Thêm dịch vụ</button>
+    <div id="add-service-dropdown" style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid #d1d5db; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); min-width:220px; z-index:10; margin-top:4px;">
+      <div class="add-service-option" data-service="trademark" style="padding:10px 16px; cursor:pointer;{% if has_trademarks %} display:none;{% endif %}">🔖 Nhãn hiệu</div>
+      <div class="add-service-option" data-service="copyright" style="padding:10px 16px; cursor:pointer;{% if has_copyrights %} display:none;{% endif %}">©️ Bản quyền</div>
+      <div class="add-service-option" data-service="business" style="padding:10px 16px; cursor:pointer;{% if has_business %} display:none;{% endif %}">🏢 Đăng ký kinh doanh</div>
+      <div class="add-service-option" data-service="investment" style="padding:10px 16px; cursor:pointer;{% if has_investment %} display:none;{% endif %}">💰 Đầu tư</div>
+      <div class="add-service-option" data-service="other" style="padding:10px 16px; cursor:pointer;{% if has_other %} display:none;{% endif %}">📋 Dịch vụ khác</div>
+    </div>
+  </div>
+
+</div>
 
   {% if not has_trademarks and not has_copyrights and not has_business and not has_investment and not has_other %}
   <p style="color:#9ca3af;font-style:italic;">Chưa có thông tin dịch vụ.</p>

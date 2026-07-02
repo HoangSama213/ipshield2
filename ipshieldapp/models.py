@@ -809,10 +809,10 @@ class CopyrightService(models.Model):
 # 3. ĐĂNG KÝ KINH DOANH
 # ============================
 class BusinessRegistrationService(models.Model):
-    contract = models.OneToOneField(
+    contract = models.ForeignKey(
         Contract,
         on_delete=models.CASCADE,
-        related_name='business'
+        related_name='businesses'      # đổi từ 'business'
     )
 
     company_name = models.CharField(
@@ -917,10 +917,10 @@ class BusinessRegistrationService(models.Model):
 # 4. ĐĂNG KÝ ĐẦU TƯ
 # ============================
 class InvestmentService(models.Model):
-    contract = models.OneToOneField(
+    contract = models.ForeignKey(
         Contract,
         on_delete=models.CASCADE,
-        related_name='investment'
+        related_name='investments'     # đổi từ 'investment'
     )
 
     # 🔥 MÃ DỰ ÁN: UNIQUE + CHO PHÉP TRỐNG
@@ -996,10 +996,10 @@ class InvestmentService(models.Model):
 # 5. DỊCH VỤ KHÁC
 # ============================
 class OtherService(models.Model):
-    contract = models.OneToOneField(
+    contract = models.ForeignKey(
         Contract,
         on_delete=models.CASCADE,
-        related_name='other_service'
+        related_name='other_services'  # đổi từ 'other_service'
     )
 
     description = models.TextField(

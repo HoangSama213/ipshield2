@@ -588,13 +588,12 @@ def contract_detail(request, id):
             return redirect('contract_detail', id=id)
 
     return render(request, "contract_detail.html", {
-        "contract": contract,
-         # ✅ Truyền từng loại service riêng
+         "contract": contract,
         "trademarks": contract.trademarks.all(),
         "copyrights": contract.copyrights.all(),
-        "business": getattr(contract, 'business', None),
-        "investment": getattr(contract, 'investment', None),
-        "other_service": getattr(contract, 'other_service', None),
+        "businesses": contract.businesses.all(),
+        "investments": contract.investments.all(),
+        "other_services": contract.other_services.all(),
         "installments": installments,
         "paid_count": paid_count,
     })
@@ -659,102 +658,60 @@ def edit_installment_amounts(request, contract_id):
 def contract_edit(request, id):
     contract = get_object_or_404(Contract, id=id)
 
-    # ✅ Khởi tạo tất cả formset/form
-    trademark_formset  = None
-    copyright_formset  = None
-    business_form      = None
-    investment_form    = None
-    other_form         = None
-
-    trademark_qs  = TrademarkService.objects.filter(contract=contract)
-    copyright_qs  = CopyrightService.objects.filter(contract=contract)
-    business_obj  = getattr(contract, 'business', None)
-    investment_obj = getattr(contract, 'investment', None)
-    other_obj     = getattr(contract, 'other_service', None)
+    trademark_qs   = TrademarkService.objects.filter(contract=contract)
+    copyright_qs   = CopyrightService.objects.filter(contract=contract)
+    business_qs    = BusinessRegistrationService.objects.filter(contract=contract)
+    investment_qs  = InvestmentService.objects.filter(contract=contract)
+    other_qs       = OtherService.objects.filter(contract=contract)
 
     if request.method == "POST":
-        contract_form     = ContractForm(request.POST, instance=contract)
-        trademark_formset = TrademarkFormSet(request.POST, request.FILES, queryset=trademark_qs, prefix="trademark")
-        copyright_formset = CopyrightFormSet(request.POST, request.FILES, queryset=copyright_qs, prefix="copyright")
-        business_form     = BusinessRegistrationForm(request.POST, request.FILES, instance=business_obj)
-        investment_form   = InvestmentForm(request.POST, request.FILES, instance=investment_obj)
-        other_form        = OtherServiceForm(request.POST, request.FILES, instance=other_obj)
+        contract_form       = ContractForm(request.POST, instance=contract)
+        trademark_formset   = TrademarkFormSet(request.POST, request.FILES, queryset=trademark_qs, prefix="trademark")
+        copyright_formset   = CopyrightFormSet(request.POST, request.FILES, queryset=copyright_qs, prefix="copyright")
+        business_formset    = BusinessFormSet(request.POST, request.FILES, queryset=business_qs, prefix="business")
+        investment_formset  = InvestmentFormSet(request.POST, request.FILES, queryset=investment_qs, prefix="investment")
+        other_formset        = OtherServiceFormSet(request.POST, request.FILES, queryset=other_qs, prefix="other")
 
         lock_contract_fields(contract_form)
 
         if contract_form.is_valid():
             contract_form.save()
 
-            # Trademark
-            if trademark_qs.exists() and trademark_formset.is_valid():
-                instances = trademark_formset.save(commit=False)
-                for obj in instances:
-                    obj.contract = contract
-                    obj.save()
-                for obj in trademark_formset.deleted_objects:
-                    obj.delete()
+            for formset in [trademark_formset, copyright_formset, business_formset, investment_formset, other_formset]:
+                if formset.is_valid():
+                    instances = formset.save(commit=False)
+                    for obj in instances:
+                        obj.contract = contract
+                        obj.save()
+                    for obj in formset.deleted_objects:
+                        obj.delete()
 
-            # Copyright
-            if copyright_qs.exists() and copyright_formset.is_valid():
-                instances = copyright_formset.save(commit=False)
-                for obj in instances:
-                    obj.contract = contract
-                    obj.save()
-                for obj in copyright_formset.deleted_objects:
-                    obj.delete()
-
-            # Business
-            if business_obj and business_form.is_valid():
-                obj = business_form.save(commit=False)
-                obj.contract = contract
-                obj.save()
-
-            # Investment
-            if investment_obj and investment_form.is_valid():
-                obj = investment_form.save(commit=False)
-                obj.contract = contract
-                obj.save()
-
-            # Other
-            if other_obj and other_form.is_valid():
-                obj = other_form.save(commit=False)
-                obj.contract = contract
-                obj.save()
-
-            # _send_email(
-            #     to_email=contract.customer.email,
-            #     subject=f"[IPSHIELD] Hợp đồng {contract.contract_no} vừa được cập nhật",
-            #     message=f"Kính gửi {contract.customer.name},\n\nHợp đồng {contract.contract_no} vừa được chỉnh sửa.\n\nTrân trọng,\nIPShield",
-            # )
             messages.success(request, "✅ Cập nhật hợp đồng thành công!")
             return redirect("contract_detail", id=contract.id)
 
     else:
-        contract_form     = ContractForm(instance=contract)
+        contract_form       = ContractForm(instance=contract)
         lock_contract_fields(contract_form)
-        trademark_formset = TrademarkFormSet(queryset=trademark_qs, prefix="trademark")
-        copyright_formset = CopyrightFormSet(queryset=copyright_qs, prefix="copyright")
-        business_form     = BusinessRegistrationForm(instance=business_obj)
-        investment_form   = InvestmentForm(instance=investment_obj)
-        other_form        = OtherServiceForm(instance=other_obj)
+        trademark_formset   = TrademarkFormSet(queryset=trademark_qs, prefix="trademark")
+        copyright_formset   = CopyrightFormSet(queryset=copyright_qs, prefix="copyright")
+        business_formset    = BusinessFormSet(queryset=business_qs, prefix="business")
+        investment_formset  = InvestmentFormSet(queryset=investment_qs, prefix="investment")
+        other_formset        = OtherServiceFormSet(queryset=other_qs, prefix="other")
 
     return render(request, "contract_edit.html", {
-        "contract":           contract,
-        "contract_form":      contract_form,
-        "trademark_formset":  trademark_formset,
-        "copyright_formset":  copyright_formset,
-        "business_form":      business_form,
-        "investment_form":    investment_form,
-        "other_form":         other_form,
-        # flags để template biết cái nào đang có dữ liệu
-        "has_trademarks":     trademark_qs.exists(),
-        "has_copyrights":     copyright_qs.exists(),
-        "has_business":       business_obj is not None,
-        "has_investment":     investment_obj is not None,
-        "has_other":          other_obj is not None,
+        "contract":            contract,
+        "contract_form":       contract_form,
+        "trademark_formset":   trademark_formset,
+        "copyright_formset":   copyright_formset,
+        "business_formset":    business_formset,
+        "investment_formset":  investment_formset,
+        "other_formset":        other_formset,
+        "has_trademarks":      trademark_qs.exists(),
+        "has_copyrights":      copyright_qs.exists(),
+        "has_business":        business_qs.exists(),
+        "has_investment":      investment_qs.exists(),
+        "has_other":           other_qs.exists(),
     })
-
-
 # ===============================================
 # DOWNLOAD CERTIFICATE
 # ===============================================

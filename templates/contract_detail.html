@@ -1267,8 +1267,8 @@
             <!-- ============================================ -->
             <!-- ĐĂNG KÝ KINH DOANH -->
             <!-- ============================================ -->
-            {% if business %}
-            {% with s=business %}
+            {% if businesses.exists %}
+            {% for s in businesses %}
             <div class="service-item-card mb-4">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1362,14 +1362,14 @@
                     {% endif %}
                 </div>
             </div>
-            {% endwith %}
+            {% endfor %}
             {% endif %}
 
             <!-- ============================================ -->
             <!-- ĐĂNG KÝ ĐẦU TƯ -->
             <!-- ============================================ -->
-            {% if investment %}
-            {% with s=investment %}
+            {% if investments.exists %}
+            {% for s in investments %}
             <div class="service-item-card mb-4">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1452,14 +1452,14 @@
                     {% endif %}
                 </div>
             </div>
-            {% endwith %}
+            {% endfor %}
             {% endif %}
 
             <!-- ============================================ -->
             <!-- DỊCH VỤ KHÁC -->
             <!-- ============================================ -->
-            {% if other_service %}
-            {% with s=other_service %}
+            {% if other_services.exists %}
+            {% for s in other_services %}
             <div class="service-item-card mb-4">
                 <div class="service-item-header">
                     <h6 class="service-item-title">
@@ -1532,7 +1532,7 @@
                     {% endif %}
                 </div>
             </div>
-            {% endwith %}
+            {% endfor %}
             {% endif %}
         </div>
     </div>
