@@ -573,7 +573,7 @@
           <div class="info-icon"><span class="material-symbols-rounded">payments</span></div>
           <div>
             <span class="info-label">Giá trị hợp đồng</span>
-            <span class="info-value">{{ contract.contract_value|intcomma }} VNĐ</span>
+            <span class="info-value">{{ contract.contract_value|intcomma }} {{ contract.currency }}</span>
           </div>
         </div>
       </div>
@@ -664,12 +664,12 @@
               <div class="progress-shine"></div>
             </div>
             <div class="progress-text">
-              {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+              {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} {{ contract.currency }}
             </div>
           </div>
           <div class="progress-footer">
             <span class="remaining-label">Còn lại:</span>
-            <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+            <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} {{ contract.currency }}</span>
           </div>
         </div>
 
@@ -690,7 +690,7 @@
               <tr class="{% if ins.is_paid %}row-paid{% elif ins.is_overdue %}row-overdue{% endif %}">
                 <td><span class="row-num">{{ forloop.counter }}</span></td>
                 <td><strong>{{ ins.notes }}</strong></td>
-                <td><span class="amount-text">{{ ins.amount|floatformat:0 }} VNĐ</span></td>
+                <td><span class="amount-text">{{ ins.amount|floatformat:0 }} {{ ins.contract.currency }}</span></td>
                 <td>
                   {% if ins.due_date %}<span class="due-tag">{{ ins.due_date|date:"d/m/Y" }}</span>
                   {% else %}—{% endif %}

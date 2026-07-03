@@ -682,7 +682,7 @@
                 </svg>
                 <div class="info-content">
                     <span class="info-label">Tổng giá trị hợp đồng</span>
-                    <span class="service-badge">{{ contract.contract_value|intcomma }} VNĐ</span>
+                    <span class="service-badge">{{ contract.contract_value|intcomma }} {{ contract.currency }}</span>
                 </div>
             </div>
         </div>
@@ -819,13 +819,13 @@
                         </div>
                     </div>
                     <div class="progress-text">
-                        {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} VNĐ
+                        {{ contract.total_paid|floatformat:0 }} / {{ contract.contract_value|floatformat:0 }} {{ contract.currency }}
                     </div>
                 </div>
 
                 <div class="progress-footer">
                     <span class="remaining-label">Còn lại:</span>
-                    <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} VNĐ</span>
+                    <span class="remaining-amount">{{ contract.remaining_amount|floatformat:0 }} {{ contract.currency }}</span>
                 </div>
             </div>
 
@@ -853,7 +853,7 @@
                                 <span class="installment-notes">{{ ins.notes }}</span>
                             </td>
                             <td class="text-end">
-                                <span class="amount">{{ ins.amount|floatformat:0|intcomma }} VNĐ</span>
+                                <span class="amount">{{ ins.amount|floatformat:0|intcomma }} {{ ins.contract.currency }}</span>
                             </td>
                             <td class="text-center">
                                 {% if ins.due_date %}
@@ -886,7 +886,7 @@
                             <td class="text-center">
                                 {% if not ins.is_paid %}
                                 <div class="action-buttons">
-                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận thanh toán đợt này?\n\nSố tiền: {{ ins.remaining_amount|floatformat:0 }} VNĐ');">
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận thanh toán đợt này?\n\nSố tiền: {{ ins.remaining_amount|floatformat:0 }} {{ ins.contract.currency }}');">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="pay_installment">
                                         <input type="hidden" name="installment_id" value="{{ ins.id }}">
@@ -972,15 +972,15 @@
                                             <div class="payment-summary">
                                                 <div class="summary-item">
                                                     <span class="summary-label">Tổng đợt:</span>
-                                                    <span class="summary-value">{{ ins.amount|floatformat:0 }} VNĐ</span>
+                                                    <span class="summary-value">{{ ins.amount|floatformat:0 }} {{ contract.currency }}</span>
                                                 </div>
                                                 <div class="summary-item">
                                                     <span class="summary-label">Đã trả:</span>
-                                                    <span class="summary-value paid">{{ ins.paid_amount|floatformat:0 }} VNĐ</span>
+                                                    <span class="summary-value paid">{{ ins.paid_amount|floatformat:0 }} {{ contract.currency }}</span>
                                                 </div>
                                                 <div class="summary-item highlight">
                                                     <span class="summary-label">Còn lại:</span>
-                                                    <span class="summary-value">{{ ins.remaining_amount|floatformat:0 }} VNĐ</span>
+                                                    <span class="summary-value">{{ ins.remaining_amount|floatformat:0 }} {{ contract.currency }}</span>
                                                 </div>
                                             </div>
 

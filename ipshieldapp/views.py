@@ -625,8 +625,8 @@ def edit_installment_amounts(request, contract_id):
             if total_entered != contract.contract_value:
                 messages.warning(
                     request,
-                    f"⚠️ Tổng số tiền các đợt ({total_entered:,.0f} VNĐ) "
-                    f"khác với giá trị hợp đồng ({contract.contract_value:,.0f} VNĐ)"
+                    f"⚠️ Tổng số tiền các đợt ({total_entered:,.2f} {contract.currency}) "
+                    f"khác với giá trị hợp đồng ({contract.contract_value:,.2f} {contract.currency})"
                 )
 
             instances = formset.save(commit=False)

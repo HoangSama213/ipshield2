@@ -869,40 +869,60 @@ document.addEventListener("DOMContentLoaded", function () {
         "id_prepaid_amount"
     ];
 
+    const currencySelect = document.getElementById("id_currency");
+
+    function isVND() {
+        return !currencySelect || currencySelect.value === "VND";
+    }
+
     moneyFields.forEach(function(fieldId) {
 
         const input = document.getElementById(fieldId);
 
         if (!input) return;
 
-        // format khi gõ
         input.addEventListener("input", function () {
-
-            let rawValue = this.value.replace(/\D/g, "");
-
-            if (!rawValue) {
-                this.value = "";
-                return;
+            if (isVND()) {
+                // VND: chỉ số nguyên, định dạng theo nhóm nghìn
+                let rawValue = this.value.replace(/\D/g, "");
+                if (!rawValue) { this.value = ""; return; }
+                this.value = Number(rawValue).toLocaleString("vi-VN");
+            } else {
+                // Ngoại tệ: cho phép số thập phân (1 dấu .)
+                let rawValue = this.value.replace(/[^\d.]/g, "");
+                rawValue = rawValue.replace(/(\..*)\./g, "$1"); // chỉ giữ 1 dấu chấm
+                this.value = rawValue;
             }
-
-            this.value = Number(rawValue).toLocaleString("vi-VN");
         });
 
-        // format khi load edit form
         if (input.value) {
-            let rawValue = input.value.replace(/\D/g, "");
-
+            let rawValue = input.value.replace(/[^\d.]/g, "");
             if (rawValue) {
-                input.value = Number(rawValue).toLocaleString("vi-VN");
+                input.value = isVND()
+                    ? Number(rawValue.replace(/\./g, "")).toLocaleString("vi-VN")
+                    : rawValue;
             }
         }
 
-        // bỏ dấu chấm trước submit
+        // bỏ dấu chấm phân nhóm (chỉ áp dụng cho VND) trước submit
         input.form.addEventListener("submit", function () {
-            input.value = input.value.replace(/\./g, "");
+            if (isVND()) {
+                input.value = input.value.replace(/\./g, "");
+            }
         });
-
     });
+
+    // khi đổi loại tiền tệ thì format lại các ô tiền theo đúng kiểu
+    if (currencySelect) {
+        currencySelect.addEventListener("change", function () {
+            moneyFields.forEach(function (fieldId) {
+                const input = document.getElementById(fieldId);
+                if (!input || !input.value) return;
+                let rawValue = input.value.replace(/[^\d.]/g, "").replace(/\./g, "");
+                input.value = isVND() ? Number(rawValue).toLocaleString("vi-VN") : rawValue;
+            });
+        });
+    }
 
 });
 </script>

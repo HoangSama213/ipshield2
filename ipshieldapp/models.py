@@ -19,7 +19,10 @@ number_validator = RegexValidator(
     message='Trường này chỉ được nhập số'
 )
 
-
+tax_code_validator = RegexValidator(
+    regex=r'^[0-9-]+$',
+    message='Mã số thuế chỉ được nhập số và dấu gạch ngang (-)'
+)
 # ============================
 # KHÁCH HÀNG
 # ============================
@@ -74,7 +77,7 @@ class Customer(models.Model):
 
     tax_code = models.CharField(
         max_length=20,
-        validators=[number_validator],
+        validators=[tax_code_validator],  
         blank=True,
         null=True,
         verbose_name='Mã số thuế'
@@ -222,7 +225,28 @@ class Contract(models.Model):
         decimal_places=0,
         verbose_name='Giá trị hợp đồng'
     )
+    # 🟢 GIÁ TRỊ HỢP ĐỒNG
+    CURRENCY_CHOICES = (
+        ('VND', 'VNĐ'),
+        ('USD', 'USD'),
+        ('EUR', 'EUR'),
+        ('JPY', 'JPY'),
+        ('CNY', 'CNY'),
+        ('KRW', 'KRW'),
+    )
 
+    currency = models.CharField(
+        max_length=3,
+        choices=CURRENCY_CHOICES,
+        default='VND',
+        verbose_name='Loại tiền tệ'
+    )
+
+    contract_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,   # đổi từ 0 sang 2 để hỗ trợ ngoại tệ có số lẻ (USD, EUR...)
+        verbose_name='Giá trị hợp đồng'
+    )
     # 🟢 TRẢ ĐỨT ĐIỂM / TRẢ NHIỀU ĐỢT
     payment_type = models.CharField(
         max_length=20,

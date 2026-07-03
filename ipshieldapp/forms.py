@@ -114,6 +114,7 @@ class ContractForm(forms.ModelForm):
         fields = [
             'customer',
             'contract_no',
+            'currency',
             'contract_value',
             'payment_type',
             'prepaid_amount',
@@ -125,9 +126,11 @@ class ContractForm(forms.ModelForm):
         labels = {
             'customer': 'Khách hàng',
             'contract_no': 'Số hợp đồng',
+            'currency': 'Loại tiền tệ',
             'contract_value': 'Giá trị hợp đồng',
             'payment_type': 'Hình thức thanh toán',
-            'prepaid_amount': 'Số tiền trả trước (VNĐ)',
+            'prepaid_amount': 'Số tiền trả trước',
+
         }
 
         widgets = {
@@ -137,6 +140,10 @@ class ContractForm(forms.ModelForm):
             'contract_no': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'VD: HD-001'
+            }),
+             'currency': forms.Select(attrs={        
+                'class': 'form-control',
+                'id': 'id_currency'
             }),
             'contract_value': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -175,6 +182,7 @@ class ContractForm(forms.ModelForm):
         # Required fields
         self.fields['customer'].required = True
         self.fields['contract_no'].required = True
+        self.fields['currency'].required = True
         self.fields['contract_value'].required = True
         self.fields['payment_type'].required = True
 

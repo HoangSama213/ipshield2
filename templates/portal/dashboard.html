@@ -231,7 +231,7 @@
                   <tr data-status="{{ contract.status }}">
                     <td><span class="contract-no">{{ contract.contract_no }}</span></td>
                     <td>{{ contract.get_service_type_display }}</td>
-                    <td>{{ contract.contract_value|floatformat:0 }} VNĐ</td>
+                    <td>{{ contract.contract_value|floatformat:0 }} {{ contract.currency }}</td>
                     <td>
                       {% if contract.payment_type == 'installment' %}
                         <div class="mini-progress">

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // BẮT BUỘC MST
             cccdInput.required = false;
-            taxInput.required = true;
+            taxInput.required = false;
             cccdInput.value = "";
         }
     }

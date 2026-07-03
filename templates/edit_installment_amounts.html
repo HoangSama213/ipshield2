@@ -28,7 +28,7 @@
                             <line x1="12" y1="1" x2="12" y2="23"></line>
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                         </svg>
-                        Giá trị: <strong>{{ contract.contract_value|intcomma }} VNĐ</strong>
+                        Giá trị: <strong>{{ contract.contract_value|intcomma }} {{ contract.currency }}</strong>
                     </span>
                 </div>
             </div>
@@ -55,11 +55,11 @@
                     <div class="alert-details">
                         <div class="alert-row">
                             <span class="alert-label">Tổng số tiền các đợt nên bằng:</span>
-                            <span class="alert-value target">{{ contract.contract_value|intcomma }} VNĐ</span>
+                            <span class="alert-value target">{{ contract.contract_value|intcomma }} {{ contract.currency }}</span>
                         </div>
                         <div class="alert-row">
                             <span class="alert-label">Tổng hiện tại:</span>
-                            <span class="alert-value current" id="currentTotal">{{ current_total|intcomma }} VNĐ</span>
+                            <span class="alert-value current" id="currentTotal">{{ current_total|intcomma }} {{ contract.currency }}</span>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <tr>
                             <th width="5%">#</th>
                             <th width="35%">
-                                Số tiền (VNĐ)
+                                Số tiền ({{ contract.currency }})
                                 <span class="required-mark">*</span>
                             </th>
                             <th width="30%">Ngày đến hạn</th>
@@ -106,7 +106,7 @@
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <polyline points="20 6 9 17 4 12"></polyline>
                                             </svg>
-                                            Đã trả: {{ form.instance.paid_amount|floatformat:0|intcomma }} VNĐ
+                                            Đã trả: {{ form.instance.paid_amount|floatformat:0|intcomma }} {{ contract.currency }}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -179,12 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const value = parseFloat(input.value) || 0;
             total += value;
         });
-
+        const currentCurrency = "{{ contract.currency }}";
         const totalElement = document.getElementById('totalAmount');
         const currentTotalElement = document.getElementById('currentTotal');
 
-        totalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
-        currentTotalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+        totalElement.textContent = total.toLocaleString('vi-VN') +' ' + currentCurrency;
+        currentTotalElement.textContent = total.toLocaleString('vi-VN') +' ' + currentCurrency;
 
         // Đổi màu nếu không khớp
         const contractValue = {{ contract.contract_value }};
@@ -665,10 +665,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentTotalElement = document.getElementById('currentTotal');
 
         totalElement.textContent =
-            total.toLocaleString('vi-VN') + ' VNĐ';
+            total.toLocaleString('vi-VN') +' ' + currentCurrency;
 
         currentTotalElement.textContent =
-            total.toLocaleString('vi-VN') + ' VNĐ';
+            total.toLocaleString('vi-VN') +' ' + currentCurrency;
 
         const contractValue = {{ contract.contract_value }};
 
