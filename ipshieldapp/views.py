@@ -1207,7 +1207,15 @@ def upload_certificate(request):
             'khac':     OtherService,
         }
 
-        model   = MODEL_MAP.get(services)
+        model = MODEL_MAP.get(services)
+        if model is None:
+            messages.error(request, f'Loại dịch vụ không hợp lệ: {services!r}')
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        if not service_id:
+            messages.error(request, 'Thiếu service_id')
+            return redirect(request.META.get('HTTP_REFERER'))
+
         service = get_object_or_404(model, id=service_id)
 
         Certificate.objects.create(content_object=service, name=name, file=file)
