@@ -208,9 +208,9 @@ def add_contract(request):
                 'contract_form': contract_form,
                 'trademark_formset': TrademarkFormSet(request.POST, request.FILES, prefix='trademark'),
                 'copyright_formset': CopyrightFormSet(request.POST, request.FILES, prefix='copyright'),
-                'business_form': BusinessRegistrationForm(request.POST, request.FILES),
-                'investment_form': InvestmentForm(request.POST, request.FILES),
-                'other_form': OtherServiceForm(request.POST, request.FILES),
+                'business_form': BusinessRegistrationForm(request.POST, request.FILES, prefix='business'),
+                'investment_form': InvestmentForm(request.POST, request.FILES, prefix='investment'),
+                'other_form': OtherServiceForm(request.POST, request.FILES, prefix='other'),
             })
 
         print("✅ Contract form valid")
@@ -260,7 +260,7 @@ def add_contract(request):
                         Certificate.objects.create(content_object=instance, file=f, name=f.name)
 
             # ── Business ──
-            business_form = BusinessRegistrationForm(request.POST, request.FILES)
+            business_form = BusinessRegistrationForm(request.POST, request.FILES, prefix='business')
             if business_form.is_valid() and any(business_form.cleaned_data.values()):
                 obj = business_form.save(commit=False)
                 obj.contract = contract
@@ -269,7 +269,7 @@ def add_contract(request):
                     Certificate.objects.create(content_object=obj, file=f, name=f.name)
 
             # ── Investment ──
-            investment_form = InvestmentForm(request.POST, request.FILES)
+            investment_form = InvestmentForm(request.POST, request.FILES, prefix='investment')
             if investment_form.is_valid() and any(investment_form.cleaned_data.values()):
                 obj = investment_form.save(commit=False)
                 obj.contract = contract
@@ -278,7 +278,7 @@ def add_contract(request):
                     Certificate.objects.create(content_object=obj, file=f, name=f.name)
 
             # ── Other ──
-            other_form = OtherServiceForm(request.POST, request.FILES)
+            other_form = OtherServiceForm(request.POST, request.FILES, prefix='other')
             if other_form.is_valid() and any(other_form.cleaned_data.values()):
                 obj = other_form.save(commit=False)
                 obj.contract = contract
@@ -332,9 +332,9 @@ def add_contract(request):
         'contract_form': ContractForm(),
         'trademark_formset': TrademarkFormSet(prefix='trademark', queryset=TrademarkService.objects.none()),
         'copyright_formset': CopyrightFormSet(prefix='copyright', queryset=CopyrightService.objects.none()),
-        'business_form': BusinessRegistrationForm(),
-        'investment_form': InvestmentForm(),
-        'other_form': OtherServiceForm(),
+        'business_form' : BusinessRegistrationForm(request.POST, request.FILES, prefix='business'),
+        'investment_form' : InvestmentForm(request.POST, request.FILES, prefix='investment'),
+        'other_form' : OtherServiceForm(request.POST, request.FILES, prefix='other')
     })
 
 
