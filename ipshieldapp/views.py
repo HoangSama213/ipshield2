@@ -49,11 +49,7 @@ def _log_activity(customer, action, note='', request=None):
     CustomerActivityLog.objects.create(
         customer=customer, action=action, note=note, ip_address=ip
     )
-def lock_contract_fields(contract_form):
-    for field_name, field in contract_form.fields.items():
-        field.disabled = True
-        field.widget.attrs['readonly'] = True
-        field.widget.attrs['class'] = field.widget.attrs.get('class', '') + ' readonly-field'
+
 
 
 # ===============================================
@@ -672,7 +668,7 @@ def contract_edit(request, id):
         investment_formset  = InvestmentFormSet(request.POST, request.FILES, queryset=investment_qs, prefix="investment")
         other_formset        = OtherServiceFormSet(request.POST, request.FILES, queryset=other_qs, prefix="other")
 
-        lock_contract_fields(contract_form)
+      
 
         if contract_form.is_valid():
             contract_form.save()
@@ -691,7 +687,7 @@ def contract_edit(request, id):
 
     else:
         contract_form       = ContractForm(instance=contract)
-        lock_contract_fields(contract_form)
+      
         trademark_formset   = TrademarkFormSet(queryset=trademark_qs, prefix="trademark")
         copyright_formset   = CopyrightFormSet(queryset=copyright_qs, prefix="copyright")
         business_formset    = BusinessFormSet(queryset=business_qs, prefix="business")
